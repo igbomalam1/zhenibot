@@ -10,6 +10,9 @@ import {
   Trash2,
   Lock,
   Unlock,
+  Wallet,
+  Plus,
+  Link2,
 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -19,15 +22,22 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
+import {
+  sendDepositApprovedEmail,
+  sendWithdrawalApprovedEmail,
+  sendWithdrawalRejectedEmail,
+  sendReferralRewardEmail,
+} from '@/lib/email'
 import type {
   ZhenbotUser,
   ZhenbotTransaction,
   ZhenbotChatThread,
   ZhenbotChatMessage,
+  ZhenbotWallet,
 } from '@/types/database'
 import { cn } from '@/lib/utils'
 
-type Tab = 'users' | 'transactions' | 'chats'
+type Tab = 'users' | 'transactions' | 'chats' | 'wallets'
 
 export function AdminDashboard() {
   const { profile } = useAuth()
@@ -37,7 +47,21 @@ export function AdminDashboard() {
   const [users, setUsers] = useState<ZhenbotUser[]>([])
   const [transactions, setTransactions] = useState<ZhenbotTransaction[]>([])
   const [threads, setThreads] = useState<ZhenbotChatThread[]>([])
+  const [wallets, setWallets] = useState<ZhenbotWallet[]>([])
   const [search, setSearch] = useState('')
+
+  // Wallet Management State
+  const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
+  const [walletType, setWalletType] = useState<'evm' | 'btc' | 'trc20'>('evm')
+  const [selectedChains, setSelectedChains] = useState<string[]>(['ETH', 'BSC', 'BASE', 'ARBITRUM', 'POLYGON'])
+  const [rawWalletsInput, setRawWalletsInput] = useState('')
+  const [walletNotes, setWalletNotes] = useState('')
+  const [addingWallets, setAddingWallets] = useState(false)
+
+  // Wallet Manual Assign Modal State
+  const [assigningWallet, setAssigningWallet] = useState<ZhenbotWallet | null>(null)
+  const [assignUserId, setAssignUserId] = useState('')
+  const [assigning, setAssigning] = useState(false)
 
   // Edit User Modal
   const [editingUser, setEditingUser] = useState<ZhenbotUser | null>(null)
@@ -53,15 +77,17 @@ export function AdminDashboard() {
 
   // Load data
   const fetchData = async () => {
-    const [usersRes, txRes, threadsRes] = await Promise.all([
+    const [usersRes, txRes, threadsRes, walletsRes] = await Promise.all([
       supabase.from(TABLE.users).select('*').order('created_at', { ascending: false }),
       supabase.from(TABLE.transactions).select('*').order('created_at', { ascending: false }).limit(100),
       supabase.from(TABLE.chatThreads).select('*').order('last_message_at', { ascending: false }),
+      supabase.from(TABLE.wallets).select('*, assigned_user:zhenbot_users(id, email, full_name)').order('created_at', { ascending: false }),
     ])
 
     if (usersRes.data) setUsers(usersRes.data)
     if (txRes.data) setTransactions(txRes.data)
     if (threadsRes.data) setThreads(threadsRes.data)
+    if (walletsRes.data) setWallets(walletsRes.data)
   }
 
   useEffect(() => {
@@ -139,7 +165,66 @@ export function AdminDashboard() {
             active_deposit: (userObj.active_deposit || 0) + tx.amount,
           })
           .eq('id', tx.user_id)
+
+        // Email 1: Deposit Approved & Deployed to trading
+        void sendDepositApprovedEmail({
+          userId: tx.user_id,
+          amount: tx.amount,
+          network: tx.network || undefined,
+          txHash: tx.tx_hash || undefined,
+        })
+
+        // Email 2: Instant Referral Commission for Upline
+        if (userObj.referrer_id) {
+          const referrer = users.find((u) => u.id === userObj.referrer_id)
+          const tier1Bonus = Math.round(tx.amount * 0.15 * 100) / 100
+          if (referrer && tier1Bonus > 0) {
+            await supabase
+              .from(TABLE.users)
+              .update({
+                wallet_balance: (referrer.wallet_balance || 0) + tier1Bonus,
+                total_earned: (referrer.total_earned || 0) + tier1Bonus,
+              })
+              .eq('id', referrer.id)
+
+            void sendReferralRewardEmail({
+              userId: referrer.id,
+              amount: tier1Bonus,
+              tier: 1,
+              downlineName: userObj.full_name || userObj.email || undefined,
+            })
+
+            // Tier 2: Grandparent upline (5%)
+            if (referrer.referrer_id) {
+              const grandparent = users.find((u) => u.id === referrer.referrer_id)
+              const tier2Bonus = Math.round(tx.amount * 0.05 * 100) / 100
+              if (grandparent && tier2Bonus > 0) {
+                await supabase
+                  .from(TABLE.users)
+                  .update({
+                    wallet_balance: (grandparent.wallet_balance || 0) + tier2Bonus,
+                    total_earned: (grandparent.total_earned || 0) + tier2Bonus,
+                  })
+                  .eq('id', grandparent.id)
+
+                void sendReferralRewardEmail({
+                  userId: grandparent.id,
+                  amount: tier2Bonus,
+                  tier: 2,
+                  downlineName: userObj.full_name || userObj.email || undefined,
+                })
+              }
+            }
+          }
+        }
       }
+    } else if (tx.type === 'withdrawal') {
+      // Email 3: Withdrawal Approved & Dispatched
+      void sendWithdrawalApprovedEmail({
+        userId: tx.user_id,
+        amount: tx.amount,
+        walletAddress: tx.wallet_address || undefined,
+      })
     }
 
     toast.success(`Transaction ${tx.id.slice(0, 8)} approved and completed.`)
@@ -148,6 +233,8 @@ export function AdminDashboard() {
 
   // Reject Transaction
   const handleRejectTx = async (txId: string) => {
+    const targetTx = transactions.find((t) => t.id === txId)
+
     const { error } = await supabase
       .from(TABLE.transactions)
       .update({ status: 'rejected' })
@@ -156,6 +243,26 @@ export function AdminDashboard() {
     if (error) {
       toast.error('Failed to reject transaction.')
       return
+    }
+
+    if (targetTx?.type === 'withdrawal') {
+      // Restore user balance
+      const userObj = users.find((u) => u.id === targetTx.user_id)
+      if (userObj) {
+        await supabase
+          .from(TABLE.users)
+          .update({
+            wallet_balance: (userObj.wallet_balance || 0) + targetTx.amount,
+          })
+          .eq('id', targetTx.user_id)
+      }
+
+      // Email 4: Withdrawal Cancelled / Rejected notice
+      void sendWithdrawalRejectedEmail({
+        userId: targetTx.user_id,
+        amount: targetTx.amount,
+        reason: 'Administrative risk verification or invalid destination wallet address.',
+      })
     }
 
     toast.success('Transaction marked as rejected.')
@@ -186,34 +293,156 @@ export function AdminDashboard() {
     void fetchData()
   }
 
-  // Toggle User Block status
+  // Toggle Block / Unblock User
   const handleToggleBlock = async (u: ZhenbotUser) => {
-    const nextStatus = !u.is_blocked
+    const nextState = !u.is_blocked
     const { error } = await supabase
       .from(TABLE.users)
-      .update({ is_blocked: nextStatus })
+      .update({ is_blocked: nextState })
       .eq('id', u.id)
 
     if (error) {
-      toast.error('Failed to update user access.')
+      toast.error(`Failed to update user block status: ${error.message}`)
       return
     }
 
-    toast.success(`User ${u.full_name || u.email} ${nextStatus ? 'blocked' : 'unblocked'}.`)
+    toast.success(nextState ? 'User has been blocked.' : 'User has been unblocked.')
     void fetchData()
   }
 
   // Delete User
   const handleDeleteUser = async (u: ZhenbotUser) => {
-    if (!confirm(`Are you sure you want to delete ${u.full_name || u.email}? This cannot be undone.`)) return
+    if (!confirm(`Are you sure you want to permanently delete user ${u.email}?`)) return
 
     const { error } = await supabase.from(TABLE.users).delete().eq('id', u.id)
     if (error) {
-      toast.error('Failed to delete user profile.')
+      toast.error(`Failed to delete user: ${error.message}`)
       return
     }
 
     toast.success('User deleted.')
+    void fetchData()
+  }
+
+  // Add Multiple / Batch Wallets
+  const handleAddWallets = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!rawWalletsInput.trim()) return
+
+    setAddingWallets(true)
+
+    // Parse wallets separated by commas, spaces, or newlines
+    const addresses = rawWalletsInput
+      .split(/[\s,]+/)
+      .map((a) => a.trim())
+      .filter((a) => a.length > 10)
+
+    if (addresses.length === 0) {
+      toast.error('No valid wallet addresses found in input.')
+      setAddingWallets(false)
+      return
+    }
+
+    const rows = addresses.map((addr) => ({
+      wallet_type: walletType,
+      address: addr,
+      chains: walletType === 'evm' ? selectedChains : walletType === 'btc' ? ['BTC'] : ['TRC20'],
+      notes: walletNotes.trim() || null,
+      is_active: true,
+    }))
+
+    const { error } = await supabase.from(TABLE.wallets).insert(rows)
+
+    setAddingWallets(false)
+    if (error) {
+      toast.error(`Failed to add wallets: ${error.message}`)
+      return
+    }
+
+    toast.success(`Successfully added ${addresses.length} wallet(s) to the pool.`)
+    setRawWalletsInput('')
+    setWalletNotes('')
+    setIsAddWalletOpen(false)
+    void fetchData()
+  }
+
+  // Delete Wallet from pool
+  const handleDeleteWallet = async (w: ZhenbotWallet) => {
+    if (!confirm(`Are you sure you want to delete wallet ${w.address}?`)) return
+
+    const { error } = await supabase.from(TABLE.wallets).delete().eq('id', w.id)
+    if (error) {
+      toast.error(`Failed to delete wallet: ${error.message}`)
+      return
+    }
+
+    toast.success('Wallet removed from pool.')
+    void fetchData()
+  }
+
+  // Assign Wallet to User
+  const handleAssignWallet = async () => {
+    if (!assigningWallet || !assignUserId) return
+
+    setAssigning(true)
+
+    // Update wallet row
+    const { error } = await supabase
+      .from(TABLE.wallets)
+      .update({
+        assigned_to_user_id: assignUserId,
+        assigned_at: new Date().toISOString(),
+      })
+      .eq('id', assigningWallet.id)
+
+    if (error) {
+      toast.error(`Failed to assign wallet: ${error.message}`)
+      setAssigning(false)
+      return
+    }
+
+    // Also update target user's dedicated column
+    const colName =
+      assigningWallet.wallet_type === 'evm'
+        ? 'assigned_evm_wallet'
+        : assigningWallet.wallet_type === 'btc'
+        ? 'assigned_btc_wallet'
+        : 'assigned_trc20_wallet'
+
+    await supabase
+      .from(TABLE.users)
+      .update({ [colName]: assigningWallet.address })
+      .eq('id', assignUserId)
+
+    setAssigning(false)
+    setAssigningWallet(null)
+    setAssignUserId('')
+    toast.success('Wallet successfully assigned to user.')
+    void fetchData()
+  }
+
+  // Unassign Wallet
+  const handleUnassignWallet = async (w: ZhenbotWallet) => {
+    if (!w.assigned_to_user_id) return
+
+    const colName =
+      w.wallet_type === 'evm'
+        ? 'assigned_evm_wallet'
+        : w.wallet_type === 'btc'
+        ? 'assigned_btc_wallet'
+        : 'assigned_trc20_wallet'
+
+    await supabase
+      .from(TABLE.users)
+      .update({ [colName]: null })
+      .eq('id', w.assigned_to_user_id)
+
+    await supabase
+      .from(TABLE.wallets)
+      .update({ assigned_to_user_id: null, assigned_at: null })
+      .eq('id', w.id)
+
+    toast.success('Wallet unassigned.')
     void fetchData()
   }
 
@@ -305,6 +534,7 @@ export function AdminDashboard() {
             {[
               { id: 'users', label: 'Users & Balances', icon: Users, count: users.length },
               { id: 'transactions', label: 'Transactions & Approvals', icon: ArrowDownToLine, count: transactions.length },
+              { id: 'wallets', label: 'Manage Wallets', icon: Wallet, count: wallets.length },
               {
                 id: 'chats',
                 label: 'Live Chat Management',
@@ -645,6 +875,124 @@ export function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* TAB 4: MANAGE WALLETS */}
+        {activeTab === 'wallets' && (
+          <div className="glass-card rounded-2xl border border-white/8 p-5 shadow-2xl space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-4">
+              <div>
+                <h2 className="text-base font-display font-bold text-white flex items-center gap-2">
+                  Deposit Wallets Pool ({wallets.length})
+                </h2>
+                <p className="font-mono text-xs text-slate-500">
+                  Add multi-chain deposit addresses, parse batch wallets, and assign unique dedicated wallets per user
+                </p>
+              </div>
+              <Button onClick={() => setIsAddWalletOpen(true)}>
+                <Plus className="size-4 mr-1.5" /> Add Wallets
+              </Button>
+            </div>
+
+            {/* Wallets Pool Table */}
+            <div className="-mx-2 overflow-x-auto px-2">
+              <table className="w-full min-w-[850px] text-left text-sm font-sans">
+                <thead>
+                  <tr className="border-b border-white/8 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                    <th className="pb-3 pr-4 font-semibold">TYPE</th>
+                    <th className="pb-3 pr-4 font-semibold">WALLET ADDRESS</th>
+                    <th className="pb-3 pr-4 font-semibold">SUPPORTED CHAINS</th>
+                    <th className="pb-3 pr-4 font-semibold">ASSIGNED USER</th>
+                    <th className="pb-3 pr-4 font-semibold">STATUS</th>
+                    <th className="pb-3 font-semibold text-right">ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {wallets.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-12 text-center font-mono text-xs text-slate-500">
+                        No deposit wallets in pool yet. Click "Add Wallets" above to paste your addresses.
+                      </td>
+                    </tr>
+                  ) : (
+                    wallets.map((w) => (
+                      <tr key={w.id} className="border-b border-white/5 transition-colors hover:bg-white/[0.02]">
+                        <td className="py-3.5 pr-4">
+                          <Badge tone={w.wallet_type === 'evm' ? 'brand' : w.wallet_type === 'btc' ? 'warning' : 'neutral'}>
+                            {w.wallet_type.toUpperCase()}
+                          </Badge>
+                        </td>
+                        <td className="py-3.5 pr-4 font-mono text-xs text-white">
+                          <span className="break-all">{w.address}</span>
+                          {w.notes && <span className="block text-[10px] text-slate-500">{w.notes}</span>}
+                        </td>
+                        <td className="py-3.5 pr-4 font-mono text-[10px] text-slate-300">
+                          <div className="flex flex-wrap gap-1 max-w-[200px]">
+                            {w.chains?.map((c) => (
+                              <span key={c} className="rounded bg-white/5 border border-white/10 px-1.5 py-0.5">
+                                {c}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-3.5 pr-4">
+                          {w.assigned_user ? (
+                            <div>
+                              <p className="font-display font-bold text-xs text-brand-400">
+                                {w.assigned_user.full_name || 'Assigned User'}
+                              </p>
+                              <p className="font-mono text-[10px] text-slate-500">{w.assigned_user.email}</p>
+                            </div>
+                          ) : (
+                            <span className="font-mono text-[10px] text-slate-500 uppercase bg-white/5 px-2 py-0.5 rounded">
+                              Unassigned (Available)
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3.5 pr-4">
+                          <Badge tone={w.assigned_to_user_id ? 'success' : 'neutral'}>
+                            {w.assigned_to_user_id ? 'IN USE' : 'READY'}
+                          </Badge>
+                        </td>
+                        <td className="py-3.5 text-right space-x-1.5">
+                          {w.assigned_to_user_id ? (
+                            <button
+                              type="button"
+                              onClick={() => void handleUnassignWallet(w)}
+                              className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs text-amber-400 hover:bg-amber-500/20 transition-colors"
+                              title="Unassign from current user"
+                            >
+                              Unassign
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAssigningWallet(w)
+                                setAssignUserId(users[0]?.id || '')
+                              }}
+                              className="rounded-lg border border-brand-400/30 bg-brand-400/10 px-2.5 py-1 font-mono text-xs font-bold text-brand-400 hover:bg-brand-400/20 transition-colors"
+                              title="Assign to specific user"
+                            >
+                              Assign User
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => void handleDeleteWallet(w)}
+                            className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors"
+                            title="Delete wallet"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Edit User Modal */}
@@ -682,6 +1030,189 @@ export function AdminDashboard() {
               </Button>
               <Button onClick={() => void handleSaveUser()} loading={userSaving}>
                 Save Changes
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Add Wallets Modal */}
+      <Modal open={isAddWalletOpen} onClose={() => setIsAddWalletOpen(false)}>
+        <form onSubmit={handleAddWallets} className="space-y-4">
+          <div>
+            <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
+              <Plus className="size-5 text-brand-400" /> Add Wallets to System Pool
+            </h3>
+            <p className="font-mono text-xs text-slate-400 mt-1">
+              Deposit addresses added here will be automatically or manually assigned to investors.
+            </p>
+          </div>
+
+          <div>
+            <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+              Wallet Architecture / Family
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { type: 'evm' as const, label: 'EVM (0x...)', desc: 'BSC, Base, ETH, Arb, Poly' },
+                { type: 'btc' as const, label: 'Bitcoin (BTC)', desc: 'Native BTC Network' },
+                { type: 'trc20' as const, label: 'Tron (TRC20)', desc: 'TRC20 USDT' },
+              ].map((item) => (
+                <button
+                  key={item.type}
+                  type="button"
+                  onClick={() => {
+                    setWalletType(item.type)
+                    if (item.type === 'btc') setSelectedChains(['BTC'])
+                    else if (item.type === 'trc20') setSelectedChains(['TRC20'])
+                    else setSelectedChains(['ETH', 'BSC', 'BASE', 'ARBITRUM', 'POLYGON'])
+                  }}
+                  className={cn(
+                    'rounded-xl border p-2.5 text-left transition-all',
+                    walletType === item.type
+                      ? 'border-brand-400 bg-brand-400/10 text-white'
+                      : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20',
+                  )}
+                >
+                  <p className="font-display font-bold text-xs">{item.label}</p>
+                  <p className="font-mono text-[10px] text-slate-500 mt-0.5">{item.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {walletType === 'evm' && (
+            <div>
+              <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+                Multi-Currency Chain Support (Selected chains share this EVM 0x address)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {['ETH', 'BSC', 'BASE', 'ARBITRUM', 'POLYGON'].map((chain) => {
+                  const isSelected = selectedChains.includes(chain)
+                  return (
+                    <button
+                      key={chain}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          if (selectedChains.length > 1) {
+                            setSelectedChains(selectedChains.filter((c) => c !== chain))
+                          }
+                        } else {
+                          setSelectedChains([...selectedChains, chain])
+                        }
+                      }}
+                      className={cn(
+                        'rounded-lg border px-3 py-1 font-mono text-xs font-semibold transition-all',
+                        isSelected
+                          ? 'border-brand-400 bg-brand-400/20 text-brand-400'
+                          : 'border-white/10 bg-white/5 text-slate-400 hover:border-white/20',
+                      )}
+                    >
+                      {isSelected ? '✓ ' : '+ '}
+                      {chain}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+              Wallet Addresses (Paste multiple separated by comma, space, or newline)
+            </label>
+            <textarea
+              required
+              rows={4}
+              value={rawWalletsInput}
+              onChange={(e) => setRawWalletsInput(e.target.value)}
+              placeholder="0x71C...b82, 0x3A2...9F1&#10;0x91F...22A"
+              className="w-full rounded-xl border border-white/10 bg-white/5 p-3 font-mono text-xs text-white placeholder-slate-600 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+            />
+            <p className="font-mono text-[10px] text-slate-500 mt-1">
+              Detected:{' '}
+              {
+                rawWalletsInput
+                  .split(/[\s,]+/)
+                  .map((a) => a.trim())
+                  .filter((a) => a.length > 10).length
+              }{' '}
+              address(es)
+            </p>
+          </div>
+
+          <Input
+            name="notes"
+            label="Internal Notes / Origin (Optional)"
+            placeholder="e.g. Cold storage vault #3, Binance hot #2"
+            value={walletNotes}
+            onChange={(e) => setWalletNotes(e.target.value)}
+          />
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-white/8">
+            <Button variant="ghost" type="button" onClick={() => setIsAddWalletOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" loading={addingWallets}>
+              Add Wallets to Pool
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Assign Wallet Modal */}
+      <Modal open={!!assigningWallet} onClose={() => setAssigningWallet(null)}>
+        {assigningWallet && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
+                <Link2 className="size-5 text-brand-400" /> Assign Wallet to User
+              </h3>
+              <p className="font-mono text-xs text-slate-400 mt-1">
+                Dedicate this address to a specific investor. No two users will share the same address.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-3 space-y-1">
+              <span className="font-mono text-[10px] uppercase text-slate-500">Selected Wallet</span>
+              <p className="font-mono text-xs font-bold text-white break-all">{assigningWallet.address}</p>
+              <div className="flex gap-1.5 pt-1">
+                <span className="font-mono text-[10px] text-brand-400 uppercase bg-brand-400/10 px-1.5 py-0.5 rounded">
+                  {assigningWallet.wallet_type.toUpperCase()}
+                </span>
+                <span className="font-mono text-[10px] text-slate-400 bg-white/5 px-1.5 py-0.5 rounded">
+                  {assigningWallet.chains?.join(', ')}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+                Select Investor User
+              </label>
+              <select
+                value={assignUserId}
+                onChange={(e) => setAssignUserId(e.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-[#0d121f] p-3 font-mono text-xs text-white focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+              >
+                <option value="" disabled>
+                  Select a user...
+                </option>
+                {users.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.full_name || 'No Name'} — {u.email}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-white/8">
+              <Button variant="ghost" onClick={() => setAssigningWallet(null)}>
+                Cancel
+              </Button>
+              <Button onClick={() => void handleAssignWallet()} loading={assigning} disabled={!assignUserId}>
+                Confirm Assignment
               </Button>
             </div>
           </div>

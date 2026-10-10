@@ -25,9 +25,25 @@ export interface ZhenbotUser {
   referrer_id: string | null
   is_admin?: boolean
   is_blocked?: boolean
+  assigned_evm_wallet?: string | null
+  assigned_btc_wallet?: string | null
+  assigned_trc20_wallet?: string | null
   last_sign_in_at?: string | null
   created_at: string
   updated_at: string
+}
+
+export interface ZhenbotWallet {
+  id: string
+  wallet_type: 'evm' | 'btc' | 'trc20'
+  address: string
+  chains: string[]
+  assigned_to_user_id: string | null
+  assigned_at: string | null
+  is_active: boolean
+  notes: string | null
+  created_at: string
+  assigned_user?: Pick<ZhenbotUser, 'id' | 'email' | 'full_name'> | null
 }
 
 export interface ZhenbotTransaction {

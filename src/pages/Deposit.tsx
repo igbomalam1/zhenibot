@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import {
@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
+import { sendDepositReceivedEmail } from '@/lib/email'
 
 export function Deposit() {
   const { user } = useAuth()
@@ -29,12 +30,65 @@ export function Deposit() {
   const [txHash, setTxHash] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [assignedWallets, setAssignedWallets] = useState<{
+    evm?: string
+    btc?: string
+    trc20?: string
+  }>({})
+  const [loadingWallet, setLoadingWallet] = useState(true)
 
   const amountNumber = Number(amount) || 0
 
+  // Fetch or dynamically auto-assign user's unique wallets from database
+  useEffect(() => {
+    if (!user?.id) return
+
+    const loadWallets = async () => {
+      setLoadingWallet(true)
+      // Call RPC function to get or assign unique wallets for this user
+      const { data, error } = await supabase.rpc('zhenbot_get_or_assign_user_wallets', {
+        p_user_id: user.id,
+      })
+
+      if (!error && data) {
+        setAssignedWallets(data as { evm?: string; btc?: string; trc20?: string })
+      } else {
+        // Fallback: check profile assigned columns directly
+        const { data: profile } = await supabase
+          .from(TABLE.users)
+          .select('assigned_evm_wallet, assigned_btc_wallet, assigned_trc20_wallet')
+          .eq('id', user.id)
+          .single()
+
+        if (profile) {
+          setAssignedWallets({
+            evm: profile.assigned_evm_wallet || undefined,
+            btc: profile.assigned_btc_wallet || undefined,
+            trc20: profile.assigned_trc20_wallet || undefined,
+          })
+        }
+      }
+      setLoadingWallet(false)
+    }
+
+    void loadWallets()
+  }, [user?.id])
+
+  // Resolve active address for chosen chain family
+  const currentAddress =
+    network.chainFamily === 'evm'
+      ? assignedWallets.evm || 'Awaiting wallet assignment by admin'
+      : network.chainFamily === 'btc'
+      ? assignedWallets.btc || 'Awaiting BTC wallet assignment by admin'
+      : assignedWallets.trc20 || 'Awaiting TRC20 wallet assignment by admin'
+
   const copyAddress = async () => {
+    if (!currentAddress || currentAddress.startsWith('Awaiting')) {
+      toast.error('No deposit wallet assigned for this chain yet. Contact admin.')
+      return
+    }
     try {
-      await navigator.clipboard.writeText(network.address)
+      await navigator.clipboard.writeText(currentAddress)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1600)
     } catch {
@@ -44,6 +98,10 @@ export function Deposit() {
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    if (!currentAddress || currentAddress.startsWith('Awaiting')) {
+      toast.error('Please wait for an active deposit wallet to be assigned before depositing.')
+      return
+    }
     if (amountNumber < 10) {
       toast.error('Minimum deposit is $10.00.')
       return
@@ -60,7 +118,7 @@ export function Deposit() {
       amount: amountNumber,
       status: 'pending',
       network: `${network.asset} · ${network.network}`,
-      wallet_address: network.address,
+      wallet_address: currentAddress,
       tx_hash: txHash.trim(),
     })
 
@@ -70,18 +128,13 @@ export function Deposit() {
       return
     }
 
-    try {
-      await supabase.functions.invoke('send-deposit-notification', {
-        body: {
-          user_id: user?.id,
-          amount: amountNumber,
-          network: `${network.asset} · ${network.network}`,
-          tx_hash: txHash.trim(),
-        },
-      })
-    } catch {
-      // Email notification is best-effort; the deposit is already recorded.
-    }
+    // Dispatch confirmation email via Resend
+    void sendDepositReceivedEmail({
+      userId: user?.id,
+      amount: amountNumber,
+      network: `${network.asset} · ${network.network}`,
+      txHash: txHash.trim(),
+    })
 
     setSubmitting(false)
     setTxHash('')
@@ -175,12 +228,17 @@ export function Deposit() {
             />
 
             <div>
-              <span className="mb-1.5 block font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Deposit Wallet Address
-              </span>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-mono text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Your Assigned Deposit Wallet
+                </span>
+                <span className="font-mono text-[10px] text-brand-400 uppercase bg-brand-400/10 border border-brand-400/20 px-2 py-0.5 rounded">
+                  {loadingWallet ? 'Loading…' : 'Dedicated Wallet'}
+                </span>
+              </div>
               <div className="flex items-center gap-2 rounded-xl border border-brand-400/30 bg-[#090b12] p-3">
                 <code className="flex-1 break-all font-mono text-xs text-brand-300">
-                  {network.address}
+                  {currentAddress}
                 </code>
                 <button
                   type="button"
@@ -197,7 +255,7 @@ export function Deposit() {
               <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-400" />
               <p>
                 Send only <strong className="text-white">{network.asset}</strong> on the{' '}
-                <strong className="text-white">{network.network}</strong> network. Sending other coins may result in loss of funds.
+                <strong className="text-white">{network.network}</strong> network. This is your personal deposit address dedicated to your account.
               </p>
             </div>
 
@@ -227,14 +285,14 @@ export function Deposit() {
             />
             <div className="flex flex-col items-center gap-5 rounded-xl border border-white/8 bg-[#090b12] p-6">
               <div className="rounded-xl bg-white p-3.5 shadow-2xl">
-                <QRCodeSVG value={network.address} size={176} level="M" fgColor="#08090e" />
+                <QRCodeSVG value={currentAddress} size={176} level="M" fgColor="#08090e" />
               </div>
               <div className="w-full text-center">
                 <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                  WALLET ADDRESS
+                  YOUR DEDICATED DESTINATION ADDRESS
                 </p>
                 <code className="mt-1 block break-all font-mono text-xs text-brand-400">
-                  {network.address}
+                  {currentAddress}
                 </code>
               </div>
 

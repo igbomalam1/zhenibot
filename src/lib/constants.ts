@@ -17,14 +17,14 @@ export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? 'support@zhen
 export const REFERRAL_BASE_URL =
   import.meta.env.VITE_REFERRAL_BASE_URL ?? 'http://localhost:5173'
 
-export type NetworkId = 'trc20' | 'erc20' | 'bep20' | 'btc'
+export type NetworkId = 'bep20' | 'erc20' | 'base' | 'arbitrum' | 'polygon' | 'btc' | 'trc20'
 
 export interface DepositNetwork {
   id: NetworkId
   asset: string
   network: string
   label: string
-  address: string
+  chainFamily: 'evm' | 'btc' | 'trc20'
   min: number
   accent: string
   confirmations: number
@@ -32,33 +32,53 @@ export interface DepositNetwork {
 
 export const DEPOSIT_NETWORKS: DepositNetwork[] = [
   {
-    id: 'trc20',
+    id: 'bep20',
     asset: 'USDT',
-    network: 'TRC20',
-    label: 'USDT · Tron (TRC20)',
-    address: 'TN9ZhenBot9TresorW4llet8Xq7R2pLk3D1',
+    network: 'BNB Chain (BEP20)',
+    label: 'USDT · BNB Chain (BSC)',
+    chainFamily: 'evm',
     min: 10,
-    accent: '#10B981',
-    confirmations: 19,
+    accent: '#F0B90B',
+    confirmations: 15,
+  },
+  {
+    id: 'base',
+    asset: 'USDT',
+    network: 'Base',
+    label: 'USDT · Base Network',
+    chainFamily: 'evm',
+    min: 10,
+    accent: '#0052FF',
+    confirmations: 10,
   },
   {
     id: 'erc20',
     asset: 'USDT',
-    network: 'ERC20',
-    label: 'USDT · Ethereum (ERC20)',
-    address: '0x7C3a9bZhenbotERC20Vault4F51c8A2eD90bE',
+    network: 'Ethereum (ERC20)',
+    label: 'USDT · Ethereum',
+    chainFamily: 'evm',
     min: 20,
     accent: '#627EEA',
     confirmations: 12,
   },
   {
-    id: 'bep20',
+    id: 'arbitrum',
     asset: 'USDT',
-    network: 'BEP20',
-    label: 'USDT · BNB Chain (BEP20)',
-    address: '0x9F1dZhenbotBEP20Vault7B4c3A8eD1f2C6aB5',
+    network: 'Arbitrum One',
+    label: 'USDT · Arbitrum',
+    chainFamily: 'evm',
     min: 10,
-    accent: '#F0B90B',
+    accent: '#28A0F0',
+    confirmations: 12,
+  },
+  {
+    id: 'polygon',
+    asset: 'USDT',
+    network: 'Polygon',
+    label: 'USDT · Polygon',
+    chainFamily: 'evm',
+    min: 10,
+    accent: '#8247E5',
     confirmations: 15,
   },
   {
@@ -66,10 +86,20 @@ export const DEPOSIT_NETWORKS: DepositNetwork[] = [
     asset: 'BTC',
     network: 'Bitcoin',
     label: 'BTC · Bitcoin Network',
-    address: 'bc1qzhenbotbtcvault8k3m2n4p6q8r0s5t7u9v2w4x',
+    chainFamily: 'btc',
     min: 50,
     accent: '#F7931A',
     confirmations: 2,
+  },
+  {
+    id: 'trc20',
+    asset: 'USDT',
+    network: 'Tron (TRC20)',
+    label: 'USDT · Tron',
+    chainFamily: 'trc20',
+    min: 10,
+    accent: '#10B981',
+    confirmations: 19,
   },
 ]
 

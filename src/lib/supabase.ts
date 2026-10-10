@@ -29,4 +29,5 @@ export const TABLE = {
   networks: 'zhenbot_deposit_networks',
   chatThreads: 'zhenbot_chat_threads',
   chatMessages: 'zhenbot_chat_messages',
+  wallets: 'zhenbot_wallets',
 } as const

@@ -11,6 +11,7 @@ import { FUND_METRICS } from '@/lib/demo'
 import { formatCompact, formatCurrency } from '@/lib/format'
 import { Logo } from '@/components/landing/Navbar'
 import { QuantRadarCanvas } from '@/components/landing/QuantRadarCanvas'
+import { sendWelcomeEmail } from '@/lib/email'
 
 type Mode = 'login' | 'register'
 
@@ -141,6 +142,14 @@ export function Auth() {
         setLoading(false)
         return
       }
+
+      // Send Welcome confirmation email via Resend
+      void sendWelcomeEmail({
+        to: email,
+        name: fullName,
+        referralCode: referralCode.trim() || undefined,
+      })
+
       toast.success(
         session
           ? 'Account created. Welcome to Zhenbot.'

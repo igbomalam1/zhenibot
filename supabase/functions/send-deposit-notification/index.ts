@@ -7,8 +7,8 @@ const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? ''
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SERVICE_ROLE_KEY = Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 
-const FROM_EMAIL = Deno.env.get('VITE_FROM_EMAIL') ?? 'Zhenbot <notifications@zhenbot.io>'
-const ADMIN_EMAIL = Deno.env.get('VITE_ADMIN_EMAIL') ?? 'admin@zhenbot.io'
+const FROM_EMAIL = Deno.env.get('VITE_FROM_EMAIL') ?? 'Zhenbot <notifications@devicodes.xyz>'
+const ADMIN_EMAIL = Deno.env.get('VITE_ADMIN_EMAIL') ?? 'admin@devicodes.xyz'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
