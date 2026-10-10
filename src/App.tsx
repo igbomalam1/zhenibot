@@ -18,6 +18,8 @@ const Referrals = lazy(() =>
   import('@/pages/Referrals').then((m) => ({ default: m.Referrals })),
 )
 const HistoryPage = lazy(() => import('@/pages/History').then((m) => ({ default: m.HistoryPage })))
+const Admin = lazy(() => import('@/pages/Admin').then((m) => ({ default: m.AdminDashboard })))
+import { LiveChatWidget } from '@/components/chat/LiveChatWidget'
 
 function withSuspense(node: ReactNode) {
   return <Suspense fallback={<FullPageLoader />}>{node}</Suspense>
@@ -50,8 +52,11 @@ export default function App() {
               <Route path="referrals" element={withSuspense(<Referrals />)} />
               <Route path="history" element={withSuspense(<HistoryPage />)} />
             </Route>
+
+            <Route path="/admin" element={withSuspense(<Admin />)} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <LiveChatWidget />
         </AuthProvider>
       </ToastProvider>
     </BrowserRouter>

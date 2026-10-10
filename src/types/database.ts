@@ -23,6 +23,9 @@ export interface ZhenbotUser {
   total_withdrawn: number
   referral_code: string | null
   referrer_id: string | null
+  is_admin?: boolean
+  is_blocked?: boolean
+  last_sign_in_at?: string | null
   created_at: string
   updated_at: string
 }
@@ -38,6 +41,7 @@ export interface ZhenbotTransaction {
   tx_hash: string | null
   note: string | null
   created_at: string
+  user?: Pick<ZhenbotUser, 'email' | 'full_name'> | null
 }
 
 export interface ZhenbotReferral {
@@ -49,6 +53,29 @@ export interface ZhenbotReferral {
   status: ReferralStatus
   created_at: string
   referee?: Pick<ZhenbotUser, 'email' | 'full_name'> | null
+}
+
+export interface ZhenbotChatThread {
+  id: string
+  user_id: string | null
+  user_name: string
+  user_email: string | null
+  status: 'open' | 'resolved' | 'closed'
+  last_message: string | null
+  last_message_at: string
+  unread_by_admin: boolean
+  unread_by_user: boolean
+  created_at: string
+}
+
+export interface ZhenbotChatMessage {
+  id: string
+  thread_id: string
+  sender_role: 'user' | 'admin'
+  sender_id: string | null
+  sender_name: string
+  message: string
+  created_at: string
 }
 
 export interface Trade {

@@ -27,4 +27,6 @@ export const TABLE = {
   transactions: 'zhenbot_transactions',
   referrals: 'zhenbot_referrals',
   networks: 'zhenbot_deposit_networks',
+  chatThreads: 'zhenbot_chat_threads',
+  chatMessages: 'zhenbot_chat_messages',
 } as const
