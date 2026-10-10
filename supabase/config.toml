@@ -1,0 +1,42 @@
+project_id = "zhenbot"
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://zhenbot.vercel.app"]
+jwt_expiry = 3600
+enable_signup = true
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+inspector_port = 8083
+
+[analytics]
+enabled = false
+
+[functions."send-deposit-notification"]
+verify_jwt = false
+
+[functions."send-withdrawal-verification"]
+verify_jwt = false
+
+[functions."confirm-withdrawal"]
+verify_jwt = false
+
+[functions."process-deposit"]
+verify_jwt = false
+
+[functions."process-daily-dividends"]
+verify_jwt = false

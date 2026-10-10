@@ -1,0 +1,35 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brandGrad" x1="16" y1="16" x2="112" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00e599"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="panelGrad" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="128" height="128" rx="32" fill="url(#panelGrad)"/>
+  <rect x="1" y="1" width="126" height="126" rx="31" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+
+  <!-- Geometric Bot / Market Node Symbol -->
+  <g filter="url(#softGlow)">
+    <path d="M34 86L54 42H92L72 86H34Z" stroke="url(#brandGrad)" stroke-width="6" stroke-linejoin="round" fill="rgba(0,229,153,0.06)"/>
+    <path d="M42 42L84 42L60 86" stroke="white" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <!-- Precision Node Vertices -->
+  <circle cx="54" cy="42" r="5" fill="#ffffff" />
+  <circle cx="92" cy="42" r="5" fill="#00e599" />
+  <circle cx="34" cy="86" r="5" fill="#00e599" />
+  <circle cx="72" cy="86" r="5" fill="#38bdf8" />
+
+  <!-- Active Status Indicator -->
+  <circle cx="102" cy="26" r="4.5" fill="#00e599" />
+</svg>
