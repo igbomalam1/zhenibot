@@ -157,6 +157,27 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             ))}
           </div>
         ))}
+
+        {profile?.is_admin && (
+          <div className="pt-2">
+            <NavLink
+              to="/admin"
+              onClick={onNavigate}
+              className="group flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-amber-400 hover:bg-amber-500/15 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 font-bold">
+                  <ShieldCheck className="size-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-display font-bold text-white tracking-tight">Admin Console</p>
+                  <p className="text-[10px] font-mono text-amber-400/80">Manage Wallets & Users</p>
+                </div>
+              </div>
+              <ChevronRight className="size-4 text-amber-400" />
+            </NavLink>
+          </div>
+        )}
       </nav>
 
       {/* User Account Card (Fintech Bank Debit Style) */}
@@ -261,6 +282,15 @@ export function DashboardLayout() {
           </div>
 
           <div className="flex items-center gap-3 font-mono text-xs">
+            {profile?.is_admin && (
+              <NavLink
+                to="/admin"
+                className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-500/20 transition-colors"
+              >
+                <ShieldCheck className="size-3.5" />
+                <span>Admin</span>
+              </NavLink>
+            )}
             <span className="hidden items-center gap-1.5 rounded border border-brand-400/30 bg-brand-400/10 px-2.5 py-1 text-[11px] font-bold text-brand-400 sm:flex">
               <Radio className="size-3 animate-pulse" />
               LIVE
