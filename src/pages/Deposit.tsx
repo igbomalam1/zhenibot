@@ -106,11 +106,10 @@ export function Deposit() {
       toast.error(`Minimum deposit is ${formatCurrency(BRAND.minDeposit)}.`)
       return
     }
-    if (txHash.trim().length < 20) {
-      toast.error('Please enter a valid transaction hash (TxID).')
-      return
-    }
+
     setSubmitting(true)
+
+    const cleanTxHash = txHash.trim() || null
 
     const { error } = await supabase.from(TABLE.transactions).insert({
       user_id: user?.id,
@@ -119,7 +118,7 @@ export function Deposit() {
       status: 'pending',
       network: `${network.asset} · ${network.network}`,
       wallet_address: currentAddress,
-      tx_hash: txHash.trim(),
+      tx_hash: cleanTxHash,
     })
 
     if (error) {
@@ -133,7 +132,7 @@ export function Deposit() {
       userId: user?.id,
       amount: amountNumber,
       network: `${network.asset} · ${network.network}`,
-      txHash: txHash.trim(),
+      txHash: cleanTxHash || undefined,
     })
 
     setSubmitting(false)
@@ -262,14 +261,14 @@ export function Deposit() {
             <Input
               name="txHash"
               label="Transaction Hash (TxID)"
-              hint="Required"
-              placeholder="Paste your transaction hash here…"
+              hint="Optional"
+              placeholder="Paste TxID if available (optional)…"
               value={txHash}
               onChange={(e) => setTxHash(e.target.value)}
             />
 
             <Button type="submit" size="lg" className="w-full mt-2" loading={submitting}>
-              Submit Deposit
+              {submitting ? 'Submitting Deposit…' : 'Submit Deposit'}
               {!submitting && <ArrowRight className="size-4 ml-1" />}
             </Button>
           </form>

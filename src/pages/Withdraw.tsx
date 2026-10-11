@@ -203,7 +203,7 @@ export function Withdraw() {
                   />
                   <Button type="submit" size="lg" className="w-full mt-2" loading={sending}>
                     <ShieldCheck className="size-4" />
-                    Request Withdrawal
+                    {sending ? 'Requesting Withdrawal…' : 'Request Withdrawal'}
                   </Button>
                   <p className="text-center font-mono text-[11px] text-slate-500">
                     A 6-digit confirmation code will be sent to your email.
@@ -233,7 +233,7 @@ export function Withdraw() {
                   />
                   <Button type="submit" size="lg" className="w-full" loading={confirming}>
                     <ShieldCheck className="size-4" />
-                    Confirm & Complete Withdrawal
+                    {confirming ? 'Verifying Code…' : 'Confirm & Complete Withdrawal'}
                   </Button>
                   <button
                     type="button"

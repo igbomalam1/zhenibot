@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from 'react'
+import { useState, type ButtonHTMLAttributes, type MouseEvent } from 'react'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -39,7 +39,7 @@ export function buttonClass(
   return cn(
     'inline-flex items-center justify-center tracking-tight transition-all duration-150',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
-    'disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
+    'disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none',
     'active:scale-[0.985] whitespace-nowrap cursor-pointer select-none',
     variants[variant],
     sizes[size],
@@ -56,19 +56,45 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export function Button({
   variant = 'primary',
   size = 'md',
-  loading = false,
+  loading: externalLoading = false,
   className,
   children,
   disabled,
+  onClick,
   ...props
 }: ButtonProps) {
+  const [internalLoading, setInternalLoading] = useState(false)
+  const isBusy = Boolean(externalLoading || internalLoading)
+
+  const handleClick = async (e: MouseEvent<HTMLButtonElement>) => {
+    if (isBusy || disabled) {
+      e.preventDefault()
+      return
+    }
+    if (!onClick) return
+
+    try {
+      const result = onClick(e) as unknown
+      if (result && typeof (result as Promise<unknown>).then === 'function') {
+        setInternalLoading(true)
+        await result
+      }
+    } finally {
+      setInternalLoading(false)
+    }
+  }
+
   return (
     <button
-      className={buttonClass(variant, size, className)}
-      disabled={disabled || loading}
+      className={cn(
+        buttonClass(variant, size, className),
+        isBusy && 'opacity-80 pointer-events-none cursor-wait',
+      )}
+      disabled={disabled || isBusy}
+      onClick={handleClick}
       {...props}
     >
-      {loading && <Loader2 className="size-4 animate-spin" />}
+      {isBusy && <Loader2 className="size-4 animate-spin shrink-0" />}
       {children}
     </button>
   )

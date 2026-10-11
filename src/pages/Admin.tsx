@@ -13,6 +13,7 @@ import {
   Wallet,
   Plus,
   Link2,
+  Loader2,
 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -49,6 +50,8 @@ export function AdminDashboard() {
   const [threads, setThreads] = useState<ZhenbotChatThread[]>([])
   const [wallets, setWallets] = useState<ZhenbotWallet[]>([])
   const [search, setSearch] = useState('')
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
 
   // Wallet Management State
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
@@ -77,17 +80,22 @@ export function AdminDashboard() {
 
   // Load data
   const fetchData = async () => {
-    const [usersRes, txRes, threadsRes, walletsRes] = await Promise.all([
-      supabase.from(TABLE.users).select('*').order('created_at', { ascending: false }),
-      supabase.from(TABLE.transactions).select('*').order('created_at', { ascending: false }).limit(100),
-      supabase.from(TABLE.chatThreads).select('*').order('last_message_at', { ascending: false }),
-      supabase.from(TABLE.wallets).select('*, assigned_user:zhenbot_users(id, email, full_name)').order('created_at', { ascending: false }),
-    ])
+    setRefreshing(true)
+    try {
+      const [usersRes, txRes, threadsRes, walletsRes] = await Promise.all([
+        supabase.from(TABLE.users).select('*').order('created_at', { ascending: false }),
+        supabase.from(TABLE.transactions).select('*').order('created_at', { ascending: false }).limit(100),
+        supabase.from(TABLE.chatThreads).select('*').order('last_message_at', { ascending: false }),
+        supabase.from(TABLE.wallets).select('*, assigned_user:zhenbot_users(id, email, full_name)').order('created_at', { ascending: false }),
+      ])
 
-    if (usersRes.data) setUsers(usersRes.data)
-    if (txRes.data) setTransactions(txRes.data)
-    if (threadsRes.data) setThreads(threadsRes.data)
-    if (walletsRes.data) setWallets(walletsRes.data)
+      if (usersRes.data) setUsers(usersRes.data)
+      if (txRes.data) setTransactions(txRes.data)
+      if (threadsRes.data) setThreads(threadsRes.data)
+      if (walletsRes.data) setWallets(walletsRes.data)
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   useEffect(() => {
@@ -145,128 +153,138 @@ export function AdminDashboard() {
   const handleApproveTx = async (tx: ZhenbotTransaction) => {
     if (tx.status === 'completed' || tx.status === 'approved') return
 
-    const { error } = await supabase
-      .from(TABLE.transactions)
-      .update({ status: 'completed' })
-      .eq('id', tx.id)
+    setActionLoadingId('approve_' + tx.id)
+    try {
+      const { error } = await supabase
+        .from(TABLE.transactions)
+        .update({ status: 'completed' })
+        .eq('id', tx.id)
 
-    if (error) {
-      toast.error('Failed to update transaction.')
-      return
-    }
+      if (error) {
+        toast.error('Failed to update transaction.')
+        return
+      }
 
-    if (tx.type === 'deposit') {
-      // Credit user active_deposit
-      const userObj = users.find((u) => u.id === tx.user_id)
-      if (userObj) {
-        await supabase
-          .from(TABLE.users)
-          .update({
-            active_deposit: (userObj.active_deposit || 0) + tx.amount,
-          })
-          .eq('id', tx.user_id)
-
-        // Email 1: Deposit Approved & Deployed to trading
-        void sendDepositApprovedEmail({
-          userId: tx.user_id,
-          amount: tx.amount,
-          network: tx.network || undefined,
-          txHash: tx.tx_hash || undefined,
-        })
-
-        // Email 2: Instant Referral Commission for Upline
-        if (userObj.referrer_id) {
-          const referrer = users.find((u) => u.id === userObj.referrer_id)
-          const tier1Bonus = Math.round(tx.amount * 0.15 * 100) / 100
-          if (referrer && tier1Bonus > 0) {
-            await supabase
-              .from(TABLE.users)
-              .update({
-                wallet_balance: (referrer.wallet_balance || 0) + tier1Bonus,
-                total_earned: (referrer.total_earned || 0) + tier1Bonus,
-              })
-              .eq('id', referrer.id)
-
-            void sendReferralRewardEmail({
-              userId: referrer.id,
-              amount: tier1Bonus,
-              tier: 1,
-              downlineName: userObj.full_name || userObj.email || undefined,
+      if (tx.type === 'deposit') {
+        // Credit user active_deposit
+        const userObj = users.find((u) => u.id === tx.user_id)
+        if (userObj) {
+          await supabase
+            .from(TABLE.users)
+            .update({
+              active_deposit: (userObj.active_deposit || 0) + tx.amount,
             })
+            .eq('id', tx.user_id)
 
-            // Tier 2: Grandparent upline (2%)
-            if (referrer.referrer_id) {
-              const grandparent = users.find((u) => u.id === referrer.referrer_id)
-              const tier2Bonus = Math.round(tx.amount * 0.02 * 100) / 100
-              if (grandparent && tier2Bonus > 0) {
-                await supabase
-                  .from(TABLE.users)
-                  .update({
-                    wallet_balance: (grandparent.wallet_balance || 0) + tier2Bonus,
-                    total_earned: (grandparent.total_earned || 0) + tier2Bonus,
-                  })
-                  .eq('id', grandparent.id)
+          // Email 1: Deposit Approved & Deployed to trading
+          void sendDepositApprovedEmail({
+            userId: tx.user_id,
+            amount: tx.amount,
+            network: tx.network || undefined,
+            txHash: tx.tx_hash || undefined,
+          })
 
-                void sendReferralRewardEmail({
-                  userId: grandparent.id,
-                  amount: tier2Bonus,
-                  tier: 2,
-                  downlineName: userObj.full_name || userObj.email || undefined,
+          // Email 2: Instant Referral Commission for Upline
+          if (userObj.referrer_id) {
+            const referrer = users.find((u) => u.id === userObj.referrer_id)
+            const tier1Bonus = Math.round(tx.amount * 0.15 * 100) / 100
+            if (referrer && tier1Bonus > 0) {
+              await supabase
+                .from(TABLE.users)
+                .update({
+                  wallet_balance: (referrer.wallet_balance || 0) + tier1Bonus,
+                  total_earned: (referrer.total_earned || 0) + tier1Bonus,
                 })
+                .eq('id', referrer.id)
+
+              void sendReferralRewardEmail({
+                userId: referrer.id,
+                amount: tier1Bonus,
+                tier: 1,
+                downlineName: userObj.full_name || userObj.email || undefined,
+              })
+
+              // Tier 2: Grandparent upline (2%)
+              if (referrer.referrer_id) {
+                const grandparent = users.find((u) => u.id === referrer.referrer_id)
+                const tier2Bonus = Math.round(tx.amount * 0.02 * 100) / 100
+                if (grandparent && tier2Bonus > 0) {
+                  await supabase
+                    .from(TABLE.users)
+                    .update({
+                      wallet_balance: (grandparent.wallet_balance || 0) + tier2Bonus,
+                      total_earned: (grandparent.total_earned || 0) + tier2Bonus,
+                    })
+                    .eq('id', grandparent.id)
+
+                  void sendReferralRewardEmail({
+                    userId: grandparent.id,
+                    amount: tier2Bonus,
+                    tier: 2,
+                    downlineName: userObj.full_name || userObj.email || undefined,
+                  })
+                }
               }
             }
           }
         }
+      } else if (tx.type === 'withdrawal') {
+        // Email 3: Withdrawal Approved & Dispatched
+        void sendWithdrawalApprovedEmail({
+          userId: tx.user_id,
+          amount: tx.amount,
+          walletAddress: tx.wallet_address || undefined,
+        })
       }
-    } else if (tx.type === 'withdrawal') {
-      // Email 3: Withdrawal Approved & Dispatched
-      void sendWithdrawalApprovedEmail({
-        userId: tx.user_id,
-        amount: tx.amount,
-        walletAddress: tx.wallet_address || undefined,
-      })
-    }
 
-    toast.success(`Transaction ${tx.id.slice(0, 8)} approved and completed.`)
-    void fetchData()
+      toast.success(`Transaction ${tx.id.slice(0, 8)} approved and completed.`)
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   // Reject Transaction
   const handleRejectTx = async (txId: string) => {
     const targetTx = transactions.find((t) => t.id === txId)
 
-    const { error } = await supabase
-      .from(TABLE.transactions)
-      .update({ status: 'rejected' })
-      .eq('id', txId)
+    setActionLoadingId('reject_' + txId)
+    try {
+      const { error } = await supabase
+        .from(TABLE.transactions)
+        .update({ status: 'rejected' })
+        .eq('id', txId)
 
-    if (error) {
-      toast.error('Failed to reject transaction.')
-      return
-    }
-
-    if (targetTx?.type === 'withdrawal') {
-      // Restore user balance
-      const userObj = users.find((u) => u.id === targetTx.user_id)
-      if (userObj) {
-        await supabase
-          .from(TABLE.users)
-          .update({
-            wallet_balance: (userObj.wallet_balance || 0) + targetTx.amount,
-          })
-          .eq('id', targetTx.user_id)
+      if (error) {
+        toast.error('Failed to reject transaction.')
+        return
       }
 
-      // Email 4: Withdrawal Cancelled / Rejected notice
-      void sendWithdrawalRejectedEmail({
-        userId: targetTx.user_id,
-        amount: targetTx.amount,
-        reason: 'Administrative risk verification or invalid destination wallet address.',
-      })
-    }
+      if (targetTx?.type === 'withdrawal') {
+        // Restore user balance
+        const userObj = users.find((u) => u.id === targetTx.user_id)
+        if (userObj) {
+          await supabase
+            .from(TABLE.users)
+            .update({
+              wallet_balance: (userObj.wallet_balance || 0) + targetTx.amount,
+            })
+            .eq('id', targetTx.user_id)
+        }
 
-    toast.success('Transaction marked as rejected.')
-    void fetchData()
+        // Email 4: Withdrawal Cancelled / Rejected notice
+        void sendWithdrawalRejectedEmail({
+          userId: targetTx.user_id,
+          amount: targetTx.amount,
+          reason: 'Administrative risk verification or invalid destination wallet address.',
+        })
+      }
+
+      toast.success('Transaction marked as rejected.')
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   // Save User Balance Edit
@@ -296,32 +314,42 @@ export function AdminDashboard() {
   // Toggle Block / Unblock User
   const handleToggleBlock = async (u: ZhenbotUser) => {
     const nextState = !u.is_blocked
-    const { error } = await supabase
-      .from(TABLE.users)
-      .update({ is_blocked: nextState })
-      .eq('id', u.id)
+    setActionLoadingId('block_' + u.id)
+    try {
+      const { error } = await supabase
+        .from(TABLE.users)
+        .update({ is_blocked: nextState })
+        .eq('id', u.id)
 
-    if (error) {
-      toast.error(`Failed to update user block status: ${error.message}`)
-      return
+      if (error) {
+        toast.error(`Failed to update user block status: ${error.message}`)
+        return
+      }
+
+      toast.success(nextState ? 'User has been blocked.' : 'User has been unblocked.')
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
     }
-
-    toast.success(nextState ? 'User has been blocked.' : 'User has been unblocked.')
-    void fetchData()
   }
 
   // Delete User
   const handleDeleteUser = async (u: ZhenbotUser) => {
     if (!confirm(`Are you sure you want to permanently delete user ${u.email}?`)) return
 
-    const { error } = await supabase.from(TABLE.users).delete().eq('id', u.id)
-    if (error) {
-      toast.error(`Failed to delete user: ${error.message}`)
-      return
-    }
+    setActionLoadingId('del_user_' + u.id)
+    try {
+      const { error } = await supabase.from(TABLE.users).delete().eq('id', u.id)
+      if (error) {
+        toast.error(`Failed to delete user: ${error.message}`)
+        return
+      }
 
-    toast.success('User deleted.')
-    void fetchData()
+      toast.success('User deleted.')
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   // Add Multiple / Batch Wallets
@@ -370,14 +398,19 @@ export function AdminDashboard() {
   const handleDeleteWallet = async (w: ZhenbotWallet) => {
     if (!confirm(`Are you sure you want to delete wallet ${w.address}?`)) return
 
-    const { error } = await supabase.from(TABLE.wallets).delete().eq('id', w.id)
-    if (error) {
-      toast.error(`Failed to delete wallet: ${error.message}`)
-      return
-    }
+    setActionLoadingId('del_wallet_' + w.id)
+    try {
+      const { error } = await supabase.from(TABLE.wallets).delete().eq('id', w.id)
+      if (error) {
+        toast.error(`Failed to delete wallet: ${error.message}`)
+        return
+      }
 
-    toast.success('Wallet removed from pool.')
-    void fetchData()
+      toast.success('Wallet removed from pool.')
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   // Assign Wallet to User
@@ -425,25 +458,30 @@ export function AdminDashboard() {
   const handleUnassignWallet = async (w: ZhenbotWallet) => {
     if (!w.assigned_to_user_id) return
 
-    const colName =
-      w.wallet_type === 'evm'
-        ? 'assigned_evm_wallet'
-        : w.wallet_type === 'btc'
-        ? 'assigned_btc_wallet'
-        : 'assigned_trc20_wallet'
+    setActionLoadingId('unassign_' + w.id)
+    try {
+      const colName =
+        w.wallet_type === 'evm'
+          ? 'assigned_evm_wallet'
+          : w.wallet_type === 'btc'
+          ? 'assigned_btc_wallet'
+          : 'assigned_trc20_wallet'
 
-    await supabase
-      .from(TABLE.users)
-      .update({ [colName]: null })
-      .eq('id', w.assigned_to_user_id)
+      await supabase
+        .from(TABLE.users)
+        .update({ [colName]: null })
+        .eq('id', w.assigned_to_user_id)
 
-    await supabase
-      .from(TABLE.wallets)
-      .update({ assigned_to_user_id: null, assigned_at: null })
-      .eq('id', w.id)
+      await supabase
+        .from(TABLE.wallets)
+        .update({ assigned_to_user_id: null, assigned_at: null })
+        .eq('id', w.id)
 
-    toast.success('Wallet unassigned.')
-    void fetchData()
+      toast.success('Wallet unassigned.')
+      void fetchData()
+    } finally {
+      setActionLoadingId(null)
+    }
   }
 
   // Send Admin Chat Reply
@@ -514,8 +552,8 @@ export function AdminDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => void fetchData()}>
-            <RefreshCw className="size-3.5 mr-1" /> Refresh
+          <Button variant="ghost" size="sm" onClick={() => void fetchData()} loading={refreshing}>
+            <RefreshCw className={cn('size-3.5 mr-1', refreshing && 'animate-spin')} /> Refresh
           </Button>
           <a
             href="/dashboard"
@@ -639,24 +677,36 @@ export function AdminDashboard() {
                         </button>
                         <button
                           type="button"
+                          disabled={actionLoadingId === 'block_' + u.id}
                           onClick={() => void handleToggleBlock(u)}
                           className={cn(
-                            'rounded-lg border p-1.5 transition-colors',
+                            'rounded-lg border p-1.5 transition-colors disabled:opacity-50',
                             u.is_blocked
                               ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                               : 'border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20',
                           )}
                           title={u.is_blocked ? 'Unblock user' : 'Block user'}
                         >
-                          {u.is_blocked ? <Unlock className="size-3.5" /> : <Lock className="size-3.5" />}
+                          {actionLoadingId === 'block_' + u.id ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : u.is_blocked ? (
+                            <Unlock className="size-3.5" />
+                          ) : (
+                            <Lock className="size-3.5" />
+                          )}
                         </button>
                         <button
                           type="button"
+                          disabled={actionLoadingId === 'del_user_' + u.id}
                           onClick={() => void handleDeleteUser(u)}
-                          className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors"
+                          className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                           title="Delete user"
                         >
-                          <Trash2 className="size-3.5" />
+                          {actionLoadingId === 'del_user_' + u.id ? (
+                            <Loader2 className="size-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="size-3.5" />
+                          )}
                         </button>
                       </td>
                     </tr>
@@ -733,17 +783,21 @@ export function AdminDashboard() {
                           <>
                             <button
                               type="button"
+                              disabled={actionLoadingId === 'approve_' + tx.id || actionLoadingId === 'reject_' + tx.id}
                               onClick={() => void handleApproveTx(tx)}
-                              className="rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 transition-colors"
+                              className="rounded-lg border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-1 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/25 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                             >
-                              Approve
+                              {actionLoadingId === 'approve_' + tx.id && <Loader2 className="size-3 animate-spin shrink-0" />}
+                              {actionLoadingId === 'approve_' + tx.id ? 'Approving…' : 'Approve'}
                             </button>
                             <button
                               type="button"
+                              disabled={actionLoadingId === 'approve_' + tx.id || actionLoadingId === 'reject_' + tx.id}
                               onClick={() => void handleRejectTx(tx.id)}
-                              className="rounded-lg border border-red-500/30 bg-red-500/15 px-2.5 py-1 font-mono text-xs font-bold text-red-400 hover:bg-red-500/25 transition-colors"
+                              className="rounded-lg border border-red-500/30 bg-red-500/15 px-2.5 py-1 font-mono text-xs font-bold text-red-400 hover:bg-red-500/25 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                             >
-                              Reject
+                              {actionLoadingId === 'reject_' + tx.id && <Loader2 className="size-3 animate-spin shrink-0" />}
+                              {actionLoadingId === 'reject_' + tx.id ? 'Rejecting…' : 'Reject'}
                             </button>
                           </>
                         )}
@@ -861,7 +915,7 @@ export function AdminDashboard() {
                         disabled={!replyText.trim() || sendingReply}
                         className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-400 text-obsidian-950 hover:bg-brand-300 transition-colors disabled:opacity-40"
                       >
-                        <Send className="size-4" />
+                        {sendingReply ? <Loader2 className="size-4 animate-spin text-obsidian-950" /> : <Send className="size-4" />}
                       </button>
                     </div>
                   </form>
@@ -957,11 +1011,13 @@ export function AdminDashboard() {
                           {w.assigned_to_user_id ? (
                             <button
                               type="button"
+                              disabled={actionLoadingId === 'unassign_' + w.id}
                               onClick={() => void handleUnassignWallet(w)}
-                              className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs text-amber-400 hover:bg-amber-500/20 transition-colors"
+                              className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                               title="Unassign from current user"
                             >
-                              Unassign
+                              {actionLoadingId === 'unassign_' + w.id && <Loader2 className="size-3 animate-spin shrink-0" />}
+                              {actionLoadingId === 'unassign_' + w.id ? 'Unassigning…' : 'Unassign'}
                             </button>
                           ) : (
                             <button
@@ -978,11 +1034,16 @@ export function AdminDashboard() {
                           )}
                           <button
                             type="button"
+                            disabled={actionLoadingId === 'del_wallet_' + w.id}
                             onClick={() => void handleDeleteWallet(w)}
-                            className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors"
+                            className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
                             title="Delete wallet"
                           >
-                            <Trash2 className="size-3.5" />
+                            {actionLoadingId === 'del_wallet_' + w.id ? (
+                              <Loader2 className="size-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="size-3.5" />
+                            )}
                           </button>
                         </td>
                       </tr>

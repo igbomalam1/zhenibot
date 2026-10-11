@@ -264,7 +264,7 @@ export function Auth() {
               )}
 
               <Button type="submit" size="lg" className="w-full mt-2" loading={loading}>
-                {mode === 'login' ? 'Sign In' : 'Create Account'}
+                {loading ? (mode === 'login' ? 'Signing In…' : 'Creating Account…') : (mode === 'login' ? 'Sign In' : 'Create Account')}
                 {!loading && <ArrowRight className="size-4 ml-1" />}
               </Button>
             </form>

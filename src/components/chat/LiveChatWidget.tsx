@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { MessageSquare, X, Send, Bot, Minimize2 } from 'lucide-react'
+import { MessageSquare, X, Send, Bot, Minimize2, Loader2 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ZhenbotChatMessage, ZhenbotChatThread } from '@/types/database'
@@ -338,7 +338,7 @@ export function LiveChatWidget() {
                     disabled={!text.trim() || sending}
                     className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-400 text-obsidian-950 transition-all hover:bg-brand-300 disabled:opacity-40"
                   >
-                    <Send className="size-4" />
+                    {sending ? <Loader2 className="size-4 animate-spin text-obsidian-950" /> : <Send className="size-4" />}
                   </button>
                 </div>
               </form>
