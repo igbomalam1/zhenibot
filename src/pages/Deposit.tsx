@@ -12,7 +12,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import { supabase, TABLE } from '@/lib/supabase'
-import { DEPOSIT_NETWORKS } from '@/lib/constants'
+import { BRAND, DEPOSIT_NETWORKS } from '@/lib/constants'
 import type { DepositNetwork } from '@/lib/constants'
 import { formatCurrency } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
@@ -102,8 +102,8 @@ export function Deposit() {
       toast.error('Please wait for an active deposit wallet to be assigned before depositing.')
       return
     }
-    if (amountNumber < 10) {
-      toast.error('Minimum deposit is $10.00.')
+    if (amountNumber < BRAND.minDeposit) {
+      toast.error(`Minimum deposit is ${formatCurrency(BRAND.minDeposit)}.`)
       return
     }
     if (txHash.trim().length < 20) {
@@ -219,7 +219,7 @@ export function Deposit() {
             <Input
               name="amount"
               type="number"
-              min={10}
+              min={BRAND.minDeposit}
               step="0.01"
               label={`Amount in USD (USDT ${network.network})`}
               suffix={`≈ ${amountNumber.toFixed(2)} ${network.asset}`}

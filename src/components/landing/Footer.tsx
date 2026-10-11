@@ -12,6 +12,10 @@ const FAQS = [
     a: 'Zhenbot trades Crypto, Stocks, and Commodities automatically 24/7. It targets 2% daily profit with a safe 5% stop loss. You receive 1.2% profit credited directly to your balance every 24 hours.',
   },
   {
+    q: 'What is the minimum deposit?',
+    a: 'The minimum deposit is $20.00 across all supported networks. Your funds are automatically deployed into the next trading cycle right away.',
+  },
+  {
     q: 'What is the minimum withdrawal?',
     a: 'The minimum withdrawal is $10.00. Each withdrawal is confirmed with a one-time email code to keep your funds safe, and sent directly to your wallet.',
   },

@@ -53,7 +53,7 @@ export function ProfitCalculator() {
                   type="range"
                   min={BRAND.minDeposit}
                   max={BRAND.maxDeposit}
-                  step={50}
+                  step={10}
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
                   className="w-full h-2 rounded-lg bg-white/10 accent-brand-400 cursor-pointer"

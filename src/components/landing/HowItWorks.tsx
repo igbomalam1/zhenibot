@@ -13,8 +13,8 @@ const STEPS: {
     step: 'Step 1',
     title: 'Deposit Money',
     description:
-      'Deposit from just $50. Your funds start working in the next trading cycle right away.',
-    tag: 'FROM $50 · NO DEPOSIT FEES',
+      'Deposit from just $20. Your funds start working in the next trading cycle right away.',
+    tag: 'FROM $20 · NO DEPOSIT FEES',
   },
   {
     icon: Bot,
