@@ -49,7 +49,7 @@ export function AffiliateTeaser() {
             Earn by Inviting Friends
           </h2>
           <p className="mt-4 text-base text-slate-400 leading-relaxed">
-            Get paid on 2 levels. Earn 15% when someone you invite deposits, and an extra 5% when their friends deposit.
+            Get paid on 2 levels. Earn 15% when someone you invite deposits, and an extra 2% when their friends deposit.
           </p>
         </div>
 
@@ -92,18 +92,18 @@ export function AffiliateTeaser() {
             <div className="relative rounded-xl border border-white/10 bg-[#090b12] p-6">
               <div className="mb-2 text-center">
                 <span className="inline-block rounded border border-brand-400/30 bg-brand-400/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-brand-400 uppercase">
-                  LEVEL 2 · 5% BONUS
+                  LEVEL 2 · 2% BONUS
                 </span>
               </div>
               <TierNode
                 badge="Friend's Friend"
                 name="Friend B"
                 sub="Level 2"
-                amount="5%"
+                amount="2%"
                 accent="#38bdf8"
               />
               <p className="mt-4 text-center text-xs leading-relaxed text-slate-300">
-                When Friend A invites Friend B, you also get an extra <span className="font-semibold text-sky-400">5% bonus</span> on Friend B's deposits.
+                When Friend A invites Friend B, you also get an extra <span className="font-semibold text-sky-400">2% bonus</span> on Friend B's deposits.
               </p>
             </div>
           </div>

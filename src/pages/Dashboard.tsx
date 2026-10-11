@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  BadgeDollarSign,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Eye,
+  EyeOff,
+  FileText,
+  Gift,
   History,
-  LayoutGrid,
-  Percent,
-  Plus,
-  Wallet,
   Activity,
+  Coins,
+  ShieldCheck,
+  TrendingUp,
+  Sparkles,
+  Copy,
+  Check,
 } from 'lucide-react'
 import {
   Area,
@@ -23,190 +27,252 @@ import {
 } from 'recharts'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDashboardStats } from '@/hooks/useFund'
-import { formatCurrency, formatDate, formatNumber } from '@/lib/format'
+import { formatCurrency, formatDate } from '@/lib/format'
 import { getEquitySeries } from '@/lib/demo'
 import { BRAND } from '@/lib/constants'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
-import { Modal } from '@/components/ui/Modal'
 import { BotTracker } from '@/components/dashboard/BotTracker'
 import { TradeFeed } from '@/components/dashboard/TradeFeed'
-
-function StatCard({
-  code,
-  label,
-  value,
-  sub,
-  icon,
-  tone,
-}: {
-  code: string
-  label: string
-  value: string
-  sub: string
-  icon: ReactNode
-  tone: 'brand' | 'profit' | 'neutral'
-}) {
-  const tones = {
-    brand: 'border-brand-400/25 bg-brand-400/10 text-brand-400',
-    profit: 'border-emerald-500/25 bg-emerald-500/10 text-brand-400',
-    neutral: 'border-white/10 bg-white/[0.04] text-slate-300',
-  } as const
-
-  return (
-    <div className="glass-card flex flex-col justify-between rounded-xl p-5 border border-white/8 transition-all hover:border-white/15">
-      <div>
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[10px] text-slate-500 tracking-wider uppercase font-semibold">
-            {code}
-          </span>
-          <span className={`flex size-8 items-center justify-center rounded-lg border ${tones[tone]}`}>
-            {icon}
-          </span>
-        </div>
-        <p className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{value}</p>
-      </div>
-      <div className="mt-3 border-t border-white/5 pt-2.5">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{label}</p>
-        <p className="mt-0.5 font-mono text-[10px] text-slate-500">{sub}</p>
-      </div>
-    </div>
-  )
-}
-
-function QuickActions({ balance, onClose }: { balance: number; onClose: () => void }) {
-  return (
-    <div className="mx-auto max-w-md">
-      <div className="border-b border-white/8 pb-3 mb-5">
-        <h3 className="text-lg font-display font-bold text-white">Quick Actions</h3>
-        <p className="text-xs font-mono text-slate-400 mt-1">
-          AVAILABLE BALANCE:{' '}
-          <span className="font-bold text-brand-400">{formatCurrency(balance)}</span>
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        <Link
-          to="/dashboard/deposit"
-          onClick={onClose}
-          className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0c0f18] p-4 transition-all hover:border-brand-400/40 hover:bg-[#101422] group"
-        >
-          <span className="flex size-11 items-center justify-center rounded-lg bg-brand-400/10 border border-brand-400/30 text-brand-400 group-hover:bg-brand-400 group-hover:text-obsidian-950 transition-colors">
-            <ArrowDownCircle className="size-5" />
-          </span>
-          <div className="flex-1">
-            <p className="font-display font-bold text-sm text-white">Deposit</p>
-            <p className="text-xs text-slate-400 mt-0.5">Add funds to start earning 1.2% daily profit →</p>
-          </div>
-        </Link>
-
-        <Link
-          to="/dashboard/withdraw"
-          onClick={onClose}
-          className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0c0f18] p-4 transition-all hover:border-white/20 hover:bg-[#101422] group"
-        >
-          <span className="flex size-11 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-white group-hover:bg-white group-hover:text-obsidian-950 transition-colors">
-            <ArrowUpCircle className="size-5" />
-          </span>
-          <div className="flex-1">
-            <p className="font-display font-bold text-sm text-white">Withdraw</p>
-            <p className="text-xs text-slate-400 mt-0.5">Withdraw your profits and referral earnings →</p>
-          </div>
-        </Link>
-      </div>
-    </div>
-  )
-}
 
 export function Dashboard() {
   const { profile, user } = useAuth()
   const { stats, loading } = useDashboardStats()
-  const [quickOpen, setQuickOpen] = useState(false)
+  const [hideBalance, setHideBalance] = useState(false)
+  const [copiedLink, setCopiedLink] = useState(false)
   const equity = useMemo(() => getEquitySeries(), [])
+
   const name = profile?.full_name?.split(' ')[0] ?? 'Investor'
+  const netWorth = stats.walletBalance + stats.activeDeposit
+  const dailyProjected = stats.activeDeposit * BRAND.dailyRate
+
+  const referralUrl = `${window.location.origin}/auth?mode=register&ref=${profile?.referral_code || ''}`
+
+  const copyReferral = async () => {
+    try {
+      await navigator.clipboard.writeText(referralUrl)
+      setCopiedLink(true)
+      setTimeout(() => setCopiedLink(false), 2000)
+    } catch {
+      // ignore
+    }
+  }
 
   const todayLabel = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
 
   return (
-    <div className="space-y-8">
-      {/* Welcome Bar */}
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/8 pb-6">
+    <div className="space-y-8 select-none">
+      {/* Top Greeting Header */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="size-1.5 rounded-full bg-brand-400" />
-            <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-              Live System Status
+            <span className="size-2 rounded-full bg-brand-400 animate-pulse" />
+            <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest font-bold">
+              PORTFOLIO ACCOUNT
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
             Welcome back, {name}
           </h1>
-          <p className="mt-1 font-mono text-xs text-slate-400">{todayLabel}</p>
+          <p className="mt-0.5 font-mono text-xs text-slate-500">{todayLabel}</p>
         </div>
 
-        <Button onClick={() => setQuickOpen(true)}>
-          <Plus className="size-4" /> Quick Action
-        </Button>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-400/25 bg-brand-400/10 px-3 py-1.5 font-mono text-xs font-bold text-brand-400">
+            <Sparkles className="size-3.5 text-brand-400" />
+            1.2% DAILY YIELD
+          </span>
+        </div>
       </div>
 
-      {/* KPI Cards Strip */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          code="Balance"
-          label="Available Balance"
-          value={loading ? '…' : formatCurrency(stats.walletBalance)}
-          sub="Ready to withdraw anytime"
-          icon={<Wallet className="size-4.5" />}
-          tone="brand"
-        />
-        <StatCard
-          code="Profit"
-          label="Today's Profit"
-          value={loading ? '…' : formatCurrency(stats.todayEarnings)}
-          sub={`${formatNumber(BRAND.dailyRate * 100, 1)}% daily profit paid`}
-          icon={<BadgeDollarSign className="size-4.5" />}
-          tone="profit"
-        />
-        <StatCard
-          code="Referrals"
-          label="Referral Earnings"
-          value={loading ? '…' : formatCurrency(stats.affiliateCommission)}
-          sub="15% direct + 5% team bonus"
-          icon={<Percent className="size-4.5" />}
-          tone="profit"
-        />
-        <StatCard
-          code="Withdrawn"
-          label="Total Withdrawn"
-          value={loading ? '…' : formatCurrency(stats.totalWithdrawn)}
-          sub={`${formatNumber(stats.depositCount, 0)} completed deposits`}
-          icon={<LayoutGrid className="size-4.5" />}
-          tone="neutral"
-        />
+      {/* MASTER FINTECH HERO BALANCE CARD */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-[#0e1424] via-[#0a0d17] to-[#070910] p-6 sm:p-8 shadow-2xl">
+        {/* Ambient Glow Orbs */}
+        <div className="absolute -top-24 -right-24 size-80 rounded-full bg-brand-400/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+
+        {/* Card Header */}
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
+              Total Account Net Worth
+            </span>
+            <button
+              type="button"
+              onClick={() => setHideBalance((v) => !v)}
+              className="rounded-lg p-1 text-slate-500 hover:text-slate-300 transition-colors"
+              title={hideBalance ? 'Show balance' : 'Hide balance'}
+            >
+              {hideBalance ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-emerald-400 font-mono text-xs font-bold shadow-sm">
+            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>ALGO YIELD ACTIVE · 24H CYCLE</span>
+          </div>
+        </div>
+
+        {/* Hero Figure */}
+        <div className="relative z-10 mt-4 mb-6">
+          <div className="flex items-baseline gap-2">
+            <p className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight">
+              {loading ? (
+                'Loading…'
+              ) : hideBalance ? (
+                '••••••••'
+              ) : (
+                formatCurrency(netWorth)
+              )}
+            </p>
+          </div>
+          <p className="mt-2 font-mono text-xs text-slate-400 flex items-center gap-1.5">
+            <TrendingUp className="size-3.5 text-brand-400" />
+            Daily Projected Dividend:{' '}
+            <strong className="text-brand-400 font-bold">
+              {hideBalance ? '••••' : `+${formatCurrency(dailyProjected)} / day`}
+            </strong>
+          </p>
+        </div>
+
+        {/* BANK-APP CLICKY ACTION BUTTONS ROW */}
+        <div className="relative z-10 grid grid-cols-2 gap-2.5 sm:grid-cols-4 pt-1 pb-2">
+          <Link
+            to="/dashboard/deposit"
+            className="group flex items-center justify-center gap-2.5 rounded-2xl bg-brand-400 px-4 py-3.5 text-xs font-display font-black text-obsidian-950 shadow-lg shadow-brand-400/20 transition-all duration-150 hover:bg-brand-300 active:scale-95"
+          >
+            <ArrowDownToLine className="size-4 transition-transform group-hover:-translate-y-0.5" />
+            <span>Add Funds</span>
+          </Link>
+
+          <Link
+            to="/dashboard/withdraw"
+            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/12 bg-white/5 px-4 py-3.5 text-xs font-display font-bold text-white shadow-md transition-all duration-150 hover:bg-white/10 hover:border-white/20 active:scale-95"
+          >
+            <ArrowUpFromLine className="size-4 text-slate-300 transition-transform group-hover:-translate-y-0.5" />
+            <span>Cash Out</span>
+          </Link>
+
+          <Link
+            to="/dashboard/referrals"
+            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-xs font-display font-bold text-slate-200 shadow-md transition-all duration-150 hover:bg-white/8 hover:text-white active:scale-95"
+          >
+            <Gift className="size-4 text-brand-400" />
+            <span>Earn 15%</span>
+          </Link>
+
+          <Link
+            to="/dashboard/history"
+            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-xs font-display font-bold text-slate-200 shadow-md transition-all duration-150 hover:bg-white/8 hover:text-white active:scale-95"
+          >
+            <FileText className="size-4 text-slate-400" />
+            <span>Statement</span>
+          </Link>
+        </div>
+
+        {/* SMALLER BALANCE DETAILS ON THE CARD (Unified Sub-metrics Strip) */}
+        <div className="relative z-10 mt-7 pt-6 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Available Cash
+            </span>
+            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-white">
+              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.walletBalance)}
+            </p>
+            <span className="font-mono text-[10px] text-brand-400 font-semibold block mt-0.5">
+              Ready to withdraw
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Active In Trading
+            </span>
+            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-white">
+              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.activeDeposit)}
+            </p>
+            <span className="font-mono text-[10px] text-emerald-400 font-semibold block mt-0.5">
+              1.2% Daily Yield
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Total Profit Earned
+            </span>
+            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-brand-400">
+              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.totalEarned)}
+            </p>
+            <span className="font-mono text-[10px] text-slate-400 block mt-0.5">
+              Cumulative Dividends
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Total Withdrawn
+            </span>
+            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-slate-300">
+              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.totalWithdrawn)}
+            </p>
+            <span className="font-mono text-[10px] text-slate-500 block mt-0.5">
+              Settled to personal wallet
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Main Grid: Bot Tracker + Equity Chart + Trade Feed */}
+      {/* REFERRAL QUICK BOOST & INVITE CARD */}
+      <div className="rounded-2xl border border-brand-400/25 bg-gradient-to-r from-brand-400/10 via-[#0a0f1c] to-[#0d1424] p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-3.5">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-brand-400 text-obsidian-950 font-bold shadow-md shadow-brand-400/30">
+            <Coins className="size-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-display font-bold text-white flex items-center gap-2">
+              Earn 15% Tier-1 + 2% Tier-2 Commissions
+              <span className="rounded bg-brand-400/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-400">
+                INSTANT
+              </span>
+            </h4>
+            <p className="font-mono text-xs text-slate-400 mt-0.5">
+              Code: <strong className="text-white">{profile?.referral_code || '—'}</strong> · Share your link to receive instant commissions whenever your partners fund.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => void copyReferral()}
+          className="flex items-center gap-2 rounded-xl border border-brand-400/30 bg-brand-400/15 px-4 py-2 font-mono text-xs font-bold text-brand-400 hover:bg-brand-400/25 transition-all active:scale-95"
+        >
+          {copiedLink ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
+          <span>{copiedLink ? 'Copied Link!' : 'Copy Referral Link'}</span>
+        </button>
+      </div>
+
+      {/* MAIN TWO-COLUMN TRADING & ANALYTICS GRID */}
       <div className="grid gap-6 lg:grid-cols-2">
+        {/* Left Column: Bot Tracker & Growth Chart */}
         <div className="space-y-6">
           <BotTracker />
 
           <div className="glass-card rounded-2xl p-5 sm:p-6 border border-white/8 shadow-xl">
             <div className="flex items-center justify-between mb-5 border-b border-white/8 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-[#121522] text-slate-300">
+                <span className="flex size-9 items-center justify-center rounded-xl border border-white/10 bg-[#121522] text-slate-300">
                   <Activity className="size-4.5 text-brand-400" />
                 </span>
                 <div>
                   <h3 className="text-sm font-display font-bold text-white tracking-tight">
-                    Fund Growth
+                    Algorithmic Yield Chart
                   </h3>
                   <p className="font-mono text-[10px] text-slate-500 uppercase">
-                    30-DAY PERFORMANCE
+                    30-DAY CUMULATIVE EQUITY
                   </p>
                 </div>
               </div>
@@ -241,18 +307,18 @@ export function Dashboard() {
                     contentStyle={{
                       background: '#0a0d15',
                       border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 8,
+                      borderRadius: 10,
                       fontSize: 12,
                       fontFamily: 'monospace',
                     }}
                     labelStyle={{ color: '#94a3b8' }}
-                    formatter={(value) => [formatCurrency(Number(value)), 'Portfolio Equity']}
+                    formatter={(value) => [formatCurrency(Number(value)), 'Cumulative Equity']}
                   />
                   <Area
                     type="monotone"
                     dataKey="value"
                     stroke="#00e599"
-                    strokeWidth={1.75}
+                    strokeWidth={2}
                     fill="url(#eq)"
                     dot={false}
                     activeDot={{ r: 4, fill: '#00e599' }}
@@ -263,19 +329,19 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Right Column: Recent Trade Feed */}
+        {/* Right Column: Live Trades Feed */}
         <div className="glass-card rounded-2xl p-5 sm:p-6 border border-white/8 shadow-xl max-h-fit">
           <div className="flex items-center justify-between mb-5 border-b border-white/8 pb-4">
             <div className="flex items-center gap-3">
-              <span className="flex size-9 items-center justify-center rounded-lg border border-white/10 bg-[#121522] text-brand-400">
+              <span className="flex size-9 items-center justify-center rounded-xl border border-white/10 bg-[#121522] text-brand-400">
                 <History className="size-4.5" />
               </span>
               <div>
                 <h3 className="text-sm font-display font-bold text-white tracking-tight">
-                  Live Trades
+                  Live Algorithmic Execution
                 </h3>
                 <p className="font-mono text-[10px] text-slate-500 uppercase">
-                  AUTOMATED TRADING FEED
+                  HIGH FREQUENCY SCALPER FEED
                 </p>
               </div>
             </div>
@@ -285,14 +351,18 @@ export function Dashboard() {
         </div>
       </div>
 
-      <Modal open={quickOpen} onClose={() => setQuickOpen(false)}>
-        <QuickActions balance={stats.walletBalance} onClose={() => setQuickOpen(false)} />
-      </Modal>
-
-      <p className="text-center font-mono text-[11px] text-slate-600">
-        ACCOUNT ID: <span className="text-slate-400">{user?.id.slice(0, 16)}…</span> · JOINED:{' '}
-        <span className="text-slate-400">{formatDate(profile?.created_at)}</span>
-      </p>
+      {/* Account Info Footer */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/6 font-mono text-[11px] text-slate-500">
+        <p>
+          ACCOUNT ID: <span className="text-slate-400">{user?.id.slice(0, 16)}…</span>
+        </p>
+        <p>
+          MEMBER SINCE: <span className="text-slate-400">{formatDate(profile?.created_at)}</span>
+        </p>
+        <p className="flex items-center gap-1.5 text-brand-400">
+          <ShieldCheck className="size-3.5" /> 256-BIT ENCRYPTED QUANT POOL
+        </p>
+      </div>
     </div>
   )
 }

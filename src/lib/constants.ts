@@ -5,7 +5,7 @@ export const BRAND = {
   cycleTarget: 0.02,
   riskStop: 0.05,
   tier1Rate: 0.15,
-  tier2Rate: 0.05,
+  tier2Rate: 0.02,
   minDeposit: 50,
   maxDeposit: 50000,
   minWithdrawal: 10,

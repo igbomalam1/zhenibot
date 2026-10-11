@@ -64,7 +64,7 @@ export function Referrals() {
           Invite Friends & Earn
         </h1>
         <p className="mt-1 font-mono text-xs text-slate-400">
-          Earn 15% direct commission on level 1, plus 5% bonus commission on level 2.
+          Earn 15% direct commission on level 1, plus 2% bonus commission on level 2.
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export function Referrals() {
         <div className="glass-card rounded-xl p-5 border border-white/8">
           <div className="flex items-center justify-between mb-3">
             <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              TEAM EARNINGS (5%)
+              TEAM EARNINGS (2%)
             </span>
             <span className="flex size-7 items-center justify-center rounded border border-amber-400/30 bg-amber-400/10 text-amber-400">
               <Network className="size-3.5" />
@@ -169,10 +169,10 @@ export function Referrals() {
               <div>
                 <p className="text-xs font-display font-bold text-white uppercase tracking-wider">Level 2: Friends of Friends</p>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  When your friends invite others who deposit, you get an extra 5% bonus.
+                  When your friends invite others who deposit, you get an extra 2% bonus.
                 </p>
               </div>
-              <Badge tone="warning">5%</Badge>
+              <Badge tone="warning">2%</Badge>
             </div>
 
             <p className="rounded-lg border border-white/6 bg-[#090b12] p-3 font-mono text-[11px] leading-relaxed text-slate-400">

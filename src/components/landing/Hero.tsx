@@ -69,12 +69,11 @@ export function Hero() {
             </div>
 
             {/* Metric Strip */}
-            <div className="mt-14 grid grid-cols-2 gap-6 sm:grid-cols-4 border-t border-white/8 pt-8">
+            <div className="mt-14 grid grid-cols-2 gap-6 sm:grid-cols-3 border-t border-white/8 pt-8">
               {[
                 { label: 'Total Trades', value: formatCompact(executions), sub: 'Live trades' },
                 { label: '24h Volume', value: `$${formatCompact(volume)}`, sub: 'Automated' },
                 { label: 'Win Rate', value: `${FUND_METRICS.winRate}%`, sub: 'Success rate' },
-                { label: 'Active Users', value: formatCompact(FUND_METRICS.activeInvestors), sub: 'Worldwide' },
               ].map((s) => (
                 <div key={s.label} className="border-l border-white/10 pl-4 py-1">
                   <p className="font-mono text-2xl sm:text-3xl font-bold text-white tracking-tight">{s.value}</p>

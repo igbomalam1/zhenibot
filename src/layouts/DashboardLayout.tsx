@@ -1,91 +1,206 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  History,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  FileText,
+  Gift,
   LayoutDashboard,
   LogOut,
   Menu,
-  Percent,
   X,
   Radio,
+  ChevronRight,
+  ShieldCheck,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/format'
 import { Logo } from '@/components/landing/Navbar'
 
-const NAV = [
-  { to: '/dashboard', label: 'Overview', icon: LayoutDashboard, end: true },
-  { to: '/dashboard/deposit', label: 'Deposit', icon: ArrowDownCircle },
-  { to: '/dashboard/withdraw', label: 'Withdraw', icon: ArrowUpCircle },
-  { to: '/dashboard/referrals', label: 'Referrals', icon: Percent },
-  { to: '/dashboard/history', label: 'History', icon: History },
+interface NavItem {
+  to: string
+  label: string
+  subtitle: string
+  icon: React.ComponentType<{ className?: string }>
+  badge?: string
+  end?: boolean
+}
+
+const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
+  {
+    section: 'BANKING & ASSETS',
+    items: [
+      {
+        to: '/dashboard',
+        label: 'Overview',
+        subtitle: 'Portfolio & 1.2% Yield',
+        icon: LayoutDashboard,
+        end: true,
+      },
+      {
+        to: '/dashboard/deposit',
+        label: 'Deposit Funds',
+        subtitle: 'Deploy Investment Capital',
+        icon: ArrowDownToLine,
+      },
+      {
+        to: '/dashboard/withdraw',
+        label: 'Withdraw Cash',
+        subtitle: 'Fast 2FA Payouts',
+        icon: ArrowUpFromLine,
+      },
+    ],
+  },
+  {
+    section: 'GROWTH & COMMISSIONS',
+    items: [
+      {
+        to: '/dashboard/referrals',
+        label: 'Affiliate Network',
+        subtitle: 'Earn 15% Direct + 2% Team',
+        icon: Gift,
+        badge: '15% BONUS',
+      },
+      {
+        to: '/dashboard/history',
+        label: 'Account Ledger',
+        subtitle: 'Statements & Transactions',
+        icon: FileText,
+      },
+    ],
+  },
 ]
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { profile, signOut } = useAuth()
-  const name = profile?.full_name ?? 'User'
+  const name = profile?.full_name ?? 'Investor'
 
   return (
-    <div className="flex h-full flex-col bg-[#06080d] border-r border-white/8">
+    <div className="flex h-full flex-col bg-[#06080d] border-r border-white/8 select-none">
       {/* Brand Header */}
-      <div className="flex h-16 items-center px-5 border-b border-white/8">
+      <div className="flex h-16 items-center justify-between px-5 border-b border-white/8 bg-[#080b12]">
         <Logo />
+        <span className="flex items-center gap-1 rounded-md border border-brand-400/20 bg-brand-400/10 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-400">
+          <ShieldCheck className="size-3 text-brand-400" /> PRO
+        </span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
-        <div className="px-3 pb-2 text-[10px] font-mono font-semibold uppercase tracking-widest text-slate-500">
-          MENU
-        </div>
-        {NAV.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={'end' in item ? item.end : false}
-            onClick={onNavigate}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-xs font-semibold tracking-wide transition-all font-mono',
-                isActive
-                  ? 'bg-brand-400/10 text-brand-400 border border-brand-400/30 font-bold shadow-sm'
-                  : 'text-slate-400 hover:bg-white/[0.04] hover:text-white',
-              )
-            }
-          >
-            <item.icon className="size-4 shrink-0" />
-            <span>{item.label}</span>
-          </NavLink>
+      {/* Fintech Button Navigation */}
+      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.section} className="space-y-1.5">
+            <div className="px-3 pb-1 text-[10px] font-mono font-bold tracking-wider text-slate-500 uppercase">
+              {group.section}
+            </div>
+            {group.items.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  cn(
+                    'group relative flex items-center justify-between rounded-xl p-2.5 transition-all duration-150 active:scale-[0.98]',
+                    isActive
+                      ? 'bg-[#101422] border border-brand-400/40 shadow-lg shadow-black/40 text-white'
+                      : 'border border-transparent text-slate-400 hover:bg-white/[0.04] hover:border-white/6 hover:text-slate-200',
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className={cn(
+                          'flex size-9 shrink-0 items-center justify-center rounded-xl transition-all',
+                          isActive
+                            ? 'bg-brand-400 text-obsidian-950 font-bold shadow-md shadow-brand-400/25'
+                            : 'bg-white/[0.05] border border-white/8 text-slate-400 group-hover:bg-white/[0.09] group-hover:text-white',
+                        )}
+                      >
+                        <item.icon className="size-4.5" />
+                      </div>
+                      <div className="min-w-0 text-left">
+                        <p
+                          className={cn(
+                            'text-xs font-display font-bold tracking-tight truncate',
+                            isActive ? 'text-white' : 'text-slate-300 group-hover:text-white',
+                          )}
+                        >
+                          {item.label}
+                        </p>
+                        <p className="text-[10px] font-mono text-slate-500 truncate group-hover:text-slate-400">
+                          {item.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 pl-2 shrink-0">
+                      {item.badge && (
+                        <span className="rounded bg-brand-400/15 border border-brand-400/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-400">
+                          {item.badge}
+                        </span>
+                      )}
+                      <ChevronRight
+                        className={cn(
+                          'size-3.5 transition-transform duration-150',
+                          isActive
+                            ? 'text-brand-400 translate-x-0.5'
+                            : 'text-slate-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5',
+                        )}
+                      />
+                    </div>
+                  </>
+                )}
+              </NavLink>
+            ))}
+          </div>
         ))}
       </nav>
 
-      {/* User Status Footer */}
+      {/* User Account Card (Fintech Bank Debit Style) */}
       <div className="border-t border-white/8 p-3.5 bg-[#080a11]">
-        <div className="flex items-center gap-3 rounded-xl border border-white/6 bg-[#0c0f18] p-3">
-          <div className="relative size-9 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-[#121522]">
-            <img
-              src="/default-avatar.svg"
-              alt={name}
-              className="size-full object-cover"
-            />
+        <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f1320] to-[#0a0d16] p-3 shadow-xl">
+          <div className="flex items-center gap-3">
+            <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#121522]">
+              <img
+                src="/default-avatar.svg"
+                alt={name}
+                className="size-full object-cover"
+              />
+              <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#0f1320] bg-brand-400" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-display font-bold text-white tracking-tight">
+                {name}
+              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="font-mono text-[10px] uppercase font-bold text-slate-500">
+                  BAL:
+                </span>
+                <span className="font-mono text-xs text-brand-400 font-bold truncate">
+                  {formatCurrency(profile?.wallet_balance ?? 0)}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-display font-bold text-white">{name}</p>
-            <p className="truncate font-mono text-[11px] text-brand-400 font-semibold">
-              {formatCurrency(profile?.wallet_balance ?? 0)}
-            </p>
+
+          <div className="mt-3 flex items-center justify-between border-t border-white/6 pt-2.5">
+            <span className="inline-flex items-center gap-1 font-mono text-[9px] font-semibold text-slate-500 uppercase">
+              <span className="size-1.5 rounded-full bg-emerald-400" /> 1.2% ACTIVE
+            </span>
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-mono text-slate-400 transition-colors hover:bg-risk-500/15 hover:text-risk-400 active:scale-95"
+              title="Sign Out"
+            >
+              <LogOut className="size-3" />
+              <span>Sign out</span>
+            </button>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => void signOut()}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg py-2 text-xs font-mono font-medium text-slate-400 transition-colors hover:bg-risk-500/10 hover:text-risk-400"
-        >
-          <LogOut className="size-3.5" />
-          <span>Sign Out</span>
-        </button>
       </div>
     </div>
   )

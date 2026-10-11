@@ -25,11 +25,15 @@ const FAQS = [
   },
   {
     q: 'How do referral bonuses work?',
-    a: 'When someone joins with your link and deposits, you get 15% immediately. When they invite a friend who deposits, you get an extra 5%.',
+    a: 'When someone joins with your link and deposits, you get 15% immediately. When they invite a friend who deposits, you get an extra 2%.',
   },
   {
     q: 'Can I withdraw my profit and referral bonuses anytime?',
     a: 'Yes. All earnings are added to your available balance and can be withdrawn anytime as long as you have at least $10.',
+  },
+  {
+    q: 'Can I withdraw my capital?',
+    a: "Yes, your capital is separated from your profits and returns every 30 days. If you wish to invest it to keep earning, you're free.",
   },
 ]
 

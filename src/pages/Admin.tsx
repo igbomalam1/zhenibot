@@ -194,10 +194,10 @@ export function AdminDashboard() {
               downlineName: userObj.full_name || userObj.email || undefined,
             })
 
-            // Tier 2: Grandparent upline (5%)
+            // Tier 2: Grandparent upline (2%)
             if (referrer.referrer_id) {
               const grandparent = users.find((u) => u.id === referrer.referrer_id)
-              const tier2Bonus = Math.round(tx.amount * 0.05 * 100) / 100
+              const tier2Bonus = Math.round(tx.amount * 0.02 * 100) / 100
               if (grandparent && tier2Bonus > 0) {
                 await supabase
                   .from(TABLE.users)

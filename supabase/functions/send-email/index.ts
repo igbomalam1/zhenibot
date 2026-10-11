@@ -153,7 +153,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
           <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
             <p style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: #64748b; margin: 0 0 6px;">Your Personal Referral Code</p>
             <p style="font-size: 20px; font-weight: 700; font-family: monospace; color: #00e599; margin: 0 0 10px;">${code}</p>
-            <p style="font-size: 12px; color: #94a3b8; margin: 0;">Share your link to earn <b>15% Tier-1</b> and <b>5% Tier-2</b> instant commissions on every downline deposit.</p>
+            <p style="font-size: 12px; color: #94a3b8; margin: 0;">Share your link to earn <b>15% Tier-1</b> and <b>2% Tier-2</b> instant commissions on every downline deposit.</p>
           </div>
           <div style="margin-top: 24px;">
             <a href="https://zhenbot.vercel.app/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
@@ -312,7 +312,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
           </p>
           <div style="background: linear-gradient(135deg, rgba(0, 229, 153, 0.1) 0%, rgba(56, 189, 248, 0.05) 100%); border: 1px solid rgba(0, 229, 153, 0.25); border-radius: 12px; padding: 22px; margin-bottom: 24px; text-align: center;">
             <span style="display: inline-block; padding: 3px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: #00e599; background: rgba(0, 229, 153, 0.15); border-radius: 6px; margin-bottom: 8px;">
-              TIER ${tier} COMMISSION (${tier === 1 ? '15%' : '5%'})
+              TIER ${tier} COMMISSION (${tier === 1 ? '15%' : '2%'})
             </span>
             <p style="font-size: 26px; font-weight: 800; color: #00e599; margin: 0 0 6px;">+${amount}</p>
             <p style="font-size: 12px; color: #94a3b8; margin: 0;">Credited immediately to your withdrawable wallet balance.</p>
