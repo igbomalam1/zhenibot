@@ -17,89 +17,65 @@ export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? 'support@zhen
 export const REFERRAL_BASE_URL =
   import.meta.env.VITE_REFERRAL_BASE_URL ?? 'http://localhost:5173'
 
-export type NetworkId = 'bep20' | 'erc20' | 'base' | 'arbitrum' | 'polygon' | 'btc' | 'trc20'
+export type NetworkId = 'bep20' | 'trc20' | 'erc20'
 
 export interface DepositNetwork {
   id: NetworkId
   asset: string
   network: string
+  shortName: string
   label: string
-  chainFamily: 'evm' | 'btc' | 'trc20'
+  chainFamily: 'evm' | 'trc20'
   min: number
   accent: string
+  badgeBg: string
   confirmations: number
+  popular?: boolean
+  feeNote: string
 }
 
 export const DEPOSIT_NETWORKS: DepositNetwork[] = [
   {
     id: 'bep20',
     asset: 'USDT',
-    network: 'BNB Chain (BEP20)',
-    label: 'USDT · BNB Chain (BSC)',
+    network: 'BNB Smart Chain (BEP20)',
+    shortName: 'BSC / BEP20',
+    label: 'USDT · BNB Smart Chain (BEP20)',
     chainFamily: 'evm',
     min: 20,
     accent: '#F0B90B',
+    badgeBg: 'rgba(240, 185, 11, 0.12)',
     confirmations: 15,
-  },
-  {
-    id: 'base',
-    asset: 'USDT',
-    network: 'Base',
-    label: 'USDT · Base Network',
-    chainFamily: 'evm',
-    min: 20,
-    accent: '#0052FF',
-    confirmations: 10,
-  },
-  {
-    id: 'erc20',
-    asset: 'USDT',
-    network: 'Ethereum (ERC20)',
-    label: 'USDT · Ethereum',
-    chainFamily: 'evm',
-    min: 20,
-    accent: '#627EEA',
-    confirmations: 12,
-  },
-  {
-    id: 'arbitrum',
-    asset: 'USDT',
-    network: 'Arbitrum One',
-    label: 'USDT · Arbitrum',
-    chainFamily: 'evm',
-    min: 20,
-    accent: '#28A0F0',
-    confirmations: 12,
-  },
-  {
-    id: 'polygon',
-    asset: 'USDT',
-    network: 'Polygon',
-    label: 'USDT · Polygon',
-    chainFamily: 'evm',
-    min: 20,
-    accent: '#8247E5',
-    confirmations: 15,
-  },
-  {
-    id: 'btc',
-    asset: 'BTC',
-    network: 'Bitcoin',
-    label: 'BTC · Bitcoin Network',
-    chainFamily: 'btc',
-    min: 20,
-    accent: '#F7931A',
-    confirmations: 2,
+    popular: true,
+    feeNote: 'Lowest Network Fees · Fast (~15s)',
   },
   {
     id: 'trc20',
     asset: 'USDT',
     network: 'Tron (TRC20)',
-    label: 'USDT · Tron',
+    shortName: 'TRON / TRC20',
+    label: 'USDT · Tron (TRC20)',
     chainFamily: 'trc20',
     min: 20,
-    accent: '#10B981',
+    accent: '#EF0027',
+    badgeBg: 'rgba(239, 0, 39, 0.12)',
     confirmations: 19,
+    popular: true,
+    feeNote: 'Global Standard · Low Gas Fees',
+  },
+  {
+    id: 'erc20',
+    asset: 'USDT',
+    network: 'Ethereum (ERC20)',
+    shortName: 'ETH / ERC20',
+    label: 'USDT · Ethereum (ERC20)',
+    chainFamily: 'evm',
+    min: 20,
+    accent: '#627EEA',
+    badgeBg: 'rgba(98, 126, 234, 0.12)',
+    confirmations: 12,
+    popular: false,
+    feeNote: 'High Security · Standard ERC-20',
   },
 ]
 

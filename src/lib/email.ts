@@ -23,6 +23,9 @@ export async function sendWelcomeEmail(params: {
   }
 }
 
+export const ADMIN_ALERT_EMAIL = 'blessedjohnny2552@gmail.com'
+export const SENDER_TEAM_EMAIL = 'team@zhenibot.com'
+
 export async function sendDepositReceivedEmail(params: {
   userId?: string
   to?: string
@@ -30,9 +33,11 @@ export async function sendDepositReceivedEmail(params: {
   amount: number
   network: string
   txHash?: string
+  walletAddress?: string
 }) {
   try {
-    await supabase.functions.invoke('send-email', {
+    // 1. Dispatch confirmation to investor
+    void supabase.functions.invoke('send-email', {
       body: {
         type: 'deposit_received',
         user_id: params.userId,
@@ -42,11 +47,48 @@ export async function sendDepositReceivedEmail(params: {
           amount: params.amount,
           network: params.network,
           tx_hash: params.txHash,
+          wallet_address: params.walletAddress,
         },
+      },
+    })
+
+    // 2. Dispatch instant deposit alert to blessedjohnny2552@gmail.com
+    void supabase.functions.invoke('send-deposit-notification', {
+      body: {
+        user_id: params.userId,
+        amount: params.amount,
+        network: params.network,
+        tx_hash: params.txHash,
+        wallet_address: params.walletAddress,
       },
     })
   } catch (err) {
     console.warn('sendDepositReceivedEmail notice:', err)
+  }
+}
+
+export async function sendChatAlertToAdmin(params: {
+  userName?: string
+  userEmail?: string
+  message: string
+  threadId?: string
+}) {
+  try {
+    // Send admin notification for incoming user chat
+    await supabase.functions.invoke('send-email', {
+      body: {
+        type: 'deposit_received', // fallback template or direct alert
+        to: ADMIN_ALERT_EMAIL,
+        data: {
+          name: `Admin Alert: New Chat from ${params.userName || 'Visitor'}`,
+          amount: 0,
+          network: `Chat Thread #${(params.threadId || '').slice(0, 8)}`,
+          tx_hash: `User: ${params.userEmail || 'Guest'} | Msg: ${params.message}`,
+        },
+      },
+    })
+  } catch (err) {
+    console.warn('sendChatAlertToAdmin notice:', err)
   }
 }
 

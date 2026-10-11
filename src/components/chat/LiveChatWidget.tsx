@@ -4,6 +4,7 @@ import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ZhenbotChatMessage, ZhenbotChatThread } from '@/types/database'
 import { cn } from '@/lib/utils'
+import { sendChatAlertToAdmin } from '@/lib/email'
 
 export function LiveChatWidget() {
   const { user, profile } = useAuth()
@@ -177,6 +178,14 @@ export function LiveChatWidget() {
           unread_by_admin: true,
         })
         .eq('id', thread.id)
+
+      // Alert admin email blessedjohnny2552@gmail.com
+      void sendChatAlertToAdmin({
+        userName: senderName,
+        userEmail: profile?.email || thread.user_email || undefined,
+        message: messageText,
+        threadId: thread.id,
+      })
     }
 
     setSending(false)
