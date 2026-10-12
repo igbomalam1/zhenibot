@@ -96,7 +96,7 @@ Deno.serve(async (req: Request) => {
             <tr><td style="padding:8px 0;color:#94a3b8;">Transaction hash</td><td style="padding:8px 0;color:#fff;word-break:break-all;">${body.tx_hash ?? '—'}</td></tr>
             <tr><td style="padding:8px 0;color:#94a3b8;">Status</td><td style="padding:8px 0;"><span style="background:rgba(245,158,11,.15);color:#fbbf24;padding:2px 10px;border-radius:999px;font-size:12px;">Pending verification</span></td></tr>
           </table>
-          <p style="margin-top:12px;">Once the transaction is confirmed on-chain your deposit will be credited and your 1.2% daily dividend will begin.</p>`,
+          <p style="margin-top:12px;">Once the transaction is confirmed on-chain your deposit will be credited and your 1.6% daily dividend will begin.</p>`,
         ),
       )
     }

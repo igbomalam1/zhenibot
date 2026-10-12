@@ -84,7 +84,7 @@ export function Dashboard() {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-400/25 bg-brand-400/10 px-3 py-1.5 font-mono text-xs font-bold text-brand-400">
             <Sparkles className="size-3.5 text-brand-400" />
-            1.2% DAILY YIELD
+            1.6% DAILY YIELD
           </span>
         </div>
       </div>
@@ -196,7 +196,7 @@ export function Dashboard() {
               {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.activeDeposit)}
             </p>
             <span className="font-mono text-[10px] text-emerald-400 font-semibold block mt-0.5">
-              1.2% Daily Yield
+              1.6% Daily Yield
             </span>
           </div>
 

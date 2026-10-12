@@ -34,7 +34,7 @@ const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
       {
         to: '/dashboard',
         label: 'Overview',
-        subtitle: 'Portfolio & 1.2% Yield',
+        subtitle: 'Portfolio & 1.6% Yield',
         icon: LayoutDashboard,
         end: true,
       },
@@ -209,7 +209,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
           <div className="mt-3 flex items-center justify-between border-t border-white/6 pt-2.5">
             <span className="inline-flex items-center gap-1 font-mono text-[9px] font-semibold text-slate-500 uppercase">
-              <span className="size-1.5 rounded-full bg-emerald-400" /> 1.2% ACTIVE
+              <span className="size-1.5 rounded-full bg-emerald-400" /> 1.6% ACTIVE
             </span>
             <button
               type="button"
@@ -276,7 +276,7 @@ export function DashboardLayout() {
                 Dashboard
               </p>
               <p className="hidden text-[11px] font-mono text-slate-500 sm:block">
-                1.2% Daily Profit Bot
+                1.6% Daily Profit Bot
               </p>
             </div>
           </div>

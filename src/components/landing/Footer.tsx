@@ -8,8 +8,8 @@ const YEAR = new Date().getFullYear()
 
 const FAQS = [
   {
-    q: 'How do I earn 1.2% daily profit?',
-    a: 'Zhenbot trades Crypto, Stocks, and Commodities automatically 24/7. It targets 2% daily profit with a safe 5% stop loss. You receive 1.2% profit credited directly to your balance every 24 hours.',
+    q: 'How do I earn 1.6% daily profit?',
+    a: 'Zhenbot trades Crypto, Stocks, and Commodities automatically 24/7. It targets 2% daily profit with a safe 5% stop loss. You receive 1.6% profit credited directly to your balance every 24 hours.',
   },
   {
     q: 'What is the minimum deposit?',
@@ -155,7 +155,7 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-4 max-w-sm text-xs leading-relaxed text-slate-400">
-              An automated trading bot that trades Crypto, Stocks, and Commodities to pay you 1.2% daily profit with a safe 5% stop loss.
+              An automated trading bot that trades Crypto, Stocks, and Commodities to pay you 1.6% daily profit with a safe 5% stop loss.
             </p>
             <div className="mt-5 flex items-center gap-2.5 font-mono text-xs">
               {['Twitter', 'Telegram', 'Support'].map((s) => (
@@ -183,7 +183,7 @@ export function Footer() {
               Risk Notice
             </p>
             <p className="text-[11px] leading-relaxed text-slate-500">
-              Trading financial markets involves risk. Never invest money you cannot afford to lose. The 1.2% daily profit is a trading target, not a fixed guarantee.
+              Trading financial markets involves risk. Never invest money you cannot afford to lose. The 1.6% daily profit is a trading target, not a fixed guarantee.
             </p>
           </div>
         </div>

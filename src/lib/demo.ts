@@ -61,7 +61,7 @@ export function getEquitySeries(days = 30) {
   let value = 100000
   const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   for (let i = days; i >= 0; i--) {
-    value *= 1 + 0.004 + rand() * 0.012
+    value *= 1 + 0.008 + rand() * 0.016
     const d = new Date(Date.now() - i * 86400000)
     out.push({ day: `${labels[d.getDay()]} ${d.getDate()}`, value: Number(value.toFixed(0)) })
   }

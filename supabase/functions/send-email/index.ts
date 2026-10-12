@@ -154,7 +154,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
           'Welcome to Zhenbot. Your account has been initialized.',
           `Welcome to Zhenbot, ${name}! 👋`,
           `<p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
-            Your account has been successfully initialized. You now have full access to our automated high-frequency quantitative trading fund earning up to <b>1.2% daily dividends</b>.
+            Your account has been successfully initialized. You now have full access to our automated high-frequency quantitative trading fund earning up to <b>1.6% daily dividends</b>.
           </p>
           <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px; margin-bottom: 24px;">
             <p style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: #64748b; margin: 0 0 6px;">Your Personal Referral Code</p>
@@ -225,7 +225,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
           <div style="background: linear-gradient(135deg, rgba(0, 229, 153, 0.08) 0%, rgba(0, 229, 153, 0.02) 100%); border: 1px solid rgba(0, 229, 153, 0.25); border-radius: 12px; padding: 20px; margin-bottom: 24px; text-align: center;">
             <p style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: #94a3b8; margin: 0 0 6px;">Total Credited to Trading</p>
             <p style="font-size: 28px; font-weight: 800; color: #00e599; margin: 0 0 8px;">${amount}</p>
-            <p style="font-size: 12px; color: #38bdf8; margin: 0;">⚡ 1.2% Daily Quantitative Dividends Activated</p>
+            <p style="font-size: 12px; color: #38bdf8; margin: 0;">⚡ 1.6% Daily Quantitative Dividends Activated</p>
           </div>
           <table role="presentation" width="100%" style="border-collapse: collapse; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; overflow: hidden; margin-bottom: 24px; font-size: 13px;">
             <tr>

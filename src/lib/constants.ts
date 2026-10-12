@@ -1,7 +1,7 @@
 export const BRAND = {
   name: 'Zhenbot',
   tagline: 'Automated Multi-Asset Trading',
-  dailyRate: 0.012,
+  dailyRate: 0.016,
   cycleTarget: 0.02,
   riskStop: 0.05,
   tier1Rate: 0.15,

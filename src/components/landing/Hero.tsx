@@ -45,13 +45,13 @@ export function Hero() {
           <div className="animate-fade-up">
             <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl font-display leading-[1.12]">
               Automated Trading Bot.
-              <span className="text-gradient block mt-2">Earn 1.2% Daily Profit.</span>
+              <span className="text-gradient block mt-2">Earn 1.6% Daily Profit.</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-slate-300 font-normal">
               Earn{' '}
               <span className="font-semibold text-brand-400 underline decoration-brand-400/40 decoration-2 underline-offset-4">
-                1.2% daily profit
+                1.6% daily profit
               </span>{' '}
               automatically. Our bot trades Crypto, Stocks, and Commodities 24/7 with a safe 5% risk stop.
             </p>

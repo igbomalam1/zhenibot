@@ -24,7 +24,7 @@ export function ProfitCalculator() {
           </h2>
           <p className="mt-4 text-base text-slate-400 leading-relaxed">
             See how much you can earn based on the{' '}
-            <span className="text-brand-400 font-semibold font-mono">1.2% daily profit</span> rate.
+            <span className="text-brand-400 font-semibold font-mono">1.6% daily profit</span> rate.
           </p>
         </div>
 
@@ -43,7 +43,7 @@ export function ProfitCalculator() {
                 </div>
                 <div className="flex items-center gap-1.5 rounded-md border border-brand-400/30 bg-brand-400/10 px-3 py-1 font-mono text-xs font-bold text-brand-400">
                   <TrendingUp className="size-3.5" />
-                  1.2% DAILY
+                  1.6% DAILY
                 </div>
               </div>
 
@@ -129,7 +129,7 @@ export function ProfitCalculator() {
               to="/auth"
               className={buttonClass('primary', 'lg', 'w-full')}
             >
-              Start Earning 1.2% Daily <ArrowRight className="size-4 ml-1" />
+              Start Earning 1.6% Daily <ArrowRight className="size-4 ml-1" />
             </Link>
           </div>
         </div>

@@ -1,5 +1,5 @@
 // Zhenbot — Daily dividend cron blueprint.
-// Calls the DB function zhenbot_credit_daily_dividends() which credits 1.2% of every
+// Calls the DB function zhenbot_credit_daily_dividends() which credits 1.6% of every
 // active deposit at 00:00 UTC. Invoke via pg_cron or the Supabase Edge Schedule
 // every day at 00:00 UTC:
 //

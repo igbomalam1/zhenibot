@@ -13,7 +13,7 @@ const TABS: { id: Filter; label: string }[] = [
   { id: 'all', label: 'All Operations' },
   { id: 'deposit', label: 'Deposits' },
   { id: 'withdrawal', label: 'Withdrawals' },
-  { id: 'dividend', label: '1.2% Daily Dividends' },
+  { id: 'dividend', label: '1.6% Daily Dividends' },
   { id: 'referral_bonus', label: 'Referral Rewards' },
 ]
 
@@ -44,7 +44,7 @@ export function HistoryPage() {
   const typeLabel: Record<TransactionType, string> = {
     deposit: 'DEPOSIT',
     withdrawal: 'WITHDRAWAL',
-    dividend: 'DIVIDEND 1.2%',
+    dividend: 'DIVIDEND 1.6%',
     referral_bonus: 'REFERRAL BONUS',
   }
 

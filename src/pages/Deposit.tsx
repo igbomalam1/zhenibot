@@ -153,7 +153,7 @@ export function Deposit() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="flex size-2 rounded-full bg-brand-400 animate-pulse" />
             <span className="font-mono text-[10px] font-bold tracking-widest text-brand-400 uppercase">
-              DEPOSIT FUNDS · 1.2% DAILY RETURN
+              DEPOSIT FUNDS · 1.6% DAILY RETURN
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
@@ -359,7 +359,7 @@ export function Deposit() {
                     Automated Earnings
                   </span>
                   <span className="rounded bg-brand-400/15 border border-brand-400/30 px-2 py-0.5 font-mono text-[10px] font-bold text-brand-400">
-                    1.2% DAILY
+                    1.6% DAILY
                   </span>
                 </div>
 

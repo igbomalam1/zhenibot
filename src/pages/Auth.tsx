@@ -38,10 +38,10 @@ function SidePanel() {
         </div>
 
         <h2 className="max-w-md text-3xl font-extrabold leading-tight text-white font-display">
-          Smart Automated Trading. <span className="text-gradient block mt-1">1.2% Daily Profit.</span>
+          Smart Automated Trading. <span className="text-gradient block mt-1">1.6% Daily Profit.</span>
         </h2>
         <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
-          Join thousands of members earning a steady 1.2% daily profit powered by automated crypto trading
+          Join thousands of members earning a steady 1.6% daily profit powered by automated crypto trading
           with over {formatCompact(FUND_METRICS.aum)} in active funds.
         </p>
 
@@ -49,7 +49,7 @@ function SidePanel() {
           {[
             { label: 'Total Managed', value: formatCurrency(FUND_METRICS.aum) },
             { label: 'Active Members', value: formatCompact(FUND_METRICS.activeInvestors) },
-            { label: 'Daily Profit', value: '1.2% / day' },
+            { label: 'Daily Profit', value: '1.6% / day' },
             { label: 'Loss Protection', value: '5.0% Stop' },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-white/8 bg-[#0b0e18]/80 p-3.5 backdrop-blur-sm">
@@ -203,7 +203,7 @@ export function Auth() {
             <p className="mt-1 text-xs text-slate-400">
               {mode === 'login'
                 ? 'Sign in to access your dashboard and balances.'
-                : 'Create an account to start earning 1.2% daily profit.'}
+                : 'Create an account to start earning 1.6% daily profit.'}
             </p>
 
             {mode === 'register' && refParam && (

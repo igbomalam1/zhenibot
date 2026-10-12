@@ -35,9 +35,9 @@ const STEPS: {
   {
     icon: Coins,
     step: 'Step 4',
-    title: 'Get 1.2% Daily Profit',
+    title: 'Get 1.6% Daily Profit',
     description:
-      'You get 1.2% daily profit added to your balance every 24 hours. Withdraw anytime from $10.',
+      'You get 1.6% daily profit added to your balance every 24 hours. Withdraw anytime from $10.',
     tag: 'WITHDRAW ANYTIME FROM $10',
   },
 ]
