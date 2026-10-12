@@ -14,6 +14,10 @@ import {
   Plus,
   Link2,
   Loader2,
+  ExternalLink,
+  CheckCheck,
+  XCircle,
+  CheckCircle2,
 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -71,6 +75,68 @@ export function AdminDashboard() {
   const [userBalance, setUserBalance] = useState('')
   const [userDeposit, setUserDeposit] = useState('')
   const [userSaving, setUserSaving] = useState(false)
+
+  // Chat filter & management state
+  const [chatFilter, setChatFilter] = useState<'all' | 'open' | 'resolved' | 'closed'>('all')
+
+  // Helper to resolve the correct blockchain explorer / scanner for a deposit/withdrawal
+  const getExplorerUrl = (tx: ZhenbotTransaction) => {
+    const hash = tx.tx_hash?.trim()
+    const address = tx.wallet_address?.trim()
+    const net = (tx.network || '').toLowerCase()
+
+    // 1. BSC (BNB Smart Chain / BEP20)
+    if (net.includes('bsc') || net.includes('bep20') || net.includes('bnb')) {
+      if (hash && hash !== '—' && hash.startsWith('0x')) {
+        return { name: 'BscScan', url: `https://bscscan.com/tx/${hash}` }
+      }
+      if (address && address.startsWith('0x')) {
+        return { name: 'BscScan (Address)', url: `https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955?a=${address}` }
+      }
+      return { name: 'BscScan USDT', url: 'https://bscscan.com/token/0x55d398326f99059ff775485246999027b3197955' }
+    }
+
+    // 2. Tron (TRC20)
+    if (net.includes('tron') || net.includes('trc20') || (address && address.startsWith('T'))) {
+      if (hash && hash !== '—' && !hash.startsWith('0x')) {
+        return { name: 'TronScan', url: `https://tronscan.org/#/transaction/${hash}` }
+      }
+      if (address) {
+        return { name: 'TronScan (Address)', url: `https://tronscan.org/#/address/${address}` }
+      }
+      return { name: 'TronScan USDT', url: 'https://tronscan.org/#/token20/TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t' }
+    }
+
+    // 3. Ethereum (ERC20)
+    if (net.includes('eth') || net.includes('erc20')) {
+      if (hash && hash !== '—' && hash.startsWith('0x')) {
+        return { name: 'Etherscan', url: `https://etherscan.io/tx/${hash}` }
+      }
+      if (address && address.startsWith('0x')) {
+        return { name: 'Etherscan (Address)', url: `https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7?a=${address}` }
+      }
+      return { name: 'Etherscan USDT', url: 'https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7' }
+    }
+
+    // 4. Fallback based on hash or address format
+    if (hash && hash !== '—') {
+      if (hash.startsWith('0x')) {
+        return { name: 'EVM Explorer', url: `https://bscscan.com/tx/${hash}` }
+      }
+      return { name: 'TronScan', url: `https://tronscan.org/#/transaction/${hash}` }
+    }
+
+    if (address) {
+      if (address.startsWith('0x')) {
+        return { name: 'BscScan (Address)', url: `https://bscscan.com/address/${address}` }
+      }
+      if (address.startsWith('T')) {
+        return { name: 'TronScan (Address)', url: `https://tronscan.org/#/address/${address}` }
+      }
+    }
+
+    return null
+  }
 
   // Active Chat management
   const [selectedThread, setSelectedThread] = useState<ZhenbotChatThread | null>(null)
@@ -515,6 +581,88 @@ export function AdminDashboard() {
     setSendingReply(false)
   }
 
+  // Update thread status (open / resolved / closed)
+  const handleUpdateThreadStatus = async (threadId: string, status: 'open' | 'resolved' | 'closed') => {
+    setActionLoadingId('status_' + threadId)
+    try {
+      const { error } = await supabase
+        .from(TABLE.chatThreads)
+        .update({ status })
+        .eq('id', threadId)
+
+      if (error) {
+        toast.error('Failed to update chat status.')
+        return
+      }
+
+      setThreads((prev) =>
+        prev.map((t) => (t.id === threadId ? { ...t, status } : t)),
+      )
+      if (selectedThread?.id === threadId) {
+        setSelectedThread((prev) => (prev ? { ...prev, status } : null))
+      }
+      toast.success(`Chat marked as ${status}.`)
+    } finally {
+      setActionLoadingId(null)
+    }
+  }
+
+  // Toggle thread read/unread
+  const handleToggleThreadUnread = async (thread: ZhenbotChatThread) => {
+    const newUnread = !thread.unread_by_admin
+    setActionLoadingId('unread_' + thread.id)
+    try {
+      const { error } = await supabase
+        .from(TABLE.chatThreads)
+        .update({ unread_by_admin: newUnread })
+        .eq('id', thread.id)
+
+      if (error) {
+        toast.error('Failed to update read state.')
+        return
+      }
+
+      setThreads((prev) =>
+        prev.map((t) => (t.id === thread.id ? { ...t, unread_by_admin: newUnread } : t)),
+      )
+      if (selectedThread?.id === thread.id) {
+        setSelectedThread((prev) => (prev ? { ...prev, unread_by_admin: newUnread } : null))
+      }
+      toast.success(newUnread ? 'Marked as unread.' : 'Marked as read.')
+    } finally {
+      setActionLoadingId(null)
+    }
+  }
+
+  // Delete chat thread and messages
+  const handleDeleteThread = async (threadId: string) => {
+    if (!confirm('Are you sure you want to permanently delete this chat thread and its entire conversation history?')) {
+      return
+    }
+
+    setActionLoadingId('del_thread_' + threadId)
+    try {
+      const { error } = await supabase
+        .from(TABLE.chatThreads)
+        .delete()
+        .eq('id', threadId)
+
+      if (error) {
+        toast.error(`Failed to delete chat: ${error.message}`)
+        return
+      }
+
+      setThreads((prev) => prev.filter((t) => t.id !== threadId))
+      if (selectedThread?.id === threadId) {
+        setSelectedThread(null)
+        setChatMessages([])
+      }
+      toast.success('Chat thread deleted.')
+    } finally {
+      setActionLoadingId(null)
+    }
+  }
+
   // Filter lists
   const filteredUsers = users.filter(
     (u) =>
@@ -527,8 +675,20 @@ export function AdminDashboard() {
     (t) =>
       t.tx_hash?.toLowerCase().includes(search.toLowerCase()) ||
       t.wallet_address?.toLowerCase().includes(search.toLowerCase()) ||
-      t.type.toLowerCase().includes(search.toLowerCase()),
+      t.type.toLowerCase().includes(search.toLowerCase()) ||
+      t.network?.toLowerCase().includes(search.toLowerCase()),
   )
+
+  const filteredThreads = threads.filter((t) => {
+    const matchesSearch =
+      t.user_name.toLowerCase().includes(search.toLowerCase()) ||
+      (t.user_email?.toLowerCase() ?? '').includes(search.toLowerCase()) ||
+      (t.last_message?.toLowerCase() ?? '').includes(search.toLowerCase())
+
+    if (!matchesSearch) return false
+    if (chatFilter === 'all') return true
+    return t.status === chatFilter
+  })
 
   return (
     <div className="min-h-screen bg-[#08090e] text-slate-300">
@@ -772,13 +932,37 @@ export function AdminDashboard() {
                           </span>
                         )}
                       </td>
-                      <td className="py-3.5 pr-4 font-mono text-[11px] text-slate-400 truncate max-w-[140px]">
-                        {tx.tx_hash || '—'}
+                      <td className="py-3.5 pr-4 font-mono text-[11px] text-slate-400">
+                        {tx.tx_hash ? (
+                          <span className="truncate max-w-[140px] block" title={tx.tx_hash}>
+                            {tx.tx_hash}
+                          </span>
+                        ) : (
+                          <span className="text-slate-600 italic">Not provided</span>
+                        )}
                       </td>
-                      <td className="py-3.5 pr-4 font-mono text-[11px] text-slate-500">
+                      <td className="py-3.5 pr-4 font-mono text-[11px] text-slate-500 whitespace-nowrap">
                         {formatDate(tx.created_at)}
                       </td>
-                      <td className="py-3.5 text-right space-x-1">
+                      <td className="py-3.5 text-right space-x-1.5 whitespace-nowrap">
+                        {/* On-Chain Scanner / Check Button */}
+                        {(() => {
+                          const scanner = getExplorerUrl(tx)
+                          if (!scanner) return null
+                          return (
+                            <a
+                              href={scanner.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-xs font-semibold text-sky-400 hover:bg-sky-500/20 hover:border-sky-500/50 transition-colors inline-flex items-center gap-1"
+                              title={`Verify on ${scanner.name}`}
+                            >
+                              <ExternalLink className="size-3" />
+                              <span>Check</span>
+                            </a>
+                          )
+                        })()}
+
                         {tx.status === 'pending' && (
                           <>
                             <button
@@ -812,93 +996,266 @@ export function AdminDashboard() {
 
         {/* TAB 3: LIVE CHAT MANAGEMENT */}
         {activeTab === 'chats' && (
-          <div className="grid gap-6 lg:grid-cols-[1fr_1.8fr]">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_1.8fr]">
             {/* Conversation Threads List */}
-            <div className="glass-card rounded-2xl border border-white/8 p-4 shadow-2xl flex flex-col h-[600px]">
+            <div className="glass-card rounded-2xl border border-white/8 p-4 shadow-2xl flex flex-col h-[640px]">
               <div className="border-b border-white/8 pb-3 mb-3">
-                <h3 className="text-sm font-display font-bold text-white">Active Chat Threads</h3>
-                <p className="font-mono text-[10px] text-slate-500 uppercase">Select thread to view & reply</p>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-display font-bold text-white">Live Chat Threads</h3>
+                  <span className="font-mono text-[10px] text-slate-500">
+                    {filteredThreads.length} of {threads.length}
+                  </span>
+                </div>
+                {/* Status Filter Tabs */}
+                <div className="mt-2.5 flex items-center gap-1">
+                  {(['all', 'open', 'resolved', 'closed'] as const).map((filterKey) => (
+                    <button
+                      key={filterKey}
+                      type="button"
+                      onClick={() => setChatFilter(filterKey)}
+                      className={cn(
+                        'flex-1 rounded-lg py-1 text-[10px] font-mono font-bold uppercase transition-all',
+                        chatFilter === filterKey
+                          ? 'bg-brand-400 text-obsidian-950 shadow-sm'
+                          : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10',
+                      )}
+                    >
+                      {filterKey}
+                      {filterKey === 'open' && (
+                        <span className="ml-1 opacity-75">
+                          ({threads.filter((t) => t.status === 'open').length})
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-                {threads.length === 0 ? (
-                  <p className="text-center font-mono text-xs text-slate-500 py-10">No chat threads yet.</p>
+                {filteredThreads.length === 0 ? (
+                  <div className="text-center py-12 px-3 text-slate-500 font-mono text-xs">
+                    <MessageSquare className="size-6 mx-auto mb-2 opacity-30 text-slate-400" />
+                    No chat threads found in this view.
+                  </div>
                 ) : (
-                  threads.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setSelectedThread(t)}
-                      className={cn(
-                        'w-full text-left rounded-xl p-3 border transition-all',
-                        selectedThread?.id === t.id
-                          ? 'border-brand-400/50 bg-brand-400/10'
-                          : 'border-white/6 bg-[#0c0f18] hover:border-white/15',
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-display font-bold text-xs text-white truncate max-w-[160px]">
-                          {t.user_name}
-                        </span>
-                        {t.unread_by_admin && (
-                          <span className="size-2 rounded-full bg-brand-400 animate-pulse" />
+                  filteredThreads.map((t) => {
+                    const isSelected = selectedThread?.id === t.id
+                    return (
+                      <div
+                        key={t.id}
+                        className={cn(
+                          'group relative rounded-xl p-3 border transition-all',
+                          isSelected
+                            ? 'border-brand-400/50 bg-brand-400/10'
+                            : 'border-white/6 bg-[#0c0f18] hover:border-white/15',
                         )}
+                      >
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => setSelectedThread(t)}
+                        >
+                          <div className="flex items-center justify-between gap-1.5">
+                            <span className="font-display font-bold text-xs text-white truncate max-w-[150px]">
+                              {t.user_name}
+                            </span>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <span
+                                className={cn(
+                                  'rounded px-1.5 py-0.2 font-mono text-[9px] font-bold uppercase',
+                                  t.status === 'open'
+                                    ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/25'
+                                    : t.status === 'resolved'
+                                    ? 'bg-sky-500/15 text-sky-400 border border-sky-500/25'
+                                    : 'bg-slate-500/15 text-slate-400 border border-slate-500/25',
+                                )}
+                              >
+                                {t.status}
+                              </span>
+                              {t.unread_by_admin && (
+                                <span className="size-2 rounded-full bg-brand-400 animate-pulse" title="Unread" />
+                              )}
+                            </div>
+                          </div>
+
+                          <p className="font-mono text-[10px] text-slate-400 truncate mt-1">
+                            {t.last_message || 'No messages yet'}
+                          </p>
+
+                          <span className="font-mono text-[9px] text-slate-600 block mt-1">
+                            {formatDate(t.last_message_at)}
+                          </span>
+                        </div>
+
+                        {/* Thread Quick Actions Strip */}
+                        <div className="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              void handleToggleThreadUnread(t)
+                            }}
+                            className="text-slate-400 hover:text-brand-400 transition-colors inline-flex items-center gap-1"
+                            title={t.unread_by_admin ? 'Mark as read' : 'Mark as unread'}
+                          >
+                            <CheckCheck className="size-3" />
+                            <span>{t.unread_by_admin ? 'Mark Read' : 'Unread'}</span>
+                          </button>
+
+                          <div className="flex items-center gap-2">
+                            {t.status !== 'closed' && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  void handleUpdateThreadStatus(t.id, 'closed')
+                                }}
+                                className="text-amber-400/80 hover:text-amber-300 transition-colors inline-flex items-center gap-0.5"
+                                title="Close chat thread"
+                              >
+                                <XCircle className="size-3" />
+                                <span>Close</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              disabled={actionLoadingId === 'del_thread_' + t.id}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                void handleDeleteThread(t.id)
+                              }}
+                              className="text-red-400/70 hover:text-red-400 transition-colors inline-flex items-center gap-0.5"
+                              title="Delete conversation"
+                            >
+                              <Trash2 className="size-3" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <p className="font-mono text-[10px] text-slate-400 truncate mt-1">
-                        {t.last_message || 'No messages'}
-                      </p>
-                      <span className="font-mono text-[9px] text-slate-600 block mt-1">
-                        {formatDate(t.last_message_at)}
-                      </span>
-                    </button>
-                  ))
+                    )
+                  })
                 )}
               </div>
             </div>
 
             {/* Conversation Messages Feed & Reply */}
-            <div className="glass-card rounded-2xl border border-white/8 p-5 shadow-2xl flex flex-col h-[600px]">
+            <div className="glass-card rounded-2xl border border-white/8 p-5 shadow-2xl flex flex-col h-[640px]">
               {selectedThread ? (
                 <>
-                  <div className="border-b border-white/8 pb-3 mb-4 flex items-center justify-between">
+                  <div className="border-b border-white/8 pb-3 mb-4 flex flex-wrap items-center justify-between gap-2">
                     <div>
-                      <h3 className="text-sm font-display font-bold text-white">
-                        {selectedThread.user_name}
-                      </h3>
-                      <p className="font-mono text-[10px] text-slate-400">
-                        {selectedThread.user_email || 'Guest visitor'}
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-display font-bold text-white">
+                          {selectedThread.user_name}
+                        </h3>
+                        <Badge
+                          tone={
+                            selectedThread.status === 'open'
+                              ? 'success'
+                              : selectedThread.status === 'resolved'
+                              ? 'brand'
+                              : 'neutral'
+                          }
+                        >
+                          {selectedThread.status.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <p className="font-mono text-[10px] text-slate-400 mt-0.5">
+                        {selectedThread.user_email || 'Guest Visitor'}
                       </p>
                     </div>
-                    <Badge tone="brand">LIVE</Badge>
+
+                    {/* Chat Action Header Toolbar */}
+                    <div className="flex items-center gap-1.5 font-mono text-xs">
+                      {selectedThread.status !== 'resolved' && (
+                        <button
+                          type="button"
+                          onClick={() => void handleUpdateThreadStatus(selectedThread.id, 'resolved')}
+                          className="rounded-lg border border-sky-500/30 bg-sky-500/10 px-2.5 py-1 text-sky-400 hover:bg-sky-500/20 transition-colors inline-flex items-center gap-1"
+                          title="Mark inquiry as resolved"
+                        >
+                          <CheckCircle2 className="size-3.5" />
+                          <span>Resolve</span>
+                        </button>
+                      )}
+
+                      {selectedThread.status !== 'closed' ? (
+                        <button
+                          type="button"
+                          onClick={() => void handleUpdateThreadStatus(selectedThread.id, 'closed')}
+                          className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-amber-400 hover:bg-amber-500/20 transition-colors inline-flex items-center gap-1"
+                          title="Close chat thread"
+                        >
+                          <XCircle className="size-3.5" />
+                          <span>Close</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void handleUpdateThreadStatus(selectedThread.id, 'open')}
+                          className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-emerald-400 hover:bg-emerald-500/20 transition-colors inline-flex items-center gap-1"
+                          title="Reopen chat thread"
+                        >
+                          <RefreshCw className="size-3.5" />
+                          <span>Reopen</span>
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => void handleToggleThreadUnread(selectedThread)}
+                        className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-slate-300 hover:bg-white/10 transition-colors inline-flex items-center gap-1"
+                        title={selectedThread.unread_by_admin ? 'Mark as read' : 'Mark as unread'}
+                      >
+                        <CheckCheck className="size-3.5" />
+                        <span>{selectedThread.unread_by_admin ? 'Mark Read' : 'Unread'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={actionLoadingId === 'del_thread_' + selectedThread.id}
+                        onClick={() => void handleDeleteThread(selectedThread.id)}
+                        className="rounded-lg border border-red-500/30 bg-red-500/10 p-1.5 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                        title="Delete this entire chat"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="flex-1 overflow-y-auto space-y-3 p-2">
-                    {chatMessages.map((m) => {
-                      const isAdmin = m.sender_role === 'admin'
-                      return (
-                        <div
-                          key={m.id}
-                          className={cn(
-                            'flex flex-col max-w-[80%]',
-                            isAdmin ? 'ml-auto items-end' : 'mr-auto items-start',
-                          )}
-                        >
-                          <span className="font-mono text-[9px] text-slate-500 mb-0.5 px-1">
-                            {m.sender_name} ({formatDate(m.created_at)})
-                          </span>
+                    {chatMessages.length === 0 ? (
+                      <p className="text-center text-slate-500 font-mono text-xs py-10">
+                        No messages in this conversation yet. Send a message below to start chatting.
+                      </p>
+                    ) : (
+                      chatMessages.map((m) => {
+                        const isAdmin = m.sender_role === 'admin'
+                        return (
                           <div
+                            key={m.id}
                             className={cn(
-                              'rounded-2xl px-4 py-2.5 text-xs leading-relaxed',
-                              isAdmin
-                                ? 'bg-brand-400 text-obsidian-950 font-medium'
-                                : 'border border-white/8 bg-[#121624] text-slate-200',
+                              'flex flex-col max-w-[80%]',
+                              isAdmin ? 'ml-auto items-end' : 'mr-auto items-start',
                             )}
                           >
-                            {m.message}
+                            <span className="font-mono text-[9px] text-slate-500 mb-0.5 px-1">
+                              {m.sender_name} ({formatDate(m.created_at)})
+                            </span>
+                            <div
+                              className={cn(
+                                'rounded-2xl px-4 py-2.5 text-xs leading-relaxed',
+                                isAdmin
+                                  ? 'bg-brand-400 text-obsidian-950 font-medium'
+                                  : 'border border-white/8 bg-[#121624] text-slate-200',
+                              )}
+                            >
+                              {m.message}
+                            </div>
                           </div>
-                        </div>
-                      )
-                    })}
+                        )
+                      })
+                    )}
                   </div>
 
                   <form onSubmit={handleSendAdminReply} className="border-t border-white/8 pt-3 mt-3">
@@ -923,7 +1280,7 @@ export function AdminDashboard() {
               ) : (
                 <div className="flex flex-1 flex-col items-center justify-center text-center p-6 text-slate-500 font-mono text-xs">
                   <MessageSquare className="size-8 mb-2 opacity-30 text-slate-400" />
-                  Select a chat thread from the left to start responding.
+                  Select a chat thread from the left to view messages and reply.
                 </div>
               )}
             </div>
