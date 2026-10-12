@@ -80,15 +80,15 @@ export function Deposit() {
     void loadWallets()
   }, [user?.id])
 
-  // Resolve active address for chosen chain family
+  // Resolve active address for chosen chain family - STRICTLY from database pool, NEVER mock
   const currentAddress =
     network.chainFamily === 'evm'
-      ? assignedWallets.evm || '0x22880c5c404cfd6b83f0ca561ffbc8a881373ea8'
-      : assignedWallets.trc20 || 'TCwJk4gK2s8ZtXw931B5vFjY8d7hN4f2s1'
+      ? assignedWallets.evm || ''
+      : assignedWallets.trc20 || ''
 
   const copyAddress = async () => {
-    if (!currentAddress || currentAddress.startsWith('Awaiting')) {
-      toast.error('No deposit wallet assigned for this chain yet. Contact admin.')
+    if (!currentAddress) {
+      toast.error('No deposit wallet assigned for this network yet. Contact support.')
       return
     }
     try {
@@ -405,65 +405,79 @@ export function Deposit() {
         </div>
 
         <Card className="border border-white/10 bg-[#090c14] p-6 shadow-2xl">
-          <div className="grid gap-6 md:grid-cols-[180px_1fr] items-center">
-            {/* QR Code Container */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="rounded-2xl bg-white p-3 shadow-2xl">
-                <QRCodeSVG value={currentAddress} size={150} level="M" fgColor="#08090e" />
-              </div>
-              <span className="font-mono text-[10px] text-slate-400 text-center">
-                Scan with Exchange / Wallet App
-              </span>
-            </div>
-
-            {/* Address & Copy Flow */}
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider">
-                    Deposit Destination Address ({network.shortName})
-                  </label>
-                  <span className="font-mono text-[10px] text-slate-400">
-                    Network: <strong className="text-white">{network.network}</strong>
-                  </span>
+          {currentAddress ? (
+            <div className="grid gap-6 md:grid-cols-[180px_1fr] items-center">
+              {/* QR Code Container */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="rounded-2xl bg-white p-3 shadow-2xl">
+                  <QRCodeSVG value={currentAddress} size={150} level="M" fgColor="#08090e" />
                 </div>
+                <span className="font-mono text-[10px] text-slate-400 text-center">
+                  Scan with Exchange / Wallet App
+                </span>
+              </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                  <div className="flex-1 rounded-xl border border-brand-400/35 bg-[#0f1422] p-3.5 font-mono text-xs text-brand-300 break-all select-all font-semibold shadow-inner">
-                    {currentAddress}
+              {/* Address & Copy Flow */}
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="font-mono text-xs font-bold text-slate-300 uppercase tracking-wider">
+                      Deposit Destination Address ({network.shortName})
+                    </label>
+                    <span className="font-mono text-[10px] text-slate-400">
+                      Network: <strong className="text-white">{network.network}</strong>
+                    </span>
                   </div>
-                  <Button
-                    type="button"
-                    onClick={copyAddress}
-                    size="md"
-                    className="shrink-0 flex items-center justify-center gap-2"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="size-4 text-obsidian-950" />
-                        <span>COPIED!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="size-4" />
-                        <span>COPY ADDRESS</span>
-                      </>
-                    )}
-                  </Button>
+
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="flex-1 rounded-xl border border-brand-400/35 bg-[#0f1422] p-3.5 font-mono text-xs text-brand-300 break-all select-all font-semibold shadow-inner">
+                      {currentAddress}
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={copyAddress}
+                      size="md"
+                      className="shrink-0 flex items-center justify-center gap-2"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="size-4 text-obsidian-950" />
+                          <span>COPIED!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="size-4" />
+                          <span>COPY ADDRESS</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Safety Alert Strip */}
+                <div className="flex items-start gap-3 rounded-xl border border-amber-400/20 bg-amber-400/5 p-3.5 text-xs text-slate-300 leading-relaxed font-sans">
+                  <Info className="mt-0.5 size-4 shrink-0 text-amber-400" />
+                  <p>
+                    Send only <strong className="text-white">USDT</strong> on the{' '}
+                    <strong className="text-white">{network.network}</strong> network to this address. Sending any other currency or using an incompatible network may result in loss of funds. Minimum transfer is{' '}
+                    <strong className="text-white">${BRAND.minDeposit}.00</strong>.
+                  </p>
                 </div>
               </div>
-
-              {/* Safety Alert Strip */}
-              <div className="flex items-start gap-3 rounded-xl border border-amber-400/20 bg-amber-400/5 p-3.5 text-xs text-slate-300 leading-relaxed font-sans">
-                <Info className="mt-0.5 size-4 shrink-0 text-amber-400" />
-                <p>
-                  Send only <strong className="text-white">USDT</strong> on the{' '}
-                  <strong className="text-white">{network.network}</strong> network to this address. Sending any other currency or using an incompatible network may result in loss of funds. Minimum transfer is{' '}
-                  <strong className="text-white">${BRAND.minDeposit}.00</strong>.
-                </p>
-              </div>
             </div>
-          </div>
+          ) : (
+            <div className="py-8 text-center space-y-3">
+              <div className="inline-flex items-center justify-center size-12 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-400 mb-1">
+                <Info className="size-6" />
+              </div>
+              <h4 className="text-base font-display font-bold text-white">
+                Wallet Assignment Pending
+              </h4>
+              <p className="font-sans text-xs text-slate-400 max-w-md mx-auto">
+                No active {network.network} ({network.shortName}) wallet is currently available in the system pool. Please notify administrator to replenish the pool, or choose another network (e.g. USDT BSC).
+              </p>
+            </div>
+          )}
         </Card>
       </div>
 
@@ -499,11 +513,16 @@ export function Deposit() {
             <Button
               type="submit"
               size="lg"
-              className="w-full text-base font-extrabold shadow-xl shadow-brand-400/20"
+              className="w-full text-base font-extrabold shadow-xl shadow-brand-400/20 disabled:opacity-50"
               loading={submitting}
+              disabled={!currentAddress}
             >
-              {submitting ? 'Confirming Deposit…' : 'I Have Transferred the Funds — Submit Deposit'}
-              {!submitting && <ArrowRight className="size-5 ml-1.5" />}
+              {submitting
+                ? 'Confirming Deposit…'
+                : !currentAddress
+                ? 'Deposit Unavailable — Awaiting Wallet'
+                : 'I Have Transferred the Funds — Submit Deposit'}
+              {!submitting && currentAddress && <ArrowRight className="size-5 ml-1.5" />}
             </Button>
           </Card>
         </form>
