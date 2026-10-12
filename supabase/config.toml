@@ -13,8 +13,8 @@ extra_search_path = ["public", "extensions"]
 
 [auth]
 enabled = true
-site_url = "http://localhost:5173"
-additional_redirect_urls = ["https://zhenbot.vercel.app"]
+site_url = "https://zhenibot.com"
+additional_redirect_urls = ["https://zhenibot.com", "https://zhenbot.vercel.app"]
 jwt_expiry = 3600
 enable_signup = true
 

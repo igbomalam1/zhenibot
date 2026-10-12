@@ -16,6 +16,9 @@ const SERVICE_ROLE_KEY = Deno.env.get('SERVICE_ROLE_KEY') ?? ''
 // Verified Resend sending identity
 const FROM_EMAIL = Deno.env.get('VITE_FROM_EMAIL') ?? 'Zhenbot <notifications@devicodes.xyz>'
 
+// Official Production Domain
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://zhenibot.com'
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -156,7 +159,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
             <p style="font-size: 12px; color: #94a3b8; margin: 0;">Share your link to earn <b>15% Tier-1</b> and <b>2% Tier-2</b> instant commissions on every downline deposit.</p>
           </div>
           <div style="margin-top: 24px;">
-            <a href="https://zhenbot.vercel.app/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+            <a href="${SITE_URL}/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
               Access Investor Dashboard →
             </a>
           </div>`,
@@ -232,7 +235,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
             </tr>
           </table>
           <div style="margin-top: 24px;">
-            <a href="https://zhenbot.vercel.app/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+            <a href="${SITE_URL}/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
               View Live Portfolio →
             </a>
           </div>`,
@@ -289,7 +292,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
             <b>Your funds have remained safely in your available wallet balance.</b> Please review your destination address or reach out to our 24/7 in-site support chat for instant assistance.
           </p>
           <div>
-            <a href="https://zhenbot.vercel.app/dashboard/withdraw" style="display: inline-block; background-color: rgba(255, 255, 255, 0.08); color: #ffffff; font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);">
+            <a href="${SITE_URL}/dashboard/withdraw" style="display: inline-block; background-color: rgba(255, 255, 255, 0.08); color: #ffffff; font-weight: 600; font-size: 13px; text-decoration: none; padding: 10px 20px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.15);">
               Review Withdrawal →
             </a>
           </div>`,
@@ -318,7 +321,7 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
             <p style="font-size: 12px; color: #94a3b8; margin: 0;">Credited immediately to your withdrawable wallet balance.</p>
           </div>
           <div style="margin-top: 24px;">
-            <a href="https://zhenbot.vercel.app/dashboard/referrals" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+            <a href="${SITE_URL}/dashboard/referrals" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
               View Referral Downline →
             </a>
           </div>`,

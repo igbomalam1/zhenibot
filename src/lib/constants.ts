@@ -15,7 +15,8 @@ export const APP_NAME = import.meta.env.VITE_APP_NAME ?? 'Zhenbot'
 export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? 'admin@zhenbot.io'
 export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? 'support@zhenbot.io'
 export const REFERRAL_BASE_URL =
-  import.meta.env.VITE_REFERRAL_BASE_URL ?? 'http://localhost:5173'
+  import.meta.env.VITE_REFERRAL_BASE_URL ??
+  (typeof window !== 'undefined' ? window.location.origin : 'https://zhenibot.com')
 
 export type NetworkId = 'bep20' | 'trc20' | 'erc20'
 
