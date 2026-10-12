@@ -77,13 +77,13 @@ export async function sendChatAlertToAdmin(params: {
     // Send admin notification for incoming user chat
     await supabase.functions.invoke('send-email', {
       body: {
-        type: 'deposit_received', // fallback template or direct alert
+        type: 'admin_chat_alert',
         to: ADMIN_ALERT_EMAIL,
         data: {
-          name: `Admin Alert: New Chat from ${params.userName || 'Visitor'}`,
-          amount: 0,
-          network: `Chat Thread #${(params.threadId || '').slice(0, 8)}`,
-          tx_hash: `User: ${params.userEmail || 'Guest'} | Msg: ${params.message}`,
+          user_name: params.userName || 'Website Visitor',
+          user_email: params.userEmail || 'Guest / Unregistered',
+          message: params.message,
+          thread_id: params.threadId,
         },
       },
     })
@@ -195,3 +195,58 @@ export async function sendReferralRewardEmail(params: {
     console.warn('sendReferralRewardEmail notice:', err)
   }
 }
+
+export async function sendDepositRejectedEmail(params: {
+  userId?: string
+  to?: string
+  name?: string
+  amount: number
+  network?: string
+  reason?: string
+}) {
+  try {
+    await supabase.functions.invoke('send-email', {
+      body: {
+        type: 'deposit_rejected',
+        user_id: params.userId,
+        to: params.to,
+        data: {
+          name: params.name,
+          amount: params.amount,
+          network: params.network,
+          reason: params.reason,
+        },
+      },
+    })
+  } catch (err) {
+    console.warn('sendDepositRejectedEmail notice:', err)
+  }
+}
+
+export async function sendDirectClientMessageEmail(params: {
+  userId?: string
+  to?: string
+  name?: string
+  subject?: string
+  message: string
+}) {
+  try {
+    const res = await supabase.functions.invoke('send-email', {
+      body: {
+        type: 'direct_message',
+        user_id: params.userId,
+        to: params.to,
+        data: {
+          name: params.name,
+          subject: params.subject,
+          message: params.message,
+        },
+      },
+    })
+    return res
+  } catch (err) {
+    console.warn('sendDirectClientMessageEmail notice:', err)
+    throw err
+  }
+}
+

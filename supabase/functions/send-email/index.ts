@@ -29,9 +29,12 @@ export type EmailType =
   | 'welcome'
   | 'deposit_received'
   | 'deposit_approved'
+  | 'deposit_rejected'
   | 'withdrawal_approved'
   | 'withdrawal_rejected'
   | 'referral_reward'
+  | 'direct_message'
+  | 'admin_chat_alert'
 
 interface SendEmailPayload {
   type: EmailType
@@ -243,6 +246,35 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
       }
     }
 
+    case 'deposit_rejected': {
+      const amount = formatUSD(data.amount)
+      const network = String(data.network ?? 'Crypto')
+      const reason = String(data.reason ?? 'Blockchain verification mismatch, unconfirmed transaction, or invalid deposit parameters.')
+      return {
+        subject: `Deposit Update (${amount}) — Verification Not Completed`,
+        preheader: `Your deposit request of ${amount} could not be confirmed on-chain.`,
+        html: emailLayout(
+          `Notice regarding your deposit submission of ${amount}.`,
+          'Deposit Verification Notice ⚠️',
+          `<p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
+            Hi ${name}, our transaction verification team and blockchain listener were unable to confirm your deposit of <b>${amount}</b> (${network}).
+          </p>
+          <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 12px; padding: 18px; margin-bottom: 24px;">
+            <p style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: #f87171; margin: 0 0 6px;">Reason</p>
+            <p style="font-size: 13px; color: #fca5a5; margin: 0; line-height: 1.5;">${reason}</p>
+          </div>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px;">
+            If you transferred funds and have the valid transaction hash (TxID), you can resubmit your deposit or message support via live chat for immediate assistance.
+          </p>
+          <div>
+            <a href="${SITE_URL}/dashboard/deposit" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+              Go to Deposit Page →
+            </a>
+          </div>`,
+        ),
+      }
+    }
+
     case 'withdrawal_approved': {
       const amount = formatUSD(data.amount)
       const wallet = String(data.wallet_address ?? '—')
@@ -323,6 +355,74 @@ function buildTemplate(type: EmailType, name: string, data: Record<string, unkno
           <div style="margin-top: 24px;">
             <a href="${SITE_URL}/dashboard/referrals" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
               View Referral Downline →
+            </a>
+          </div>`,
+        ),
+      }
+    }
+
+    case 'direct_message': {
+      const message = String(data.message ?? '')
+      const subject = String(data.subject ?? 'New Notification from Zhenbot Support')
+      return {
+        subject,
+        preheader: `You have received a message from Zhenbot Support: ${message.slice(0, 80)}`,
+        html: emailLayout(
+          'Official message from Zhenbot Support.',
+          'Message from Support 💬',
+          `<p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
+            Hi ${name}, you have a direct message from the Zhenbot Support & Management team:
+          </p>
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 229, 153, 0.25); border-left: 4px solid #00e599; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <p style="font-size: 14px; color: #ffffff; margin: 0; line-height: 1.7; white-space: pre-wrap;">${message}</p>
+          </div>
+          <p style="font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px;">
+            You can log in to your account anytime to view your balance, manage transactions, or reply via live chat.
+          </p>
+          <div>
+            <a href="${SITE_URL}/dashboard" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+              Access Your Dashboard →
+            </a>
+          </div>`,
+        ),
+      }
+    }
+
+    case 'admin_chat_alert': {
+      const senderName = String(data.user_name ?? 'Website Visitor')
+      const senderEmail = String(data.user_email ?? 'Guest / Unregistered')
+      const message = String(data.message ?? '')
+      const threadId = String(data.thread_id ?? '')
+      return {
+        subject: `[Zhenbot Chat Alert] New Message from ${senderName}`,
+        preheader: `New message received from ${senderName}: ${message.slice(0, 80)}`,
+        html: emailLayout(
+          `New incoming live chat from ${senderName}.`,
+          'Incoming Live Chat Message 💬',
+          `<p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-bottom: 20px;">
+            A user just sent a message via Zhenbot Live Support:
+          </p>
+          <table role="presentation" width="100%" style="border-collapse: collapse; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; overflow: hidden; margin-bottom: 20px; font-size: 13px;">
+            <tr>
+              <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #64748b;">User Name</td>
+              <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-weight: 700; color: #ffffff; text-align: right;">${senderName}</td>
+            </tr>
+            <tr>
+              <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #64748b;">User Email</td>
+              <td style="padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-family: monospace; color: #38bdf8; text-align: right;">${senderEmail}</td>
+            </tr>
+            ${threadId ? `<tr>
+              <td style="padding: 12px 16px; color: #64748b;">Thread Reference</td>
+              <td style="padding: 12px 16px; font-family: monospace; font-size: 11px; color: #94a3b8; text-align: right;">#${threadId.slice(0, 8)}</td>
+            </tr>` : ''}
+          </table>
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 229, 153, 0.25); border-left: 4px solid #00e599; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <p style="font-size: 11px; text-transform: uppercase; font-family: monospace; color: #00e599; margin: 0 0 8px; font-weight: 700;">Message Content</p>
+            <p style="font-size: 14px; color: #ffffff; margin: 0; line-height: 1.7; white-space: pre-wrap;">${message}</p>
+          </div>
+          <div>
+            <a href="${SITE_URL}/admin" style="display: inline-block; background-color: #00e599; color: #08090e; font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px 24px; border-radius: 10px;">
+              Open Admin Chat Console →
             </a>
           </div>`,
         ),

@@ -18,6 +18,7 @@ import {
   CheckCheck,
   XCircle,
   CheckCircle2,
+  Mail,
 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -29,9 +30,11 @@ import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import {
   sendDepositApprovedEmail,
+  sendDepositRejectedEmail,
   sendWithdrawalApprovedEmail,
   sendWithdrawalRejectedEmail,
   sendReferralRewardEmail,
+  sendDirectClientMessageEmail,
 } from '@/lib/email'
 import type {
   ZhenbotUser,
@@ -75,6 +78,12 @@ export function AdminDashboard() {
   const [userBalance, setUserBalance] = useState('')
   const [userDeposit, setUserDeposit] = useState('')
   const [userSaving, setUserSaving] = useState(false)
+
+  // Direct Client Message Modal State
+  const [messagingUser, setMessagingUser] = useState<ZhenbotUser | null>(null)
+  const [messageSubject, setMessageSubject] = useState('')
+  const [messageBody, setMessageBody] = useState('')
+  const [sendingDirectMsg, setSendingDirectMsg] = useState(false)
 
   // Chat filter & management state
   const [chatFilter, setChatFilter] = useState<'all' | 'open' | 'resolved' | 'closed'>('all')
@@ -150,7 +159,11 @@ export function AdminDashboard() {
     try {
       const [usersRes, txRes, threadsRes, walletsRes] = await Promise.all([
         supabase.from(TABLE.users).select('*').order('created_at', { ascending: false }),
-        supabase.from(TABLE.transactions).select('*').order('created_at', { ascending: false }).limit(100),
+        supabase
+          .from(TABLE.transactions)
+          .select('*, user:zhenbot_users(id, email, full_name)')
+          .order('created_at', { ascending: false })
+          .limit(100),
         supabase.from(TABLE.chatThreads).select('*').order('last_message_at', { ascending: false }),
         supabase.from(TABLE.wallets).select('*, assigned_user:zhenbot_users(id, email, full_name)').order('created_at', { ascending: false }),
       ])
@@ -338,11 +351,19 @@ export function AdminDashboard() {
             .eq('id', targetTx.user_id)
         }
 
-        // Email 4: Withdrawal Cancelled / Rejected notice
+        // Email: Withdrawal Cancelled / Rejected notice
         void sendWithdrawalRejectedEmail({
           userId: targetTx.user_id,
           amount: targetTx.amount,
           reason: 'Administrative risk verification or invalid destination wallet address.',
+        })
+      } else if (targetTx?.type === 'deposit') {
+        // Email: Deposit Rejected notice
+        void sendDepositRejectedEmail({
+          userId: targetTx.user_id,
+          amount: targetTx.amount,
+          network: targetTx.network || undefined,
+          reason: 'Deposit transaction could not be confirmed on blockchain or invalid transfer parameters.',
         })
       }
 
@@ -375,6 +396,32 @@ export function AdminDashboard() {
     toast.success('User updated successfully.')
     setEditingUser(null)
     void fetchData()
+  }
+
+  // Send Direct Message / Email to Client
+  const handleSendDirectMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!messagingUser || !messageBody.trim()) return
+
+    setSendingDirectMsg(true)
+    try {
+      await sendDirectClientMessageEmail({
+        userId: messagingUser.id,
+        to: messagingUser.email || undefined,
+        name: messagingUser.full_name || messagingUser.email || undefined,
+        subject: messageSubject.trim() || undefined,
+        message: messageBody.trim(),
+      })
+
+      toast.success(`Message sent directly to ${messagingUser.email}`)
+      setMessagingUser(null)
+      setMessageSubject('')
+      setMessageBody('')
+    } catch (err) {
+      toast.error('Failed to send message: ' + (err as Error).message)
+    } finally {
+      setSendingDirectMsg(false)
+    }
   }
 
   // Toggle Block / Unblock User
@@ -576,6 +623,18 @@ export function AdminDashboard() {
           unread_by_user: true,
         })
         .eq('id', selectedThread.id)
+
+      // Send email alert to user if thread has a user email
+      const targetEmail = selectedThread.user_email?.trim()
+      if (targetEmail) {
+        void sendDirectClientMessageEmail({
+          userId: selectedThread.user_id || undefined,
+          to: targetEmail,
+          name: selectedThread.user_name || undefined,
+          subject: 'New Reply from Zhenbot Support Agent',
+          message: text,
+        })
+      }
     }
 
     setSendingReply(false)
@@ -672,11 +731,17 @@ export function AdminDashboard() {
   )
 
   const filteredTransactions = transactions.filter(
-    (t) =>
-      t.tx_hash?.toLowerCase().includes(search.toLowerCase()) ||
-      t.wallet_address?.toLowerCase().includes(search.toLowerCase()) ||
-      t.type.toLowerCase().includes(search.toLowerCase()) ||
-      t.network?.toLowerCase().includes(search.toLowerCase()),
+    (t) => {
+      const userObj = t.user || users.find((u) => u.id === t.user_id)
+      return (
+        t.tx_hash?.toLowerCase().includes(search.toLowerCase()) ||
+        t.wallet_address?.toLowerCase().includes(search.toLowerCase()) ||
+        t.type.toLowerCase().includes(search.toLowerCase()) ||
+        t.network?.toLowerCase().includes(search.toLowerCase()) ||
+        (userObj?.full_name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
+        (userObj?.email?.toLowerCase().includes(search.toLowerCase()) ?? false)
+      )
+    },
   )
 
   const filteredThreads = threads.filter((t) => {
@@ -837,6 +902,18 @@ export function AdminDashboard() {
                         </button>
                         <button
                           type="button"
+                          onClick={() => {
+                            setMessagingUser(u)
+                            setMessageSubject('Important Update Regarding Your Zhenbot Account')
+                            setMessageBody('')
+                          }}
+                          className="rounded-lg border border-brand-400/30 bg-brand-400/10 p-1.5 text-brand-400 hover:bg-brand-400/20 transition-colors"
+                          title="Send direct email / message to user"
+                        >
+                          <Mail className="size-3.5" />
+                        </button>
+                        <button
+                          type="button"
                           disabled={actionLoadingId === 'block_' + u.id}
                           onClick={() => void handleToggleBlock(u)}
                           className={cn(
@@ -891,6 +968,7 @@ export function AdminDashboard() {
               <table className="w-full min-w-[850px] text-left text-sm font-sans">
                 <thead>
                   <tr className="border-b border-white/8 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+                    <th className="pb-3 pr-4 font-semibold">INVESTOR</th>
                     <th className="pb-3 pr-4 font-semibold">TYPE</th>
                     <th className="pb-3 pr-4 font-semibold">AMOUNT</th>
                     <th className="pb-3 pr-4 font-semibold">STATUS</th>
@@ -901,8 +979,20 @@ export function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTransactions.map((tx) => (
+                  {filteredTransactions.map((tx) => {
+                    const investor = tx.user || users.find((u) => u.id === tx.user_id)
+                    return (
                     <tr key={tx.id} className="border-b border-white/5 transition-colors hover:bg-white/[0.02]">
+                      <td className="py-3.5 pr-4">
+                        <div className="max-w-[170px]">
+                          <p className="font-display font-bold text-xs text-white truncate">
+                            {investor?.full_name || 'Anonymous Investor'}
+                          </p>
+                          <p className="font-mono text-[10px] text-slate-500 truncate">
+                            {investor?.email || tx.user_id}
+                          </p>
+                        </div>
+                      </td>
                       <td className="py-3.5 pr-4">
                         <Badge tone={tx.type === 'deposit' ? 'brand' : tx.type === 'withdrawal' ? 'warning' : 'neutral'}>
                           {tx.type.toUpperCase()}
@@ -963,6 +1053,28 @@ export function AdminDashboard() {
                           )
                         })()}
 
+                        {/* Message Client Button */}
+                        {investor && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const foundUser = users.find((u) => u.id === tx.user_id) || ({
+                                id: tx.user_id,
+                                email: investor.email || '',
+                                full_name: investor.full_name || '',
+                              } as ZhenbotUser)
+                              setMessagingUser(foundUser)
+                              setMessageSubject(`Notice Regarding Your ${tx.type === 'deposit' ? 'Deposit' : 'Withdrawal'} (${formatCurrency(tx.amount)})`)
+                              setMessageBody('')
+                            }}
+                            className="rounded-lg border border-brand-400/30 bg-brand-400/10 px-2 py-1 font-mono text-xs font-semibold text-brand-400 hover:bg-brand-400/20 transition-colors inline-flex items-center gap-1"
+                            title={`Send direct email/message to ${investor.full_name || investor.email}`}
+                          >
+                            <Mail className="size-3" />
+                            <span>Message</span>
+                          </button>
+                        )}
+
                         {tx.status === 'pending' && (
                           <>
                             <button
@@ -987,7 +1099,7 @@ export function AdminDashboard() {
                         )}
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </div>
@@ -1634,6 +1746,70 @@ export function AdminDashboard() {
               </Button>
             </div>
           </div>
+        )}
+      </Modal>
+
+      {/* Direct Client Messaging Modal */}
+      <Modal open={!!messagingUser} onClose={() => setMessagingUser(null)}>
+        {messagingUser && (
+          <form onSubmit={handleSendDirectMessage} className="space-y-4">
+            <div>
+              <h3 className="text-lg font-display font-bold text-white flex items-center gap-2">
+                <Mail className="size-5 text-brand-400" /> Message Investor Directly
+              </h3>
+              <p className="font-mono text-xs text-slate-400 mt-1">
+                Dispatches an official email notification directly to the investor's inbox.
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/8 bg-[#0c101c] p-3 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-slate-400">Recipient:</span>
+                <span className="font-display font-bold text-white">{messagingUser.full_name || 'Investor'}</span>
+              </div>
+              <div className="flex items-center justify-between mt-1">
+                <span className="font-mono text-slate-400">Email Address:</span>
+                <span className="font-mono font-semibold text-brand-400">{messagingUser.email}</span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+                Email Subject
+              </label>
+              <input
+                type="text"
+                value={messageSubject}
+                onChange={(e) => setMessageSubject(e.target.value)}
+                placeholder="Important Notice from Zhenbot Management"
+                className="w-full rounded-xl border border-white/10 bg-[#0d121f] p-3 font-sans text-xs text-white focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+              />
+            </div>
+
+            <div>
+              <label className="block font-mono text-xs text-slate-300 mb-1.5 uppercase font-semibold">
+                Message Body
+              </label>
+              <textarea
+                required
+                rows={5}
+                value={messageBody}
+                onChange={(e) => setMessageBody(e.target.value)}
+                placeholder="Type your official message or instructions to this investor..."
+                className="w-full rounded-xl border border-white/10 bg-[#0d121f] p-3 font-sans text-xs text-white placeholder-slate-500 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400 resize-none leading-relaxed"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-white/8">
+              <Button variant="ghost" type="button" onClick={() => setMessagingUser(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={sendingDirectMsg} disabled={!messageBody.trim()}>
+                <Send className="size-3.5 mr-1.5" />
+                Send Email to Investor
+              </Button>
+            </div>
+          </form>
         )}
       </Modal>
     </div>
