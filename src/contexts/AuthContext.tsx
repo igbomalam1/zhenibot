@@ -37,6 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const fetchProfile = useCallback(async (userId: string) => {
+    // Proactively settle any matured 24h dividend cycles for users
+    try {
+      await supabase.rpc('zhenbot_credit_daily_dividends')
+    } catch {
+      // background settling fallback
+    }
+
     const { data, error } = await supabase
       .from(TABLE.users)
       .select('*')

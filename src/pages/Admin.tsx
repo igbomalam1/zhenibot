@@ -19,6 +19,7 @@ import {
   XCircle,
   CheckCircle2,
   Mail,
+  Sparkles,
 } from 'lucide-react'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
@@ -59,6 +60,7 @@ export function AdminDashboard() {
   const [search, setSearch] = useState('')
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
+  const [processingDividends, setProcessingDividends] = useState(false)
 
   // Wallet Management State
   const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
@@ -424,6 +426,26 @@ export function AdminDashboard() {
     }
   }
 
+  // Process 1.6% Daily Dividends on demand
+  const handleTriggerDividends = async () => {
+    setProcessingDividends(true)
+    try {
+      const { data, error } = await supabase.rpc('zhenbot_credit_daily_dividends')
+      if (error) throw error
+      const res = data as { success?: boolean; credited_users?: number; cycles_credited?: number; total_amount?: number }
+      if (res?.credited_users && res.credited_users > 0) {
+        toast.success(`Processed! Credited ${res.credited_users} user(s) with ${res.cycles_credited} cycle(s) totaling $${res.total_amount?.toFixed(2)}.`)
+      } else {
+        toast.info('All accounts are up to date. No 24-hour cycles pending.')
+      }
+      void fetchData()
+    } catch (err) {
+      toast.error('Failed to trigger dividends: ' + (err as Error).message)
+    } finally {
+      setProcessingDividends(false)
+    }
+  }
+
   // Toggle Block / Unblock User
   const handleToggleBlock = async (u: ZhenbotUser) => {
     const nextState = !u.is_blocked
@@ -777,6 +799,14 @@ export function AdminDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            onClick={handleTriggerDividends}
+            loading={processingDividends}
+            className="bg-brand-400 hover:bg-brand-300 text-obsidian-950 font-bold border-none shadow-sm"
+          >
+            <Sparkles className="size-3.5 mr-1 text-obsidian-950" /> Run 1.6% Dividends
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => void fetchData()} loading={refreshing}>
             <RefreshCw className={cn('size-3.5 mr-1', refreshing && 'animate-spin')} /> Refresh
           </Button>
