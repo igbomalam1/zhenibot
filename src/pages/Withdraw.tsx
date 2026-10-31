@@ -3,9 +3,10 @@ import type { FormEvent } from 'react'
 import {
   ArrowUpFromLine,
   KeyRound,
-  MailCheck,
   ShieldCheck,
   Wallet,
+  Bike,
+  CheckCircle2,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
@@ -13,10 +14,9 @@ import { useTransactions } from '@/hooks/useFund'
 import { supabase, TABLE } from '@/lib/supabase'
 import { BRAND, DEPOSIT_NETWORKS } from '@/lib/constants'
 import type { NetworkId } from '@/lib/constants'
-import { formatCurrency, formatDate, timeAgo } from '@/lib/format'
-import { Badge, statusTone } from '@/components/ui/Badge'
+import { formatCurrency, timeAgo } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
-import { Card, CardHeader } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 
@@ -25,7 +25,7 @@ type Step = 'form' | 'verify' | 'done'
 export function Withdraw() {
   const { user, profile } = useAuth()
   const toast = useToast()
-  const { transactions, loading } = useTransactions()
+  const { transactions } = useTransactions()
 
   const [step, setStep] = useState<Step>('form')
   const [amount, setAmount] = useState('')
@@ -36,6 +36,11 @@ export function Withdraw() {
   const [sending, setSending] = useState(false)
   const [confirming, setConfirming] = useState(false)
 
+  // Fleet settings state
+  const [pickupCity, setPickupCity] = useState('Abuja (Wuse 2)')
+  const [autoDispatchOnPaid, setAutoDispatchOnPaid] = useState(true)
+  const [selectedFleet, setSelectedFleet] = useState('SendMe Okada Express')
+
   const balance = profile?.wallet_balance ?? 0
   const amountNumber = Number(amount) || 0
   const target = DEPOSIT_NETWORKS.find((n) => n.id === network) ?? DEPOSIT_NETWORKS[0]
@@ -45,9 +50,7 @@ export function Withdraw() {
   const requestWithdrawal = async (e: FormEvent) => {
     e.preventDefault()
     if (amountNumber < BRAND.minWithdrawal) {
-      toast.error(
-        `Minimum withdrawal is ${formatCurrency(BRAND.minWithdrawal)}.`,
-      )
+      toast.error(`Minimum payout is ${formatCurrency(BRAND.minWithdrawal)}.`)
       return
     }
     if (amountNumber > balance) {
@@ -55,7 +58,7 @@ export function Withdraw() {
       return
     }
     if (address.trim().length < 12) {
-      toast.error('Enter a valid destination wallet address.')
+      toast.error('Enter a valid destination settlement address.')
       return
     }
     setSending(true)
@@ -74,7 +77,7 @@ export function Withdraw() {
       .single()
 
     if (error || !data) {
-      toast.error(error?.message ?? 'Failed to request withdrawal.')
+      toast.error(error?.message ?? 'Failed to request payout.')
       setSending(false)
       return
     }
@@ -90,7 +93,7 @@ export function Withdraw() {
         },
       })
     } catch {
-      toast.error('Could not reach the verification service. Contact support.')
+      toast.error('Could not reach verification service. Contact support.')
       setSending(false)
       return
     }
@@ -98,7 +101,7 @@ export function Withdraw() {
     setTxId(data.id as string)
     setStep('verify')
     setSending(false)
-    toast.success('Verification code sent to your email.')
+    toast.success('2FA security code dispatched to your email.')
   }
 
   const confirmWithdrawal = async (e: FormEvent) => {
@@ -120,71 +123,150 @@ export function Withdraw() {
     }
 
     setStep('done')
-    toast.success('Withdrawal request verified and approved.')
+    toast.success('Payout request verified and approved.')
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 select-none">
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
         <div className="flex items-center gap-2 mb-1">
-          <span className="size-1.5 rounded-full bg-brand-400" />
-          <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-            Withdraw
+          <span className="size-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span className="font-mono text-[10px] text-brand-300 uppercase tracking-widest font-bold">
+            LOGISTICS & REVENUE SETTLEMENT
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-          Withdraw Money
+          Dispatch & Fleet Settings
         </h1>
-        <p className="mt-1 font-mono text-xs text-slate-400">
-          Fast withdrawals to your crypto wallet, verified with a one-time email code.
+        <p className="mt-1 text-xs text-slate-300">
+          Configure on-demand delivery couriers and withdraw accumulated partner agency commissions.
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           {/* Balance readout card */}
-          <div className="glass-card flex items-center justify-between rounded-xl p-5 border border-white/8">
+          <div className="glass-card flex items-center justify-between rounded-2xl p-5 border border-white/8 shadow-xl">
             <div className="flex items-center gap-3.5">
-              <span className="flex size-11 items-center justify-center rounded-lg border border-brand-400/30 bg-brand-400/10 text-brand-400">
+              <span className="flex size-11 items-center justify-center rounded-xl border border-brand-500/30 bg-brand-500/10 text-brand-400">
                 <Wallet className="size-5" />
               </span>
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-                  AVAILABLE BALANCE
+                <p className="text-[11px] font-mono uppercase text-slate-400 font-bold">
+                  Available Revenue & Credits
                 </p>
-                <p className="font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-tight mt-0.5">
+                <p className="font-mono text-2xl font-extrabold text-white tracking-tight">
                   {formatCurrency(balance)}
                 </p>
               </div>
             </div>
-            <span className="font-mono text-[11px] text-brand-400 bg-brand-400/10 border border-brand-400/20 px-2.5 py-1 rounded">
-              MIN: {formatCurrency(BRAND.minWithdrawal)}
+            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 font-mono text-[11px] font-bold text-emerald-400">
+              WITHDRAWABLE
             </span>
           </div>
 
-          <Card className="border border-white/10 shadow-xl">
-            {step === 'form' && (
-              <>
-                <CardHeader
-                  title="Withdraw Details"
-                  subtitle="Enter how much you want to withdraw and your receiving address"
-                  icon={<ArrowUpFromLine className="size-5" />}
-                />
-                <form onSubmit={(e) => void requestWithdrawal(e)} className="space-y-4">
+          {/* Courier & Logistics Fleet Configuration */}
+          <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/8 pb-3">
+              <div className="flex items-center gap-2">
+                <Bike className="size-5 text-cyan-400" />
+                <h3 className="font-display font-bold text-white text-base">On-Demand Courier Dispatch Rules</h3>
+              </div>
+              <span className="font-mono text-[10px] text-emerald-400 font-bold">FLEET ONLINE</span>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1">
+                  Default Warehouse / Pickup Hub
+                </label>
+                <select
+                  value={pickupCity}
+                  onChange={(e) => {
+                    setPickupCity(e.target.value)
+                    toast.success('Pickup hub updated!')
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-[#0d1424] p-3 text-xs font-mono text-white focus:border-brand-500 focus:outline-none"
+                >
+                  <option value="Abuja (Wuse 2)">Abuja Central Hub (Wuse 2, Abuja)</option>
+                  <option value="Lagos (Ikeja)">Lagos Mainland Hub (Ikeja, Lagos)</option>
+                  <option value="Lagos (Lekki)">Lagos Island Hub (Lekki Phase 1)</option>
+                  <option value="Port Harcourt">Port Harcourt Logistics Hub (GRA)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1">
+                  Preferred On-Demand Courier Partner
+                </label>
+                <select
+                  value={selectedFleet}
+                  onChange={(e) => {
+                    setSelectedFleet(e.target.value)
+                    toast.success('Preferred courier partner updated!')
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-[#0d1424] p-3 text-xs font-mono text-white focus:border-brand-500 focus:outline-none"
+                >
+                  <option value="SendMe Okada Express">SendMe Okada Express (Fastest Okada Rider Dispatch)</option>
+                  <option value="GIG Logistics API">GIG Logistics (Interstate & Express)</option>
+                  <option value="Bolt Delivery Direct">Bolt Delivery Business API</option>
+                  <option value="Custom In-House Fleet">Custom In-House Okada Fleet (Internal WhatsApp)</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between rounded-xl border border-white/6 bg-black/30 p-3">
+                <div>
+                  <p className="text-xs font-semibold text-white">Auto-Dispatch Upon Payment Confirmation</p>
+                  <p className="text-[11px] text-slate-400">Pings closest okada rider immediately when Paystack webhook verifies order.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAutoDispatchOnPaid((v) => !v)
+                    toast.info(autoDispatchOnPaid ? 'Auto-dispatch paused' : 'Auto-dispatch activated!')
+                  }}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                    autoDispatchOnPaid ? 'bg-cyan-500' : 'bg-slate-700'
+                  }`}
+                >
+                  <span
+                    className={`inline-block size-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                      autoDispatchOnPaid ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 1: Cashout Form */}
+          {step === 'form' && (
+            <Card className="border border-white/8 bg-[#0a0f1d] p-6 shadow-xl">
+              <div className="flex items-center gap-2 mb-4">
+                <ArrowUpFromLine className="size-4 text-brand-400" />
+                <h3 className="font-display font-bold text-white text-base">Withdraw Partner Revenue</h3>
+              </div>
+              <form onSubmit={requestWithdrawal} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-white mb-1">
+                    Payout Amount ($)
+                  </label>
                   <Input
-                    name="amount"
                     type="number"
                     min={BRAND.minWithdrawal}
                     step="0.01"
-                    label="Withdrawal Amount (USD)"
-                    suffix={`MAX: ${formatCurrency(balance)}`}
+                    placeholder="Min $10.00"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-white mb-1">
+                    Settlement Network
+                  </label>
                   <Select
-                    name="network"
-                    label="Receiving Network"
                     value={network}
                     onChange={(e) => setNetwork(e.target.value as NetworkId)}
                   >
@@ -194,114 +276,118 @@ export function Withdraw() {
                       </option>
                     ))}
                   </Select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-white mb-1">
+                    Destination Wallet / Settlement Address
+                  </label>
                   <Input
-                    name="address"
-                    label={`Receiving ${target.asset} Address (${target.network})`}
-                    placeholder="Paste your receiving wallet address…"
+                    placeholder="Enter recipient address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
-                  <Button type="submit" size="lg" className="w-full mt-2" loading={sending}>
-                    <ShieldCheck className="size-4" />
-                    {sending ? 'Requesting Withdrawal…' : 'Request Withdrawal'}
-                  </Button>
-                  <p className="text-center font-mono text-[11px] text-slate-500">
-                    A 6-digit confirmation code will be sent to your email.
-                  </p>
-                </form>
-              </>
-            )}
-
-            {step === 'verify' && (
-              <div className="animate-fade-up">
-                <CardHeader
-                  title="Email Verification"
-                  subtitle="Enter the 6-digit code sent to your email address"
-                  icon={<MailCheck className="size-5" />}
-                />
-                <form onSubmit={(e) => void confirmWithdrawal(e)} className="space-y-4">
-                  <Input
-                    name="code"
-                    label="Verification Code"
-                    inputMode="numeric"
-                    maxLength={6}
-                    placeholder="••••••"
-                    icon={<KeyRound className="size-4" />}
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    className="font-mono text-xl tracking-[0.4em] text-center"
-                  />
-                  <Button type="submit" size="lg" className="w-full" loading={confirming}>
-                    <ShieldCheck className="size-4" />
-                    {confirming ? 'Verifying Code…' : 'Confirm & Complete Withdrawal'}
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={() => setStep('form')}
-                    className="w-full text-center font-mono text-xs text-slate-500 hover:text-slate-300"
-                  >
-                    ← Back to withdraw form
-                  </button>
-                </form>
-              </div>
-            )}
-
-            {step === 'done' && (
-              <div className="animate-fade-up py-8 text-center font-sans">
-                <span className="mx-auto flex size-14 items-center justify-center rounded-xl border border-brand-400/30 bg-brand-400/10 text-brand-400">
-                  <MailCheck className="size-7" />
-                </span>
-                <h3 className="mt-4 text-xl font-bold text-white font-display">Withdrawal Approved</h3>
-                <p className="mt-1 text-xs text-slate-400 max-w-sm mx-auto">
-                  Your withdrawal has been verified and will be sent to your wallet shortly.
-                </p>
-                <div className="mt-6">
-                  <Button onClick={() => setStep('form')}>Make Another Withdrawal</Button>
                 </div>
-              </div>
-            )}
-          </Card>
-        </div>
 
-        {/* Recent Ledger History */}
-        <Card className="border border-white/10 shadow-xl">
-          <CardHeader
-            title="Withdrawal History"
-            subtitle="Your previous withdrawal requests and status"
-            icon={<ArrowUpFromLine className="size-5" />}
-          />
-          {loading ? (
-            <p className="py-8 text-center font-mono text-xs text-slate-500">Loading history…</p>
-          ) : withdrawals.length === 0 ? (
-            <p className="py-8 text-center font-mono text-xs text-slate-500">
-              No previous withdrawals found.
-            </p>
-          ) : (
-            <div className="space-y-2.5">
-              {withdrawals.slice(0, 6).map((w) => (
-                <div
-                  key={w.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-[#090b12] p-3.5 transition-colors hover:border-white/12"
+                <Button
+                  type="submit"
+                  size="lg"
+                  loading={sending}
+                  className="w-full bg-gradient-to-r from-brand-600 to-brand-500 shadow-md shadow-brand-500/20"
                 >
-                  <div className="min-w-0">
-                    <p className="font-mono text-sm font-bold text-white tracking-tight">
-                      {formatCurrency(w.amount)}
-                    </p>
-                    <p className="truncate font-mono text-[10px] text-slate-400 mt-0.5">
-                      {w.network} · {w.wallet_address?.slice(0, 14)}…
-                    </p>
-                    <p className="font-mono text-[10px] text-slate-600 mt-0.5">
-                      {formatDate(w.created_at)} ({timeAgo(w.created_at)})
-                    </p>
-                  </div>
-                  <Badge tone={statusTone(w.status)}>
-                    {w.status}
-                  </Badge>
-                </div>
-              ))}
+                  Proceed with Payout
+                </Button>
+              </form>
+            </Card>
+          )}
+
+          {/* Step 2: 2FA Verification */}
+          {step === 'verify' && (
+            <Card className="border border-brand-500/40 bg-[#0e1526] p-6 shadow-2xl">
+              <div className="flex items-center gap-2 mb-3 text-brand-300">
+                <KeyRound className="size-5" />
+                <h3 className="font-display font-bold text-white text-base">2FA Email Verification</h3>
+              </div>
+              <p className="text-xs text-slate-300 mb-4">
+                Enter the 6-digit confirmation code dispatched to your registered enterprise email address.
+              </p>
+              <form onSubmit={confirmWithdrawal} className="space-y-4">
+                <Input
+                  placeholder="6-digit code"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  className="font-mono text-center text-lg tracking-widest"
+                />
+                <Button
+                  type="submit"
+                  size="lg"
+                  loading={confirming}
+                  className="w-full bg-gradient-to-r from-brand-600 to-brand-500"
+                >
+                  Confirm & Finalize Payout
+                </Button>
+              </form>
+            </Card>
+          )}
+
+          {/* Step 3: Done */}
+          {step === 'done' && (
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-6 text-center space-y-3">
+              <div className="flex size-12 mx-auto items-center justify-center rounded-2xl bg-emerald-500 text-obsidian-950">
+                <CheckCircle2 className="size-6" />
+              </div>
+              <h3 className="text-base font-display font-bold text-white">Payout Dispatched</h3>
+              <p className="text-xs text-slate-300">
+                Your payout has been authorized and queued for blockchain settlement.
+              </p>
+              <Button size="sm" variant="outline" onClick={() => setStep('form')}>
+                New Payout Request
+              </Button>
             </div>
           )}
-        </Card>
+        </div>
+
+        {/* Right Column: Historical Withdrawals Ledger */}
+        <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-4">
+              <h3 className="font-display font-bold text-white text-base">Recent Settlement History</h3>
+              <span className="font-mono text-[10px] text-slate-400 uppercase">AUDIT TRAIL</span>
+            </div>
+
+            {withdrawals.length === 0 ? (
+              <div className="py-12 text-center text-xs text-slate-500 font-mono">
+                No historical payouts found.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {withdrawals.slice(0, 6).map((w) => (
+                  <div
+                    key={w.id}
+                    className="flex items-center justify-between rounded-xl border border-white/5 bg-[#0a0f1d] p-3 text-xs"
+                  >
+                    <div>
+                      <p className="font-mono font-bold text-white">{formatCurrency(w.amount)}</p>
+                      <p className="font-mono text-[10px] text-slate-400">{w.network || 'USDT'}</p>
+                    </div>
+                    <div className="text-right">
+                      <span className="rounded bg-brand-500/10 border border-brand-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-brand-300 uppercase">
+                        {w.status}
+                      </span>
+                      <p className="font-mono text-[10px] text-slate-500 mt-0.5">{timeAgo(w.created_at)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="size-3.5 text-brand-400" /> Multi-Sig Cold Vault Guarded
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -31,7 +31,6 @@ export function QuantRadarCanvas({ className }: { className?: string }) {
     resize()
     window.addEventListener('resize', resize)
 
-    // Handle visibility to save CPU/GPU cycles
     const observer = new IntersectionObserver(
       (entries) => {
         isVisible = entries[0].isIntersecting
@@ -40,38 +39,36 @@ export function QuantRadarCanvas({ className }: { className?: string }) {
     )
     observer.observe(canvas)
 
-    let mouseX = width / 2
-    let mouseY = height / 2
-    let targetMouseX = mouseX
-    let targetMouseY = mouseY
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect()
-      targetMouseX = e.clientX - rect.left
-      targetMouseY = e.clientY - rect.top
-    }
-    window.addEventListener('mousemove', onMouseMove, { passive: true })
-
-    // Synthetic execution nodes
-    interface Node {
+    // Interactive automation nodes
+    const nodeCount = 38
+    const nodes: {
       x: number
       y: number
+      vx: number
+      vy: number
       radius: number
+      color: string
       pulse: number
-      speed: number
-      label: string
-      yieldPct: string
+      kind: string
+    }[] = []
+
+    const colors = ['#6366F1', '#818CF8', '#06B6D4', '#22D3EE', '#10B981', '#A855F7']
+    const kinds = ['EMAIL', 'DISPATCH', 'SUPPORT', 'INVOICE', 'WEBHOOK']
+
+    for (let i = 0; i < nodeCount; i++) {
+      nodes.push({
+        x: Math.random() * (width || 800),
+        y: Math.random() * (height || 600),
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: 2 + Math.random() * 2.5,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        pulse: Math.random() * Math.PI * 2,
+        kind: kinds[Math.floor(Math.random() * kinds.length)],
+      })
     }
 
-    const nodes: Node[] = [
-      { x: 0.22, y: 0.35, radius: 3, pulse: 0, speed: 0.03, label: 'BTC/USDT', yieldPct: '+0.42%' },
-      { x: 0.68, y: 0.25, radius: 3.5, pulse: 1.2, speed: 0.025, label: 'ETH/USDT', yieldPct: '+0.58%' },
-      { x: 0.45, y: 0.72, radius: 2.8, pulse: 2.4, speed: 0.035, label: 'SOL/USDT', yieldPct: '+0.91%' },
-      { x: 0.82, y: 0.65, radius: 3.2, pulse: 3.8, speed: 0.02, label: 'XAU/USD', yieldPct: '+0.36%' },
-      { x: 0.15, y: 0.80, radius: 2.5, pulse: 4.5, speed: 0.04, label: 'NVDA/USD', yieldPct: '+0.64%' },
-    ]
-
-    let frame = 0
+    let time = 0
 
     const render = () => {
       if (!isVisible) {
@@ -79,129 +76,63 @@ export function QuantRadarCanvas({ className }: { className?: string }) {
         return
       }
 
-      frame += 0.015
-      mouseX += (targetMouseX - mouseX) * 0.05
-      mouseY += (targetMouseY - mouseY) * 0.05
-
+      time += 0.02
       ctx.clearRect(0, 0, width, height)
 
-      // Draw faint architectural coordinate grid
-      const gridSize = 48
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)'
-      ctx.lineWidth = 1
+      // Update and draw nodes
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i]
+        if (!reducedMotion) {
+          n.x += n.vx
+          n.y += n.vy
 
-      for (let x = 0; x < width; x += gridSize) {
+          if (n.x < 0) n.x = width
+          if (n.x > width) n.x = 0
+          if (n.y < 0) n.y = height
+          if (n.y > height) n.y = 0
+        }
+
+        // Connect nearby nodes with glowing data conduits
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n2 = nodes[j]
+          const dx = n.x - n2.x
+          const dy = n.y - n2.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+
+          if (dist < 130) {
+            const alpha = (1 - dist / 130) * 0.22
+            ctx.beginPath()
+            ctx.strokeStyle = n.color
+            ctx.globalAlpha = alpha
+            ctx.lineWidth = 1
+            ctx.moveTo(n.x, n.y)
+            ctx.lineTo(n2.x, n2.y)
+            ctx.stroke()
+            ctx.globalAlpha = 1
+          }
+        }
+
+        // Draw node
         ctx.beginPath()
-        ctx.moveTo(x, 0)
-        ctx.lineTo(x, height)
-        ctx.stroke()
-      }
-
-      for (let y = 0; y < height; y += gridSize) {
-        ctx.beginPath()
-        ctx.moveTo(0, y)
-        ctx.lineTo(width, y)
-        ctx.stroke()
-      }
-
-      // Draw mathematical volatility wave 1 (Primary Emerald Yield Stream)
-      ctx.beginPath()
-      ctx.strokeStyle = 'rgba(0, 229, 153, 0.45)'
-      ctx.lineWidth = 1.5
-
-      const waveOffset = Math.sin(frame * 0.8) * 12
-      for (let x = 0; x <= width; x += 4) {
-        const nx = x / width
-        const y =
-          height * 0.52 +
-          Math.sin(nx * 7 + frame * 1.5) * 22 +
-          Math.cos(nx * 14 - frame * 0.8) * 12 +
-          waveOffset * (1 - nx)
-        if (x === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      }
-      ctx.stroke()
-
-      // Volatility wave 2 (Secondary Telemetry Cobalt)
-      ctx.beginPath()
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.22)'
-      ctx.lineWidth = 1
-      for (let x = 0; x <= width; x += 6) {
-        const nx = x / width
-        const y =
-          height * 0.52 +
-          Math.cos(nx * 9 + frame * 1.2) * 28 +
-          Math.sin(nx * 4 - frame * 0.5) * 16
-        if (x === 0) ctx.moveTo(x, y)
-        else ctx.lineTo(x, y)
-      }
-      ctx.stroke()
-
-      // High-frequency sweep scan line
-      const sweepX = (frame * 120) % (width + 100) - 50
-      const sweepGrad = ctx.createLinearGradient(sweepX - 40, 0, sweepX, 0)
-      sweepGrad.addColorStop(0, 'rgba(0, 229, 153, 0)')
-      sweepGrad.addColorStop(1, 'rgba(0, 229, 153, 0.15)')
-      ctx.fillStyle = sweepGrad
-      ctx.fillRect(sweepX - 40, 0, 40, height)
-
-      ctx.strokeStyle = 'rgba(0, 229, 153, 0.6)'
-      ctx.beginPath()
-      ctx.moveTo(sweepX, 0)
-      ctx.lineTo(sweepX, height)
-      ctx.stroke()
-
-      // Render execution nodes
-      nodes.forEach((node) => {
-        node.pulse += node.speed
-        const px = node.x * width + Math.sin(frame + node.pulse) * 6
-        const py = node.y * height + Math.cos(frame * 0.8 + node.pulse) * 6
-
-        // Ping ring
-        const ringSize = (node.pulse % 2.5) * 10 + node.radius
-        const ringAlpha = Math.max(0, 1 - (node.pulse % 2.5) / 2.5) * 0.4
-        ctx.strokeStyle = `rgba(0, 229, 153, ${ringAlpha})`
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.arc(px, py, ringSize, 0, Math.PI * 2)
-        ctx.stroke()
-
-        // Core dot
-        ctx.fillStyle = '#00e599'
-        ctx.beginPath()
-        ctx.arc(px, py, node.radius, 0, Math.PI * 2)
+        ctx.arc(n.x, n.y, n.radius + Math.sin(time + n.pulse) * 0.7, 0, Math.PI * 2)
+        ctx.fillStyle = n.color
+        ctx.shadowColor = n.color
+        ctx.shadowBlur = 8
         ctx.fill()
-
-        // Node label and yield tag
-        ctx.font = '10px "JetBrains Mono", monospace'
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
-        ctx.fillText(node.label, px + 8, py - 4)
-
-        ctx.font = 'bold 9px "JetBrains Mono", monospace'
-        ctx.fillStyle = '#00e599'
-        ctx.fillText(node.yieldPct, px + 8, py + 8)
-      })
-
-      if (!reducedMotion) {
-        animId = requestAnimationFrame(render)
+        ctx.shadowBlur = 0
       }
+
+      animId = requestAnimationFrame(render)
     }
 
     render()
 
     return () => {
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('mousemove', onMouseMove)
-      observer.disconnect()
       cancelAnimationFrame(animId)
+      window.removeEventListener('resize', resize)
+      observer.disconnect()
     }
   }, [])
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className={className}
-      aria-hidden="true"
-    />
-  )
+  return <canvas ref={canvasRef} className={className} />
 }

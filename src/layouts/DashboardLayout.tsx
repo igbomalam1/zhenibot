@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import {
-  ArrowDownToLine,
   ArrowUpFromLine,
   FileText,
   Gift,
@@ -9,9 +8,10 @@ import {
   LogOut,
   Menu,
   X,
-  Radio,
   ChevronRight,
   ShieldCheck,
+  Zap,
+  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -29,43 +29,44 @@ interface NavItem {
 
 const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
   {
-    section: 'BANKING & ASSETS',
+    section: 'OPERATIONS & AUTOMATIONS',
     items: [
       {
         to: '/dashboard',
-        label: 'Overview',
-        subtitle: 'Portfolio & 1.6% Yield',
+        label: 'Operations Center',
+        subtitle: 'Live Telemetry & AI Workflows',
         icon: LayoutDashboard,
         end: true,
       },
       {
         to: '/dashboard/deposit',
-        label: 'Deposit Funds',
-        subtitle: 'Deploy Investment Capital',
-        icon: ArrowDownToLine,
+        label: 'Automation Fuel & Credits',
+        subtitle: 'Compute Quota & Plan Top-Up',
+        icon: Zap,
+        badge: 'ACTIVE',
       },
       {
         to: '/dashboard/withdraw',
-        label: 'Withdraw Cash',
-        subtitle: 'Fast 2FA Payouts',
+        label: 'Dispatch & Fleet Settings',
+        subtitle: 'Courier APIs & Payout Rails',
         icon: ArrowUpFromLine,
       },
     ],
   },
   {
-    section: 'GROWTH & COMMISSIONS',
+    section: 'GROWTH & AUDIT',
     items: [
       {
         to: '/dashboard/referrals',
-        label: 'Affiliate Network',
-        subtitle: 'Earn 15% Direct + 2% Team',
+        label: 'Agency & Partner Program',
+        subtitle: '20% Recurring Monthly Payouts',
         icon: Gift,
-        badge: '15% BONUS',
+        badge: '20% CUT',
       },
       {
         to: '/dashboard/history',
-        label: 'Account Ledger',
-        subtitle: 'Statements & Transactions',
+        label: 'Execution Logs & Audit',
+        subtitle: 'Full Task Telemetry & Payloads',
         icon: FileText,
       },
     ],
@@ -74,19 +75,19 @@ const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { profile, signOut } = useAuth()
-  const name = profile?.full_name ?? 'Investor'
+  const name = profile?.full_name ?? 'Business Ops'
 
   return (
-    <div className="flex h-full flex-col bg-[#06080d] border-r border-white/8 select-none">
+    <div className="flex h-full flex-col bg-[#070b14] border-r border-white/8 select-none">
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-5 border-b border-white/8 bg-[#080b12]">
+      <div className="flex h-20 items-center justify-between px-5 border-b border-white/8 bg-[#090e1a]">
         <Logo />
-        <span className="flex items-center gap-1 rounded-md border border-brand-400/20 bg-brand-400/10 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-400">
-          <ShieldCheck className="size-3 text-brand-400" /> PRO
+        <span className="flex items-center gap-1 rounded-md border border-brand-400/25 bg-brand-500/10 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-300">
+          <Sparkles className="size-3 text-cyan-300" /> PRO
         </span>
       </div>
 
-      {/* Fintech Button Navigation */}
+      {/* Navigation */}
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
         {NAV_GROUPS.map((group) => (
           <div key={group.section} className="space-y-1.5">
@@ -103,7 +104,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   cn(
                     'group relative flex items-center justify-between rounded-xl p-2.5 transition-all duration-150 active:scale-[0.98]',
                     isActive
-                      ? 'bg-[#101422] border border-brand-400/40 shadow-lg shadow-black/40 text-white'
+                      ? 'bg-[#12192e] border border-brand-500/40 shadow-lg shadow-black/40 text-white'
                       : 'border border-transparent text-slate-400 hover:bg-white/[0.04] hover:border-white/6 hover:text-slate-200',
                   )
                 }
@@ -115,7 +116,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                         className={cn(
                           'flex size-9 shrink-0 items-center justify-center rounded-xl transition-all',
                           isActive
-                            ? 'bg-brand-400 text-obsidian-950 font-bold shadow-md shadow-brand-400/25'
+                            ? 'bg-gradient-to-br from-brand-600 to-brand-500 text-white font-bold shadow-md shadow-brand-500/30'
                             : 'bg-white/[0.05] border border-white/8 text-slate-400 group-hover:bg-white/[0.09] group-hover:text-white',
                         )}
                       >
@@ -138,7 +139,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
                     <div className="flex items-center gap-1.5 pl-2 shrink-0">
                       {item.badge && (
-                        <span className="rounded bg-brand-400/15 border border-brand-400/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-400">
+                        <span className="rounded bg-brand-500/15 border border-brand-500/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-300">
                           {item.badge}
                         </span>
                       )}
@@ -170,8 +171,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   <ShieldCheck className="size-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-display font-bold text-white tracking-tight">Admin Console</p>
-                  <p className="text-[10px] font-mono text-amber-400/80">Manage Wallets & Users</p>
+                  <p className="text-xs font-display font-bold text-white tracking-tight">Enterprise Admin</p>
+                  <p className="text-[10px] font-mono text-amber-400/80">Cluster & Fleets Control</p>
                 </div>
               </div>
               <ChevronRight className="size-4 text-amber-400" />
@@ -180,17 +181,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         )}
       </nav>
 
-      {/* User Account Card (Fintech Bank Debit Style) */}
-      <div className="border-t border-white/8 p-3.5 bg-[#080a11]">
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f1320] to-[#0a0d16] p-3 shadow-xl">
+      {/* User Organization Card */}
+      <div className="border-t border-white/8 p-3.5 bg-[#080d18]">
+        <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#11172a] to-[#0a0f1d] p-3 shadow-xl">
           <div className="flex items-center gap-3">
-            <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#121522]">
+            <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#141c32]">
               <img
                 src="/default-avatar.svg"
                 alt={name}
                 className="size-full object-cover"
               />
-              <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#0f1320] bg-brand-400" />
+              <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#0f1320] bg-emerald-400" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-display font-bold text-white tracking-tight">
@@ -198,9 +199,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               </p>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <span className="font-mono text-[10px] uppercase font-bold text-slate-500">
-                  BAL:
+                  CREDITS:
                 </span>
-                <span className="font-mono text-xs text-brand-400 font-bold truncate">
+                <span className="font-mono text-xs text-brand-300 font-bold truncate">
                   {formatCurrency(profile?.wallet_balance ?? 0)}
                 </span>
               </div>
@@ -208,13 +209,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           </div>
 
           <div className="mt-3 flex items-center justify-between border-t border-white/6 pt-2.5">
-            <span className="inline-flex items-center gap-1 font-mono text-[9px] font-semibold text-slate-500 uppercase">
-              <span className="size-1.5 rounded-full bg-emerald-400" /> 1.6% ACTIVE
+            <span className="inline-flex items-center gap-1 font-mono text-[9px] font-semibold text-emerald-400 uppercase">
+              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" /> 14 CLUSTERS SYNCED
             </span>
             <button
               type="button"
               onClick={() => void signOut()}
-              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-mono text-slate-400 transition-colors hover:bg-risk-500/15 hover:text-risk-400 active:scale-95"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-mono text-slate-400 transition-colors hover:bg-risk-500/15 hover:text-risk-400 active:scale-95 cursor-pointer"
               title="Sign Out"
             >
               <LogOut className="size-3" />
@@ -232,7 +233,7 @@ export function DashboardLayout() {
   const { profile } = useAuth()
 
   return (
-    <div className="min-h-screen bg-[#08090e]">
+    <div className="min-h-screen bg-[#090d16] text-slate-300">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 lg:block">
         <SidebarContent />
       </aside>
@@ -260,23 +261,23 @@ export function DashboardLayout() {
 
       <div className="lg:pl-64">
         {/* Top Header */}
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-white/8 bg-[#08090e]/85 px-4 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-3 border-b border-white/8 bg-[#090d16]/90 px-4 backdrop-blur-xl sm:px-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex size-9 items-center justify-center rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 lg:hidden"
+              className="flex size-10 items-center justify-center rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 lg:hidden"
               aria-label="Open menu"
             >
-              <Menu className="size-4.5" />
+              <Menu className="size-5" />
             </button>
 
             <div>
-              <p className="text-sm font-display font-bold text-white tracking-tight">
-                Dashboard
+              <p className="text-base font-display font-bold text-white tracking-tight">
+                Operations Command Center
               </p>
-              <p className="hidden text-[11px] font-mono text-slate-500 sm:block">
-                1.6% Daily Profit Bot
+              <p className="hidden text-[11px] font-mono text-slate-400 sm:block">
+                Zhen Autonomous AI Operations Engine · 99.98% SLA
               </p>
             </div>
           </div>
@@ -291,20 +292,20 @@ export function DashboardLayout() {
                 <span>Admin</span>
               </NavLink>
             )}
-            <span className="hidden items-center gap-1.5 rounded border border-brand-400/30 bg-brand-400/10 px-2.5 py-1 text-[11px] font-bold text-brand-400 sm:flex">
-              <Radio className="size-3 animate-pulse" />
-              LIVE
+            <span className="hidden items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400 sm:flex">
+              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+              ENGINE LIVE
             </span>
-            <div className="flex items-center gap-2 rounded-lg border border-white/8 bg-[#0c0f18] py-1 px-2.5">
-              <div className="size-6 overflow-hidden rounded-full border border-white/10 bg-[#121522]">
+            <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-[#0e1424] py-1.5 px-3">
+              <div className="size-6 overflow-hidden rounded-full border border-white/10 bg-[#141c30]">
                 <img
                   src="/default-avatar.svg"
                   alt="User"
                   className="size-full object-cover"
                 />
               </div>
-              <span className="font-display font-semibold text-xs text-white max-w-[120px] truncate">
-                {profile?.full_name?.split(' ')[0] ?? 'Investor'}
+              <span className="font-display font-semibold text-xs text-white max-w-[130px] truncate">
+                {profile?.full_name?.split(' ')[0] ?? 'Business Ops'}
               </span>
             </div>
           </div>

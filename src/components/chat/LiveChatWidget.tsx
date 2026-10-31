@@ -198,13 +198,13 @@ export function LiveChatWidget() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="group relative flex size-14 items-center justify-center rounded-2xl border border-brand-400/40 bg-[#090b12] text-brand-400 shadow-2xl transition-all hover:scale-105 hover:border-brand-400 hover:shadow-brand-400/20"
+          className="group relative flex size-14 items-center justify-center rounded-2xl border border-brand-500/40 bg-[#090d16] text-brand-400 shadow-2xl transition-all hover:scale-105 hover:border-brand-400 hover:shadow-brand-500/30"
           aria-label="Open Live Chat"
         >
           <MessageSquare className="size-6 transition-transform group-hover:scale-110" />
           <span className="absolute -top-1 -right-1 flex size-3.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
-            <span className="relative inline-flex size-3.5 rounded-full bg-brand-400" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+            <span className="relative inline-flex size-3.5 rounded-full bg-cyan-400" />
           </span>
           {unreadCount > 0 && (
             <span className="absolute -top-2 -left-2 flex size-5 items-center justify-center rounded-full bg-emerald-500 font-mono text-[10px] font-extrabold text-obsidian-950">
@@ -216,20 +216,20 @@ export function LiveChatWidget() {
 
       {/* Chat Window Panel */}
       {isOpen && (
-        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#090b12] shadow-2xl animate-fade-up">
+        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#090d16] shadow-2xl animate-fade-up">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/8 bg-[#0c0f18] px-4 py-3.5">
+          <div className="flex items-center justify-between border-b border-white/8 bg-[#0c1220] px-4 py-3.5">
             <div className="flex items-center gap-3">
-              <div className="relative flex size-9 items-center justify-center rounded-xl border border-brand-400/30 bg-[#121624] text-brand-400">
+              <div className="relative flex size-9 items-center justify-center rounded-xl border border-brand-500/30 bg-[#12192e] text-brand-300">
                 <Bot className="size-5" />
-                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-brand-400 ring-2 ring-[#0c0f18]" />
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-400 ring-2 ring-[#0c1220]" />
               </div>
               <div>
                 <h4 className="text-sm font-display font-bold text-white tracking-tight">
-                  Zhenbot Live Support
+                  Zhen Operations AI
                 </h4>
-                <p className="font-mono text-[10px] text-brand-400 font-semibold uppercase">
-                  Online · Instant Response
+                <p className="font-mono text-[10px] text-emerald-400 font-semibold uppercase">
+                  Online · 24/7 Automation Support
                 </p>
               </div>
             </div>
@@ -256,12 +256,12 @@ export function LiveChatWidget() {
           {/* Body Content */}
           {!hasStarted ? (
             <div className="flex flex-1 flex-col justify-center p-6 text-center">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-brand-400/30 bg-brand-400/10 text-brand-400 mb-3">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-brand-500/30 bg-brand-500/10 text-brand-300 mb-3">
                 <MessageSquare className="size-6" />
               </div>
-              <h5 className="text-base font-display font-bold text-white">Start a Conversation</h5>
+              <h5 className="text-base font-display font-bold text-white">Ask Zhen Operations AI</h5>
               <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-                Have questions about deposits, trading returns, or need technical help? Let us know.
+                Have questions about email triage, dispatching local bike couriers, or building custom automations? Chat with us.
               </p>
 
               <form onSubmit={startConversation} className="mt-5 space-y-3 text-left">

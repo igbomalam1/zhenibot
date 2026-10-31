@@ -13,16 +13,16 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-400 text-obsidian-950 font-bold shadow-md shadow-brand-400/15 hover:bg-brand-300 hover:shadow-brand-400/25 active:brightness-95',
+    'bg-brand-500 text-white font-semibold shadow-md shadow-brand-500/25 hover:bg-brand-400 hover:shadow-brand-500/35 active:brightness-95',
   secondary:
-    'border border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08] hover:border-white/20 active:bg-white/[0.03]',
+    'border border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.1] hover:border-white/20 active:bg-white/[0.04]',
   outline:
-    'border border-brand-400/35 text-brand-400 hover:bg-brand-400/10 hover:border-brand-400/60 active:bg-brand-400/15',
+    'border border-brand-400/40 text-brand-300 hover:bg-brand-500/10 hover:border-brand-400 active:bg-brand-500/20',
   ghost: 'text-slate-300 hover:bg-white/5 hover:text-white',
   danger:
     'bg-risk-500 text-white shadow-md shadow-risk-500/20 hover:bg-risk-400 active:bg-risk-600',
   success:
-    'bg-profit-500 text-obsidian-950 font-bold shadow-md shadow-profit-500/20 hover:bg-profit-400',
+    'bg-profit-500 text-white font-semibold shadow-md shadow-profit-500/20 hover:bg-profit-400',
 }
 
 const sizes: Record<ButtonSize, string> = {

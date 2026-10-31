@@ -24,7 +24,7 @@ export async function sendWelcomeEmail(params: {
 }
 
 export const ADMIN_ALERT_EMAIL = 'blessedjohnny2552@gmail.com'
-export const SENDER_TEAM_EMAIL = 'team@zhenibot.com'
+export const SENDER_TEAM_EMAIL = 'team@zhenautomation.io'
 
 export async function sendDepositReceivedEmail(params: {
   userId?: string

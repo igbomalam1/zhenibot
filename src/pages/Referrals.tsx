@@ -1,17 +1,15 @@
 import { useMemo, useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
-import { Check, Copy, Network, Percent, Share2, Users } from 'lucide-react'
+import { Check, Copy, Network, Percent, Gift, Sparkles, Building2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import { useReferrals } from '@/hooks/useFund'
 import { REFERRAL_BASE_URL } from '@/lib/constants'
-import { formatCurrency, formatDate, maskEmail } from '@/lib/format'
-import { Badge, statusTone } from '@/components/ui/Badge'
+import { formatCurrency, maskEmail } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
-import { Card, CardHeader } from '@/components/ui/Card'
 
 function maskName(name: string | null): string {
-  if (!name) return 'Investor'
+  if (!name) return 'Business Client'
   const parts = name.split(' ')
   if (parts.length === 1) {
     return `${parts[0].slice(0, 2)}•••`
@@ -23,7 +21,7 @@ export function Referrals() {
   const { profile } = useAuth()
   const toast = useToast()
   const [copied, setCopied] = useState(false)
-  const { referrals, loading } = useReferrals()
+  const { referrals } = useReferrals()
 
   const referralUrl = useMemo(() => {
     const code = profile?.referral_code ?? ''
@@ -44,6 +42,7 @@ export function Referrals() {
     try {
       await navigator.clipboard.writeText(referralUrl)
       setCopied(true)
+      toast.success('Agency referral link copied!')
       window.setTimeout(() => setCopied(false), 1600)
     } catch {
       toast.info('Select the link and copy manually.')
@@ -51,190 +50,124 @@ export function Referrals() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 select-none">
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
         <div className="flex items-center gap-2 mb-1">
-          <span className="size-1.5 rounded-full bg-brand-400" />
-          <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest font-semibold">
-            Referrals
+          <span className="size-2 rounded-full bg-brand-400 animate-pulse" />
+          <span className="font-mono text-[10px] text-brand-300 uppercase tracking-widest font-bold">
+            PARTNER & AGENCY PROGRAM
           </span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-          Invite Friends & Earn
+          Agency & Referral Network
         </h1>
-        <p className="mt-1 font-mono text-xs text-slate-400">
-          Earn 15% direct commission on level 1, plus 2% bonus commission on level 2.
+        <p className="mt-1 text-xs text-slate-300">
+          Onboard other businesses to Zhen Automation and earn 20% recurring monthly revenue across all client subscriptions.
         </p>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="glass-card rounded-xl p-5 border border-white/8">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              DIRECT EARNINGS (15%)
-            </span>
-            <span className="flex size-7 items-center justify-center rounded border border-brand-400/30 bg-brand-400/10 text-brand-400">
-              <Percent className="size-3.5" />
-            </span>
-          </div>
-          <p className="font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {formatCurrency(totals.tier1)}
-          </p>
-          <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">Level 1 Commission</p>
-        </div>
-
-        <div className="glass-card rounded-xl p-5 border border-white/8">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              TEAM EARNINGS (2%)
-            </span>
-            <span className="flex size-7 items-center justify-center rounded border border-amber-400/30 bg-amber-400/10 text-amber-400">
-              <Network className="size-3.5" />
-            </span>
-          </div>
-          <p className="font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {formatCurrency(totals.tier2)}
-          </p>
-          <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">Level 2 Commission</p>
-        </div>
-
-        <div className="glass-card rounded-xl p-5 border border-white/8">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-mono text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              TOTAL INVITED
-            </span>
-            <span className="flex size-7 items-center justify-center rounded border border-white/10 bg-[#121522] text-slate-300">
-              <Users className="size-3.5" />
-            </span>
-          </div>
-          <p className="font-mono text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            {totals.count} <span className="text-xs text-slate-500 font-normal">PEOPLE</span>
-          </p>
-          <p className="font-mono text-[10px] text-slate-500 mt-1 uppercase">
-            {referrals.filter((r) => r.tier === 1).length} DIRECT ·{' '}
-            {referrals.filter((r) => r.tier === 2).length} INDIRECT
-          </p>
-        </div>
+      {/* Summary KPI Strip */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          { label: 'Onboarded Businesses', value: totals.count, icon: Building2, color: 'text-brand-300' },
+          { label: 'Total Commission Earned', value: formatCurrency(totals.total), icon: Gift, color: 'text-emerald-400' },
+          { label: 'Direct 20% Payouts', value: formatCurrency(totals.tier1), icon: Percent, color: 'text-cyan-300' },
+          { label: 'Sub-Agency 5% Overrides', value: formatCurrency(totals.tier2), icon: Network, color: 'text-indigo-400' },
+        ].map((s) => {
+          const Icon = s.icon
+          return (
+            <div key={s.label} className="glass-card rounded-2xl p-4 border border-white/8 shadow-md">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-mono uppercase font-bold text-slate-400">{s.label}</span>
+                <Icon className={`size-4 ${s.color}`} />
+              </div>
+              <p className="font-mono text-2xl font-bold text-white">{s.value}</p>
+            </div>
+          )
+        })}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        {/* Link Share Card */}
-        <Card className="border border-white/10 shadow-xl">
-          <CardHeader
-            title="Your Referral Link"
-            subtitle="Share your link or QR code with friends to earn instant rewards"
-            icon={<Share2 className="size-5" />}
-          />
-          <div className="flex flex-col items-center gap-6 rounded-xl border border-white/8 bg-[#090b12] p-6 sm:flex-row">
-            <div className="shrink-0 rounded-xl bg-white p-2.5 shadow-2xl">
-              <QRCodeSVG value={referralUrl} size={128} level="M" fgColor="#08090e" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="mb-1.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">
-                REFERRAL CODE:{' '}
-                <strong className="text-brand-400 font-bold">{profile?.referral_code ?? 'PENDING'}</strong>
-              </p>
-              <code className="block break-all rounded-lg border border-white/10 bg-[#0e111d] p-3 font-mono text-[11px] leading-relaxed text-slate-300">
-                {referralUrl}
-              </code>
+      {/* Shareable Link Box */}
+      <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10 shadow-xl">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center">
+          <div className="space-y-4">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-bold text-brand-300 font-mono uppercase">
+              <Sparkles className="size-3.5" /> RECURRING MONTHLY PAYOUTS
+            </span>
+            <h2 className="text-2xl font-bold text-white font-display">
+              Your Exclusive Agency Partner Link
+            </h2>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Every company or client that creates an account through your link is tied to your agency code. Whenever they purchase automation credits or renew monthly plans, 20% is credited directly to your account.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <input
+                type="text"
+                readOnly
+                value={referralUrl}
+                className="flex-1 rounded-xl border border-white/10 bg-[#0a0f1e] px-4 py-3 font-mono text-xs text-white truncate focus:outline-none"
+              />
               <Button
                 type="button"
-                onClick={() => void copy()}
-                className="mt-3 w-full"
+                onClick={copy}
+                className="bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold shrink-0 cursor-pointer"
               >
-                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
-                {copied ? 'Copied' : 'Copy Referral Link'}
+                {copied ? <Check className="size-4 mr-1" /> : <Copy className="size-4 mr-1" />}
+                {copied ? 'Copied!' : 'Copy Partner Link'}
               </Button>
             </div>
           </div>
-        </Card>
 
-        {/* Matrix Rules */}
-        <Card className="border border-white/10 shadow-xl">
-          <CardHeader title="How You Earn" subtitle="Instant bonuses paid directly to your balance" icon={<Percent className="size-5" />} />
-          <div className="space-y-3 font-sans">
-            <div className="flex items-center justify-between rounded-xl border border-brand-400/25 bg-brand-400/5 p-4">
-              <div>
-                <p className="text-xs font-display font-bold text-white uppercase tracking-wider">Level 1: Direct Friends</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  When someone joins with your link and deposits, you get 15% immediately.
-                </p>
-              </div>
-              <Badge tone="brand">15%</Badge>
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-white/8 bg-black/40 p-5 text-center">
+            <div className="rounded-xl bg-white p-3 shadow-md">
+              <QRCodeSVG value={referralUrl} size={130} level="M" />
             </div>
-
-            <div className="flex items-center justify-between rounded-xl border border-amber-400/25 bg-amber-400/5 p-4">
-              <div>
-                <p className="text-xs font-display font-bold text-white uppercase tracking-wider">Level 2: Friends of Friends</p>
-                <p className="text-[11px] text-slate-400 mt-0.5">
-                  When your friends invite others who deposit, you get an extra 2% bonus.
-                </p>
-              </div>
-              <Badge tone="warning">2%</Badge>
-            </div>
-
-            <p className="rounded-lg border border-white/6 bg-[#090b12] p-3 font-mono text-[11px] leading-relaxed text-slate-400">
-              Commissions are paid instantly and can be withdrawn anytime.
+            <p className="mt-3 font-mono text-[10px] text-slate-400 uppercase">
+              Scan to open agency signup portal
             </p>
           </div>
-        </Card>
+        </div>
       </div>
 
-      {/* Downline Table */}
-      <Card className="border border-white/10 shadow-xl">
-        <CardHeader title="Invited Friends" subtitle="People who joined using your referral link" icon={<Users className="size-5" />} />
-        <div className="-mx-2 overflow-x-auto px-2">
-          <table className="w-full min-w-[640px] text-left text-sm font-sans">
-            <thead>
-              <tr className="border-b border-white/8 font-mono text-[10px] uppercase tracking-wider text-slate-500">
-                <th className="pb-3 pr-4 font-semibold">MEMBER</th>
-                <th className="pb-3 pr-4 font-semibold">LEVEL</th>
-                <th className="pb-3 pr-4 font-semibold">YOUR BONUS</th>
-                <th className="pb-3 pr-4 font-semibold">STATUS</th>
-                <th className="pb-3 font-semibold">JOIN DATE</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center font-mono text-xs text-slate-500">
-                    Retrieving network records…
-                  </td>
-                </tr>
-              ) : referrals.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center font-mono text-xs text-slate-500">
-                    No active downline nodes found. Share your referral link above.
-                  </td>
-                </tr>
-              ) : (
-                referrals.map((r) => (
-                  <tr key={r.id} className="border-b border-white/5 transition-colors hover:bg-white/[0.02]">
-                    <td className="py-3.5 pr-4">
-                      <p className="font-display font-bold text-sm text-white">{maskName(r.referee?.full_name ?? null)}</p>
-                      <p className="font-mono text-[11px] text-slate-500">{maskEmail(r.referee?.email ?? 'unknown@invite')}</p>
-                    </td>
-                    <td className="py-3.5 pr-4">
-                      <Badge tone={r.tier === 1 ? 'brand' : 'warning'}>TIER {r.tier}</Badge>
-                    </td>
-                    <td className="py-3.5 pr-4 font-mono font-bold text-brand-400">
-                      {formatCurrency(r.commission_amount)}
-                    </td>
-                    <td className="py-3.5 pr-4">
-                      <Badge tone={statusTone(r.status)}>
-                        {r.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3.5 font-mono text-[11px] text-slate-500">{formatDate(r.created_at)}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Referral Client Ledger */}
+      <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl">
+        <div className="flex items-center justify-between border-b border-white/8 pb-4 mb-4">
+          <h3 className="text-base font-display font-bold text-white">Client Portfolio Roster</h3>
+          <span className="font-mono text-xs text-slate-400">
+            {referrals.length} Connected Businesses
+          </span>
         </div>
-      </Card>
+
+        {referrals.length === 0 ? (
+          <div className="py-12 text-center text-xs text-slate-500 font-mono">
+            No client accounts registered yet. Share your partner link to start earning 20% recurring.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {referrals.map((r) => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between rounded-xl border border-white/5 bg-[#0a0f1e] p-3.5 text-xs transition-colors hover:border-brand-500/20"
+              >
+                <div>
+                  <p className="font-display font-bold text-white">{maskName(r.referee?.full_name ?? null)}</p>
+                  <p className="font-mono text-[10px] text-slate-400">
+                    {r.referee?.email ? maskEmail(r.referee.email) : '—'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-mono font-bold text-emerald-400">+{formatCurrency(r.commission_amount)}</p>
+                  <span className="font-mono text-[9px] uppercase text-brand-300 font-semibold">
+                    Tier {r.tier} ({r.tier === 1 ? '20%' : '5%'})
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

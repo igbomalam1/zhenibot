@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowRight, KeyRound, Mail, User } from 'lucide-react'
+import { ArrowRight, KeyRound, Mail, User, ShieldCheck } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
-import { FUND_METRICS } from '@/lib/demo'
-import { formatCompact, formatCurrency } from '@/lib/format'
 import { Logo } from '@/components/landing/Navbar'
 import { QuantRadarCanvas } from '@/components/landing/QuantRadarCanvas'
 import { sendWelcomeEmail } from '@/lib/email'
@@ -19,9 +17,9 @@ const YEAR = new Date().getFullYear()
 
 function SidePanel() {
   return (
-    <div className="relative hidden overflow-hidden border-r border-white/8 bg-[#06080d] lg:flex lg:flex-col lg:justify-between lg:p-12">
+    <div className="relative hidden overflow-hidden border-r border-white/8 bg-[#070b14] lg:flex lg:flex-col lg:justify-between lg:p-12">
       {/* Background Quant Radar Canvas */}
-      <div className="absolute inset-0 pointer-events-none opacity-30">
+      <div className="absolute inset-0 pointer-events-none opacity-40">
         <QuantRadarCanvas className="w-full h-full" />
       </div>
 
@@ -32,45 +30,44 @@ function SidePanel() {
       </div>
 
       <div className="relative z-10">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-brand-400/30 bg-[#0d121c] px-3 py-1 font-mono text-[11px] text-brand-400">
-          <span className="size-1.5 rounded-full bg-brand-400 animate-pulse" />
-          <span>AUTOMATED TRADING BOT</span>
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-[#0d1424] px-3.5 py-1 font-mono text-[11px] text-brand-300">
+          <span className="size-2 rounded-full bg-cyan-400 animate-pulse" />
+          <span>AUTONOMOUS OPERATIONS ENGINE</span>
         </div>
 
         <h2 className="max-w-md text-3xl font-extrabold leading-tight text-white font-display">
-          Smart Automated Trading. <span className="text-gradient block mt-1">1.6% Daily Profit.</span>
+          Run Your Business Operations on <span className="text-gradient block mt-1">100% Autopilot.</span>
         </h2>
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-400">
-          Join thousands of members earning a steady 1.6% daily profit powered by automated crypto trading
-          with over {formatCompact(FUND_METRICS.aum)} in active funds.
+        <p className="mt-4 max-w-md text-sm leading-relaxed text-slate-300">
+          Join high-growth companies automating email triage, on-demand courier booking, 24/7 customer care reps, and invoice reconciliation with zero manual effort.
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-3">
           {[
-            { label: 'Total Managed', value: formatCurrency(FUND_METRICS.aum) },
-            { label: 'Active Members', value: formatCompact(FUND_METRICS.activeInvestors) },
-            { label: 'Daily Profit', value: '1.6% / day' },
-            { label: 'Loss Protection', value: '5.0% Stop' },
+            { label: 'Tasks Automated', value: '4.8M+' },
+            { label: 'Hours Saved/Wk', value: '18.5 hrs' },
+            { label: 'Avg Latency', value: '1.2s' },
+            { label: 'Cluster Uptime', value: '99.98%' },
           ].map((s) => (
-            <div key={s.label} className="rounded-xl border border-white/8 bg-[#0b0e18]/80 p-3.5 backdrop-blur-sm">
+            <div key={s.label} className="rounded-xl border border-white/8 bg-[#0c1220]/80 p-3.5 backdrop-blur-sm">
               <p className="font-mono text-lg font-bold text-white tracking-tight">{s.value}</p>
-              <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-500">
+              <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-slate-400">
                 {s.label}
               </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-xl border border-brand-400/20 bg-brand-400/5 p-3.5">
-          <span className="flex size-2 rounded-full bg-brand-400" />
+        <div className="mt-6 flex items-center gap-3 rounded-xl border border-brand-500/25 bg-brand-500/10 p-3.5">
+          <span className="flex size-2 rounded-full bg-emerald-400" />
           <p className="text-xs font-mono text-slate-300">
-            <span className="font-semibold text-brand-400">BOT STATUS:</span> Trading active. Progressing toward today's 2.0% target.
+            <span className="font-semibold text-brand-300">SYSTEM STATUS:</span> All 14 automation clusters operational.
           </p>
         </div>
       </div>
 
       <p className="relative z-10 text-[11px] font-mono text-slate-500">
-        © {YEAR} Zhenbot · Automated Crypto Trading
+        © {YEAR} Zhen Automation Inc. · Autonomous AI Business Operations
       </p>
     </div>
   )
@@ -105,10 +102,10 @@ export function Auth() {
   const validate = (): boolean => {
     const next: typeof errors = {}
     if (mode === 'register' && fullName.trim().length < 2) {
-      next.fullName = 'Please enter your full name.'
+      next.fullName = 'Please enter your full name or company name.'
     }
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      next.email = 'Enter a valid email address.'
+      next.email = 'Enter a valid business email address.'
     }
     if (password.length < 6) {
       next.password = 'Password must be at least 6 characters.'
@@ -143,145 +140,142 @@ export function Auth() {
         return
       }
 
-      // Send Welcome confirmation email via Resend
       void sendWelcomeEmail({
         to: email,
         name: fullName,
         referralCode: referralCode.trim() || undefined,
       })
 
-      toast.success(
-        session
-          ? 'Account created. Welcome to Zhenbot.'
-          : 'Account created. Check your email to confirm your account.',
-      )
-      if (session) navigate('/dashboard')
+      navigate('/dashboard')
     }
-    setLoading(false)
   }
 
   return (
-    <div className="flex min-h-screen bg-[#08090e]">
+    <div className="grid min-h-screen lg:grid-cols-[1fr_1fr] bg-[#090d16] text-slate-300">
       <SidePanel />
 
-      <div className="relative flex flex-1 flex-col px-4 py-8 sm:px-8 lg:items-center lg:justify-center">
-        <div className="pointer-events-none absolute inset-0 lg:hidden">
-          <div className="glass-card absolute left-1/2 top-8 -translate-x-1/2 rounded-xl px-4 py-2 border border-white/10">
-            <Logo />
-          </div>
+      <div className="flex flex-col justify-between p-6 sm:p-12">
+        <div className="flex items-center justify-between lg:hidden mb-8">
+          <Logo />
         </div>
 
-        <div className="w-full max-w-md animate-fade-up lg:mt-0 mt-20">
-          <div className="glass-card rounded-2xl p-6 sm:p-8 border border-white/10 shadow-2xl">
-            {/* Mode Selector */}
-            <div className="mb-6 grid grid-cols-2 gap-1 rounded-xl border border-white/8 bg-[#090b12] p-1">
-              {(
-                [
-                  ['login', 'Sign in'],
-                  ['register', 'Create account'],
-                ] as [Mode, string][]
-              ).map(([m, label]) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => setMode(m)}
-                  className={cn(
-                    'rounded-lg py-2 text-xs font-mono font-semibold uppercase tracking-wider transition-all',
-                    mode === m
-                      ? 'bg-brand-400 text-obsidian-950 font-extrabold shadow-sm'
-                      : 'text-slate-400 hover:text-white',
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+        <div className="mx-auto w-full max-w-sm my-auto">
+          {/* Mode Switcher */}
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/8 bg-[#0c1220] p-1 mb-8">
+            <button
+              type="button"
+              onClick={() => setMode('login')}
+              className={cn(
+                'rounded-lg py-2 font-mono text-xs font-bold transition-all cursor-pointer',
+                mode === 'login'
+                  ? 'bg-brand-500 text-white shadow-md shadow-brand-500/25'
+                  : 'text-slate-400 hover:text-white',
+              )}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode('register')}
+              className={cn(
+                'rounded-lg py-2 font-mono text-xs font-bold transition-all cursor-pointer',
+                mode === 'register'
+                  ? 'bg-brand-500 text-white shadow-md shadow-brand-500/25'
+                  : 'text-slate-400 hover:text-white',
+              )}
+            >
+              Start Free Pilot
+            </button>
+          </div>
 
+          <div className="mb-6">
             <h1 className="text-2xl font-extrabold text-white font-display">
-              {mode === 'login' ? 'Sign In' : 'Create Free Account'}
+              {mode === 'login' ? 'Access Operations Studio' : 'Create Business Account'}
             </h1>
             <p className="mt-1 text-xs text-slate-400">
               {mode === 'login'
-                ? 'Sign in to access your dashboard and balances.'
-                : 'Create an account to start earning 1.6% daily profit.'}
+                ? 'Sign in to monitor your active workflows and telemetry.'
+                : '14-day free pilot. Automate emails, dispatches, and care reps.'}
             </p>
+          </div>
 
-            {mode === 'register' && refParam && (
-              <div className="mt-4 flex items-center gap-2 rounded-lg border border-brand-400/30 bg-brand-400/10 px-3.5 py-2.5 text-xs text-brand-300 font-mono">
-                <ArrowRight className="size-3.5 shrink-0" />
-                <span>
-                  Invited by: <strong className="text-brand-400 font-bold">{refParam}</strong>
-                </span>
-              </div>
-            )}
-
-            <form className="mt-6 space-y-4" onSubmit={onSubmit}>
-              {mode === 'register' && (
+          <form onSubmit={onSubmit} className="space-y-4">
+            {mode === 'register' && (
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1">
+                  Full Name / Business Name
+                </label>
                 <Input
-                  name="fullName"
-                  label="Full name"
-                  placeholder="John Doe"
                   icon={<User className="size-4" />}
+                  placeholder="e.g. Acme Logistics or Jane Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   error={errors.fullName}
                 />
-              )}
+              </div>
+            )}
 
+            <div>
+              <label className="block text-xs font-semibold text-white mb-1">
+                Business Email Address
+              </label>
               <Input
-                name="email"
                 type="email"
-                label="Email address"
-                placeholder="name@example.com"
-                autoComplete="email"
                 icon={<Mail className="size-4" />}
+                placeholder="name@company.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 error={errors.email}
               />
+            </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-white mb-1">
+                Password
+              </label>
               <Input
-                name="password"
                 type="password"
-                label="Password"
-                placeholder="Minimum 6 characters"
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                 icon={<KeyRound className="size-4" />}
+                placeholder="At least 6 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 error={errors.password}
               />
+            </div>
 
-              {mode === 'register' && (
+            {mode === 'register' && (
+              <div>
+                <label className="block text-xs font-semibold text-white mb-1">
+                  Agency Partner Referral Code (Optional)
+                </label>
                 <Input
-                  name="referralCode"
-                  label="Referral code"
-                  hint="Optional"
-                  placeholder="ZBTR-XXXX"
+                  placeholder="Optional partner code"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value)}
                 />
-              )}
+              </div>
+            )}
 
-              <Button type="submit" size="lg" className="w-full mt-2" loading={loading}>
-                {loading ? (mode === 'login' ? 'Signing In…' : 'Creating Account…') : (mode === 'login' ? 'Sign In' : 'Create Account')}
-                {!loading && <ArrowRight className="size-4 ml-1" />}
-              </Button>
-            </form>
+            <Button
+              type="submit"
+              size="lg"
+              loading={loading}
+              className="w-full bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 text-white font-bold shadow-lg shadow-brand-500/25 mt-2"
+            >
+              {mode === 'login' ? 'Sign In to Studio' : 'Launch My First Automation'}
+              <ArrowRight className="size-4 ml-1" />
+            </Button>
+          </form>
 
-            <p className="mt-5 text-center text-[11px] leading-relaxed text-slate-500">
-              By proceeding you agree to our{' '}
-              <a className="text-slate-400 hover:text-brand-400 underline underline-offset-2" href="#">Terms of Service</a> and{' '}
-              <a className="text-slate-400 hover:text-brand-400 underline underline-offset-2" href="#">Privacy Policy</a>.
-            </p>
+          <div className="mt-8 pt-6 border-t border-white/6 text-center text-xs text-slate-400">
+            <span className="flex items-center justify-center gap-1.5">
+              <ShieldCheck className="size-3.5 text-brand-400" /> Enterprise-grade 256-bit AES encryption
+            </span>
           </div>
+        </div>
 
-          <p className="mt-6 text-center text-xs text-slate-500 font-mono">
-            Return to home?{' '}
-            <Link to="/" className="font-semibold text-brand-400 hover:text-brand-300 underline underline-offset-2">
-              Back to Home
-            </Link>
-          </p>
+        <div className="text-center text-[11px] font-mono text-slate-500">
+          <Link to="/" className="hover:text-slate-300">← Back to Zhen Automation Homepage</Link>
         </div>
       </div>
     </div>

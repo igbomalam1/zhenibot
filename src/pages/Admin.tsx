@@ -653,7 +653,7 @@ export function AdminDashboard() {
           userId: selectedThread.user_id || undefined,
           to: targetEmail,
           name: selectedThread.user_name || undefined,
-          subject: 'New Reply from Zhenbot Support Agent',
+          subject: 'New Reply from Zhen Automation Support Agent',
           message: text,
         })
       }
@@ -787,7 +787,7 @@ export function AdminDashboard() {
           </div>
           <div>
             <h1 className="text-sm font-display font-bold text-white tracking-tight flex items-center gap-2">
-              Zhenbot Admin Control Panel
+              Zhen Automation Enterprise Control Panel
               <span className="rounded bg-brand-400/15 border border-brand-400/30 px-1.5 py-0.5 font-mono text-[10px] font-bold text-brand-400">
                 MASTER
               </span>
@@ -934,7 +934,7 @@ export function AdminDashboard() {
                           type="button"
                           onClick={() => {
                             setMessagingUser(u)
-                            setMessageSubject('Important Update Regarding Your Zhenbot Account')
+                            setMessageSubject('Important Update Regarding Your Zhen Automation Account')
                             setMessageBody('')
                           }}
                           className="rounded-lg border border-brand-400/30 bg-brand-400/10 p-1.5 text-brand-400 hover:bg-brand-400/20 transition-colors"
@@ -1811,7 +1811,7 @@ export function AdminDashboard() {
                 type="text"
                 value={messageSubject}
                 onChange={(e) => setMessageSubject(e.target.value)}
-                placeholder="Important Notice from Zhenbot Management"
+                placeholder="Important Notice from Zhen Automation Management"
                 className="w-full rounded-xl border border-white/10 bg-[#0d121f] p-3 font-sans text-xs text-white focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
               />
             </div>

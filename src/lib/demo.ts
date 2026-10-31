@@ -1,18 +1,93 @@
 import type { Trade } from '@/types/database'
 
-const PAIRS = [
-  { symbol: 'BTC', pair: 'BTC/USDT', exchange: 'Bybit' },
-  { symbol: 'ETH', pair: 'ETH/USDT', exchange: 'Binance' },
-  { symbol: 'SOL', pair: 'SOL/USDT', exchange: 'Bybit' },
-  { symbol: 'BNB', pair: 'BNB/USDT', exchange: 'Bitget' },
-  { symbol: 'XRP', pair: 'XRP/USDT', exchange: 'MEXC' },
-  { symbol: 'NVDA', pair: 'NVDA/USD', exchange: 'Bybit' },
-  { symbol: 'TSLA', pair: 'TSLA/USD', exchange: 'MEXC' },
-  { symbol: 'AAPL', pair: 'AAPL/USD', exchange: 'Binance' },
-  { symbol: 'MSFT', pair: 'MSFT/USD', exchange: 'Bybit' },
-  { symbol: 'XAU', pair: 'XAU/USD', exchange: 'Bitget' },
-  { symbol: 'XAG', pair: 'XAG/USD', exchange: 'Bitget' },
-  { symbol: 'OIL', pair: 'WTI/USD', exchange: 'MEXC' },
+export interface AutomationEvent {
+  id: string
+  type: 'email' | 'dispatch' | 'support' | 'invoice' | 'crm'
+  title: string
+  channel: string
+  latency: string
+  status: 'completed' | 'running' | 'routed'
+  summary: string
+  savingsMinutes: number
+  timestamp: number
+}
+
+export const LIVE_AUTOMATION_EVENTS: AutomationEvent[] = [
+  {
+    id: 'evt-101',
+    type: 'email',
+    title: 'Autonomous Email Responder',
+    channel: 'Gmail Enterprise',
+    latency: '1.2s',
+    status: 'completed',
+    summary: 'Parsed wholesale RFP from sales@apexventures.co, generated custom PDF quote, sent personalized reply.',
+    savingsMinutes: 24,
+    timestamp: Date.now() - 4000,
+  },
+  {
+    id: 'evt-102',
+    type: 'dispatch',
+    title: 'Okada & Bike Courier Dispatch',
+    channel: 'SendMe & Bolt Fleet',
+    latency: '1.8s',
+    status: 'completed',
+    summary: 'Order #ZH-9921 from Shopify: Assigned Rider #42 (Wuse 2, Abuja), generated waybill & SMS tracking link.',
+    savingsMinutes: 35,
+    timestamp: Date.now() - 14000,
+  },
+  {
+    id: 'evt-103',
+    type: 'support',
+    title: '24/7 AI Customer Care Rep',
+    channel: 'WhatsApp Business API',
+    latency: '0.9s',
+    status: 'completed',
+    summary: 'Resolved delivery address change request for customer +234 803 ••• 4192 in fluent Nigerian English.',
+    savingsMinutes: 18,
+    timestamp: Date.now() - 28000,
+  },
+  {
+    id: 'evt-104',
+    type: 'invoice',
+    title: 'Payment Reconciler & Invoicing',
+    channel: 'Paystack Webhook',
+    latency: '1.4s',
+    status: 'completed',
+    summary: 'Reconciled ₦185,000 bank transfer for Invoice #INV-882, marked order fulfilled and updated ledger.',
+    savingsMinutes: 15,
+    timestamp: Date.now() - 45000,
+  },
+  {
+    id: 'evt-105',
+    type: 'email',
+    title: 'Smart Meeting Scheduler',
+    channel: 'Outlook 365 + Cal.com',
+    latency: '1.5s',
+    status: 'completed',
+    summary: 'Negotiated prospective client demo slot across 3 timezones and sent Google Meet invite.',
+    savingsMinutes: 20,
+    timestamp: Date.now() - 72000,
+  },
+  {
+    id: 'evt-106',
+    type: 'dispatch',
+    title: 'Express Delivery Auto-Booking',
+    channel: 'GIGL Logistics API',
+    latency: '2.1s',
+    status: 'completed',
+    summary: 'WooCommerce Order #WC-3012: Dispatched interstate parcel from Ikeja Lagos to Port Harcourt.',
+    savingsMinutes: 40,
+    timestamp: Date.now() - 98000,
+  },
+]
+
+const AUTOMATION_TYPES = [
+  { symbol: 'EMAIL', pair: 'Email Triage', exchange: 'Gmail API' },
+  { symbol: 'DISPATCH', pair: 'Bike Courier Dispatch', exchange: 'SendMe Fleet' },
+  { symbol: 'SUPPORT', pair: 'WhatsApp AI Agent', exchange: 'WhatsApp Cloud' },
+  { symbol: 'INVOICE', pair: 'Paystack Auto-Reconcile', exchange: 'Paystack' },
+  { symbol: 'CRM', pair: 'HubSpot Lead Sync', exchange: 'HubSpot' },
+  { symbol: 'DOCS', pair: 'PDF Invoice OCR', exchange: 'Zhen Vision' },
 ]
 
 function seededRandom(seed: number) {
@@ -23,59 +98,56 @@ function seededRandom(seed: number) {
   }
 }
 
-function buildTrades(): Trade[] {
-  const rand = seededRandom(20260101)
+function buildAutomationFeed(): Trade[] {
+  const rand = seededRandom(20260201)
   const now = Date.now()
   const trades: Trade[] = []
   for (let i = 0; i < 48; i++) {
-    const p = PAIRS[Math.floor(rand() * PAIRS.length)]
-    let profitPct = 0.12 + rand() * 0.38
-    if (rand() < 0.28) profitPct = 0.1 + rand() * 0.18
-    const side = rand() < 0.55 ? 'LONG' : 'SHORT'
-    const entry = 20 + rand() * 1400
-    const dir = side === 'LONG' ? 1 : -1
+    const p = AUTOMATION_TYPES[Math.floor(rand() * AUTOMATION_TYPES.length)]
+    const latencySec = (0.8 + rand() * 1.5).toFixed(2)
+    const successRate = 98 + rand() * 1.9
     trades.push({
-      id: `tx-${now - i}`,
+      id: `task-${now - i}`,
       symbol: p.symbol,
       pair: p.pair,
       exchange: p.exchange,
-      side,
-      entry: Number(entry.toFixed(2)),
-      exit: Number((entry * (1 + dir * profitPct / 100)).toFixed(2)),
-      profitPct: Number(profitPct.toFixed(2)),
-      at: now - i * (1000 * 60 * 7),
+      side: 'LONG', // 'COMPLETED'
+      entry: Number(latencySec),
+      exit: Number((Number(latencySec) + 0.1).toFixed(2)),
+      profitPct: Number(successRate.toFixed(1)),
+      at: now - i * (1000 * 60 * 3),
     })
   }
   return trades
 }
 
-const seed = buildTrades()
+const seed = buildAutomationFeed()
 
 export function getTrades(count = 12): Trade[] {
   return seed.slice(0, count)
 }
 
 export function getEquitySeries(days = 30) {
-  const rand = seededRandom(20260102)
+  const rand = seededRandom(20260202)
   const out: { day: string; value: number }[] = []
-  let value = 100000
+  let tasksCount = 12400
   const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   for (let i = days; i >= 0; i--) {
-    value *= 1 + 0.008 + rand() * 0.016
+    tasksCount += Math.floor(450 + rand() * 600)
     const d = new Date(Date.now() - i * 86400000)
-    out.push({ day: `${labels[d.getDay()]} ${d.getDate()}`, value: Number(value.toFixed(0)) })
+    out.push({ day: `${labels[d.getDay()]} ${d.getDate()}`, value: tasksCount })
   }
   return out
 }
 
 export const FUND_METRICS = {
-  aum: 48_252_000,
-  activeInvestors: 3824,
-  avgDailyVolume: 218_740,
-  winRate: 94.6,
-  totalPayout: 11_405_220,
-  executions: 1_842_391,
-  running: 1284,
+  aum: 4_842_910, // Tasks Automated
+  activeInvestors: 1_420, // Active Businesses
+  avgDailyVolume: 184_600, // Daily Task Throughput
+  winRate: 99.8, // Execution Success Rate %
+  totalPayout: 420_000, // Hours Saved in total
+  executions: 4_842_910,
+  running: 4_210, // Running Automation Workflows
 }
 
 export function maskReferralCode(code: string): string {

@@ -1,20 +1,20 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
   Eye,
   EyeOff,
-  FileText,
   Gift,
-  History,
-  Activity,
-  Coins,
-  ShieldCheck,
-  TrendingUp,
   Sparkles,
   Copy,
   Check,
+  Mail,
+  Bike,
+  Headphones,
+  Receipt,
+  Calendar,
+  Zap,
+  Play,
+  CheckCircle2,
 } from 'lucide-react'
 import {
   Area,
@@ -26,24 +26,95 @@ import {
   YAxis,
 } from 'recharts'
 import { useAuth } from '@/contexts/AuthContext'
-import { useDashboardStats } from '@/hooks/useFund'
-import { formatCurrency, formatDate } from '@/lib/format'
+import { formatCurrency } from '@/lib/format'
 import { getEquitySeries } from '@/lib/demo'
-import { BRAND } from '@/lib/constants'
-import { Badge } from '@/components/ui/Badge'
 import { BotTracker } from '@/components/dashboard/BotTracker'
 import { TradeFeed } from '@/components/dashboard/TradeFeed'
 
+interface WorkflowSwitch {
+  id: string
+  title: string
+  category: string
+  icon: typeof Mail
+  color: string
+  status: boolean
+  desc: string
+  tasksToday: number
+}
+
 export function Dashboard() {
-  const { profile, user } = useAuth()
-  const { stats, loading } = useDashboardStats()
+  const { profile } = useAuth()
   const [hideBalance, setHideBalance] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
+  const [simulatedAlert, setSimulatedAlert] = useState<string | null>(null)
   const equity = useMemo(() => getEquitySeries(), [])
 
-  const name = profile?.full_name?.split(' ')[0] ?? 'Investor'
-  const netWorth = stats.walletBalance + stats.activeDeposit
-  const dailyProjected = stats.activeDeposit * BRAND.dailyRate
+  const [workflows, setWorkflows] = useState<WorkflowSwitch[]>([
+    {
+      id: 'wf-email',
+      title: 'Smart Email Concierge & Auto-Reply',
+      category: 'INBOX AUTOPILOT',
+      icon: Mail,
+      color: '#6366F1',
+      status: true,
+      desc: 'Triages sales inquiries, parses RFQ attachments, sends personalized replies in 1.2s.',
+      tasksToday: 74,
+    },
+    {
+      id: 'wf-dispatch',
+      title: 'On-Demand Delivery & Okada Booking',
+      category: 'LOGISTICS DISPATCH',
+      icon: Bike,
+      color: '#06B6D4',
+      status: true,
+      desc: 'Auto-pings closest bike rider upon order checkout, calculates fee & sends WhatsApp tracking.',
+      tasksToday: 42,
+    },
+    {
+      id: 'wf-support',
+      title: '24/7 AI Customer Care Representative',
+      category: 'WHATSAPP & WEB CARE',
+      icon: Headphones,
+      color: '#10B981',
+      status: true,
+      desc: 'Handles order status, return queries & product questions in natural multilingual English & Pidgin.',
+      tasksToday: 118,
+    },
+    {
+      id: 'wf-invoice',
+      title: 'Autonomous Invoicing & Paystack Sync',
+      category: 'FINANCIAL OPS',
+      icon: Receipt,
+      color: '#F59E0B',
+      status: true,
+      desc: 'Generates branded PDF invoices, syncs Paystack webhooks & reconciles accounting ledger.',
+      tasksToday: 31,
+    },
+    {
+      id: 'wf-cal',
+      title: 'Smart Meeting & Calendar Scheduler',
+      category: 'SALES SCHEDULING',
+      icon: Calendar,
+      color: '#A855F7',
+      status: true,
+      desc: 'Proactively books qualifying enterprise leads directly into executive Google Meet / Zoom.',
+      tasksToday: 19,
+    },
+  ])
+
+  const toggleWorkflow = (id: string) => {
+    setWorkflows((prev) =>
+      prev.map((w) => (w.id === id ? { ...w, status: !w.status } : w)),
+    )
+  }
+
+  const triggerManualTest = (wf: WorkflowSwitch) => {
+    setSimulatedAlert(`Successfully triggered test execution for [${wf.title}]. Task executed in 1.1s!`)
+    setTimeout(() => setSimulatedAlert(null), 4500)
+  }
+
+  const name = profile?.full_name?.split(' ')[0] ?? 'Business Ops'
+  const creditsBalance = profile?.wallet_balance ?? 125.0
 
   const referralUrl = `${window.location.origin}/auth?mode=register&ref=${profile?.referral_code || ''}`
 
@@ -70,41 +141,52 @@ export function Dashboard() {
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="size-2 rounded-full bg-brand-400 animate-pulse" />
+            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest font-bold">
-              PORTFOLIO ACCOUNT
+              OPERATIONS COMMAND CENTER
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
             Welcome back, {name}
           </h1>
-          <p className="mt-0.5 font-mono text-xs text-slate-500">{todayLabel}</p>
+          <p className="mt-0.5 font-mono text-xs text-slate-400">{todayLabel} · Zhen Engine Active</p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-400/25 bg-brand-400/10 px-3 py-1.5 font-mono text-xs font-bold text-brand-400">
-            <Sparkles className="size-3.5 text-brand-400" />
-            1.6% DAILY YIELD
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 font-mono text-xs font-bold text-brand-300">
+            <Sparkles className="size-3.5 text-cyan-300" />
+            99.98% HEALTH SLA
           </span>
         </div>
       </div>
 
-      {/* MASTER FINTECH HERO BALANCE CARD */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-[#0e1424] via-[#0a0d17] to-[#070910] p-6 sm:p-8 shadow-2xl">
+      {simulatedAlert && (
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-emerald-300 text-xs font-mono flex items-center justify-between shadow-lg animate-fade-up">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="size-4 text-emerald-400" /> {simulatedAlert}
+          </span>
+          <button type="button" onClick={() => setSimulatedAlert(null)} className="text-slate-400 hover:text-white cursor-pointer">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* OPERATIONS HERO BALANCE CARD */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-[#10172b] via-[#0b101f] to-[#070b14] p-6 sm:p-8 shadow-2xl">
         {/* Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 size-80 rounded-full bg-brand-400/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -right-24 size-80 rounded-full bg-brand-500/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
 
         {/* Card Header */}
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
-              Total Account Net Worth
+              Automation Fuel Credits
             </span>
             <button
               type="button"
               onClick={() => setHideBalance((v) => !v)}
-              className="rounded-lg p-1 text-slate-500 hover:text-slate-300 transition-colors"
+              className="rounded-lg p-1 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
               title={hideBalance ? 'Show balance' : 'Hide balance'}
             >
               {hideBalance ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -113,215 +195,198 @@ export function Dashboard() {
 
           <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-emerald-400 font-mono text-xs font-bold shadow-sm">
             <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>ALGO YIELD ACTIVE · 24H CYCLE</span>
+            <span>AUTONOMOUS CLUSTER SYNCED</span>
           </div>
         </div>
 
         {/* Hero Figure */}
-        <div className="relative z-10 mt-4 mb-6">
-          <div className="flex items-baseline gap-2">
-            <p className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white tracking-tight">
-              {loading ? (
-                'Loading…'
-              ) : hideBalance ? (
-                '••••••••'
-              ) : (
-                formatCurrency(netWorth)
-              )}
-            </p>
-          </div>
-          <p className="mt-2 font-mono text-xs text-slate-400 flex items-center gap-1.5">
-            <TrendingUp className="size-3.5 text-brand-400" />
-            Daily Projected Dividend:{' '}
-            <strong className="text-brand-400 font-bold">
-              {hideBalance ? '••••' : `+${formatCurrency(dailyProjected)} / day`}
-            </strong>
+        <div className="relative z-10 mt-4 flex flex-wrap items-baseline gap-4">
+          <p className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-white">
+            {hideBalance ? '••••••' : formatCurrency(creditsBalance)}
           </p>
+          <span className="font-mono text-xs text-brand-300 font-semibold bg-brand-500/10 px-2 py-0.5 rounded-md border border-brand-500/20">
+            ~12,500 compute tasks available
+          </span>
         </div>
 
-        {/* BANK-APP CLICKY ACTION BUTTONS ROW */}
-        <div className="relative z-10 grid grid-cols-2 gap-2.5 sm:grid-cols-4 pt-1 pb-2">
+        {/* 3 Metrics inside hero card */}
+        <div className="relative z-10 mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3 border-t border-white/8 pt-6">
+          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
+            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Tasks Executed (Month)</p>
+            <p className="font-mono text-xl font-bold text-white mt-1">2,841 tasks</p>
+            <p className="text-[10px] text-emerald-400 mt-0.5">+18% vs last month</p>
+          </div>
+          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
+            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Time Saved This Month</p>
+            <p className="font-mono text-xl font-bold text-cyan-300 mt-1">142.5 hours</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">~3.5 full work weeks</p>
+          </div>
+          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
+            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Avg Execution Latency</p>
+            <p className="font-mono text-xl font-bold text-emerald-400 mt-1">1.2 seconds</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">End-to-end multi-channel</p>
+          </div>
+        </div>
+
+        {/* Quick action triggers */}
+        <div className="relative z-10 mt-6 flex flex-wrap items-center gap-3">
           <Link
             to="/dashboard/deposit"
-            className="group flex items-center justify-center gap-2.5 rounded-2xl bg-brand-400 px-4 py-3.5 text-xs font-display font-black text-obsidian-950 shadow-lg shadow-brand-400/20 transition-all duration-150 hover:bg-brand-300 active:scale-95"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-brand-500/25 hover:from-brand-500 hover:to-brand-400 transition-all cursor-pointer"
           >
-            <ArrowDownToLine className="size-4 transition-transform group-hover:-translate-y-0.5" />
-            <span>Add Funds</span>
+            <Zap className="size-4" /> Top Up Fuel Credits
           </Link>
-
           <Link
             to="/dashboard/withdraw"
-            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/12 bg-white/5 px-4 py-3.5 text-xs font-display font-bold text-white shadow-md transition-all duration-150 hover:bg-white/10 hover:border-white/20 active:scale-95"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.1] transition-all cursor-pointer"
           >
-            <ArrowUpFromLine className="size-4 text-slate-300 transition-transform group-hover:-translate-y-0.5" />
-            <span>Cash Out</span>
+            <Bike className="size-4 text-cyan-400" /> Dispatch Fleet Settings
           </Link>
-
           <Link
             to="/dashboard/referrals"
-            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-xs font-display font-bold text-slate-200 shadow-md transition-all duration-150 hover:bg-white/8 hover:text-white active:scale-95"
+            className="inline-flex items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-2.5 text-xs font-bold text-brand-300 hover:bg-brand-500/20 transition-all cursor-pointer"
           >
-            <Gift className="size-4 text-brand-400" />
-            <span>Earn 15%</span>
+            <Gift className="size-4 text-brand-400" /> 20% Agency Program
           </Link>
-
-          <Link
-            to="/dashboard/history"
-            className="group flex items-center justify-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3.5 text-xs font-display font-bold text-slate-200 shadow-md transition-all duration-150 hover:bg-white/8 hover:text-white active:scale-95"
-          >
-            <FileText className="size-4 text-slate-400" />
-            <span>Statement</span>
-          </Link>
-        </div>
-
-        {/* SMALLER BALANCE DETAILS ON THE CARD (Unified Sub-metrics Strip) */}
-        <div className="relative z-10 mt-7 pt-6 border-t border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Available Cash
-            </span>
-            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-white">
-              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.walletBalance)}
-            </p>
-            <span className="font-mono text-[10px] text-brand-400 font-semibold block mt-0.5">
-              Ready to withdraw
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Active In Trading
-            </span>
-            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-white">
-              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.activeDeposit)}
-            </p>
-            <span className="font-mono text-[10px] text-emerald-400 font-semibold block mt-0.5">
-              1.6% Daily Yield
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Total Profit Earned
-            </span>
-            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-brand-400">
-              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.totalEarned)}
-            </p>
-            <span className="font-mono text-[10px] text-slate-400 block mt-0.5">
-              Cumulative Dividends
-            </span>
-          </div>
-
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3.5 transition-colors hover:border-white/10">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-              Total Withdrawn
-            </span>
-            <p className="mt-1 font-mono text-lg sm:text-xl font-bold text-slate-300">
-              {loading ? '…' : hideBalance ? '••••' : formatCurrency(stats.totalWithdrawn)}
-            </p>
-            <span className="font-mono text-[10px] text-slate-500 block mt-0.5">
-              Settled to personal wallet
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* REFERRAL QUICK BOOST & INVITE CARD */}
-      <div className="rounded-2xl border border-brand-400/25 bg-gradient-to-r from-brand-400/10 via-[#0a0f1c] to-[#0d1424] p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
-        <div className="flex items-center gap-3.5">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-brand-400 text-obsidian-950 font-bold shadow-md shadow-brand-400/30">
-            <Coins className="size-5" />
-          </div>
+      {/* ACTIVE WORKFLOWS SWITCHBOARD */}
+      <div className="rounded-3xl border border-white/10 bg-[#0a0f1d] p-6 shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-4 mb-6">
           <div>
-            <h4 className="text-sm font-display font-bold text-white flex items-center gap-2">
-              Earn 15% Tier-1 + 2% Tier-2 Commissions
-              <span className="rounded bg-brand-400/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-400">
-                INSTANT
+            <h2 className="text-lg font-bold text-white font-display flex items-center gap-2">
+              Active Autonomous Workflows
+              <span className="rounded-full bg-brand-500/15 border border-brand-500/30 px-2 py-0.5 font-mono text-[10px] text-brand-300 font-bold">
+                {workflows.filter((w) => w.status).length} / {workflows.length} RUNNING
               </span>
-            </h4>
-            <p className="font-mono text-xs text-slate-400 mt-0.5">
-              Code: <strong className="text-white">{profile?.referral_code || '—'}</strong> · Share your link to receive instant commissions whenever your partners fund.
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Toggle workflows on/off or test run live executions directly.
             </p>
           </div>
+
+          <button
+            type="button"
+            onClick={copyReferral}
+            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-xs font-semibold text-slate-300 hover:bg-white/[0.08] transition-all cursor-pointer"
+          >
+            {copiedLink ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+            <span>{copiedLink ? 'Link Copied!' : 'Copy Agency Link'}</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={() => void copyReferral()}
-          className="flex items-center gap-2 rounded-xl border border-brand-400/30 bg-brand-400/15 px-4 py-2 font-mono text-xs font-bold text-brand-400 hover:bg-brand-400/25 transition-all active:scale-95"
-        >
-          {copiedLink ? <Check className="size-4 text-emerald-400" /> : <Copy className="size-4" />}
-          <span>{copiedLink ? 'Copied Link!' : 'Copy Referral Link'}</span>
-        </button>
+        <div className="grid gap-4 md:grid-cols-2">
+          {workflows.map((wf) => {
+            const Icon = wf.icon
+            return (
+              <div
+                key={wf.id}
+                className={`rounded-2xl border p-4 transition-all ${
+                  wf.status
+                    ? 'border-white/10 bg-[#0e1528] shadow-md'
+                    : 'border-white/5 bg-white/[0.02] opacity-50'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex size-10 items-center justify-center rounded-xl border shrink-0"
+                      style={{
+                        backgroundColor: `${wf.color}15`,
+                        borderColor: `${wf.color}35`,
+                        color: wf.color,
+                      }}
+                    >
+                      <Icon className="size-5" />
+                    </span>
+                    <div>
+                      <span className="font-mono text-[9px] font-bold uppercase tracking-wider block" style={{ color: wf.color }}>
+                        {wf.category}
+                      </span>
+                      <h3 className="font-display text-sm font-bold text-white">{wf.title}</h3>
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <button
+                    type="button"
+                    onClick={() => toggleWorkflow(wf.id)}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      wf.status ? 'bg-brand-500' : 'bg-slate-700'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                        wf.status ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <p className="text-xs text-slate-300 mb-4">{wf.desc}</p>
+
+                <div className="flex items-center justify-between border-t border-white/5 pt-3 font-mono text-[11px]">
+                  <span className="text-slate-400">
+                    Tasks today: <span className="font-bold text-white">{wf.tasksToday}</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => triggerManualTest(wf)}
+                    className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
+                  >
+                    <Play className="size-3" /> Test Run
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {/* MAIN TWO-COLUMN TRADING & ANALYTICS GRID */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Left Column: Bot Tracker & Growth Chart */}
+      {/* LOWER SECTION: BOT TRACKER & LIVE STREAM */}
+      <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           <BotTracker />
 
-          <div className="glass-card rounded-2xl p-5 sm:p-6 border border-white/8 shadow-xl">
-            <div className="flex items-center justify-between mb-5 border-b border-white/8 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-9 items-center justify-center rounded-xl border border-white/10 bg-[#121522] text-slate-300">
-                  <Activity className="size-4.5 text-brand-400" />
-                </span>
-                <div>
-                  <h3 className="text-sm font-display font-bold text-white tracking-tight">
-                    Algorithmic Yield Chart
-                  </h3>
-                  <p className="font-mono text-[10px] text-slate-500 uppercase">
-                    30-DAY CUMULATIVE EQUITY
-                  </p>
-                </div>
+          {/* 30-Day Task Throughput Chart */}
+          <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-display font-bold text-white">30-Day Automation Growth</h3>
+                <p className="text-[11px] font-mono text-slate-400">Cumulative tasks processed on autopilot</p>
               </div>
-              <Badge tone="success">+38.4% NET</Badge>
+              <span className="font-mono text-xs text-brand-300 font-bold bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">
+                +310% MOM
+              </span>
             </div>
-
-            <div className="h-56">
+            <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={equity} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+                <AreaChart data={equity}>
                   <defs>
-                    <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#00e599" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="#00e599" stopOpacity={0} />
+                    <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.04)" vertical={false} />
-                  <XAxis
-                    dataKey="day"
-                    tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
-                    axisLine={false}
-                    tickLine={false}
-                    minTickGap={28}
-                  />
-                  <YAxis
-                    tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'monospace' }}
-                    axisLine={false}
-                    tickLine={false}
-                    width={50}
-                    tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}k`}
-                  />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" />
+                  <XAxis dataKey="day" stroke="#64748b" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
                   <Tooltip
                     contentStyle={{
-                      background: '#0a0d15',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 10,
+                      backgroundColor: '#0c1220',
+                      borderColor: '#ffffff15',
+                      borderRadius: 12,
                       fontSize: 12,
-                      fontFamily: 'monospace',
                     }}
-                    labelStyle={{ color: '#94a3b8' }}
-                    formatter={(value) => [formatCurrency(Number(value)), 'Cumulative Equity']}
                   />
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#00e599"
+                    stroke="#818cf8"
                     strokeWidth={2}
-                    fill="url(#eq)"
-                    dot={false}
-                    activeDot={{ r: 4, fill: '#00e599' }}
+                    fillOpacity={1}
+                    fill="url(#colorTasks)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -329,39 +394,26 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Right Column: Live Trades Feed */}
-        <div className="glass-card rounded-2xl p-5 sm:p-6 border border-white/8 shadow-xl max-h-fit">
-          <div className="flex items-center justify-between mb-5 border-b border-white/8 pb-4">
-            <div className="flex items-center gap-3">
-              <span className="flex size-9 items-center justify-center rounded-xl border border-white/10 bg-[#121522] text-brand-400">
-                <History className="size-4.5" />
-              </span>
-              <div>
-                <h3 className="text-sm font-display font-bold text-white tracking-tight">
-                  Live Algorithmic Execution
-                </h3>
-                <p className="font-mono text-[10px] text-slate-500 uppercase">
-                  HIGH FREQUENCY SCALPER FEED
-                </p>
+        {/* Right: Live Telemetry Event Feed */}
+        <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between border-b border-white/8 pb-4 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                <h3 className="text-sm font-display font-bold text-white">Live Execution Feed</h3>
               </div>
+              <span className="font-mono text-[10px] text-slate-400">STREAMING</span>
             </div>
-            <Badge tone="brand" pulse>LIVE</Badge>
+            <TradeFeed />
           </div>
-          <TradeFeed />
-        </div>
-      </div>
 
-      {/* Account Info Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-white/6 font-mono text-[11px] text-slate-500">
-        <p>
-          ACCOUNT ID: <span className="text-slate-400">{user?.id.slice(0, 16)}…</span>
-        </p>
-        <p>
-          MEMBER SINCE: <span className="text-slate-400">{formatDate(profile?.created_at)}</span>
-        </p>
-        <p className="flex items-center gap-1.5 text-brand-400">
-          <ShieldCheck className="size-3.5" /> 256-BIT ENCRYPTED QUANT POOL
-        </p>
+          <div className="mt-4 pt-3 border-t border-white/6 flex items-center justify-between text-xs text-slate-400 font-mono">
+            <span>Audit Trail Protected</span>
+            <Link to="/dashboard/history" className="text-brand-300 hover:underline">
+              View All Logs →
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )
