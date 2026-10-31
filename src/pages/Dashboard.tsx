@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom'
 import {
   Eye,
   EyeOff,
-  Gift,
-  Sparkles,
   Copy,
   Check,
   Mail,
@@ -12,9 +10,9 @@ import {
   Headphones,
   Receipt,
   Calendar,
-  Zap,
   Play,
   CheckCircle2,
+  ArrowRight,
 } from 'lucide-react'
 import {
   Area,
@@ -36,7 +34,6 @@ interface WorkflowSwitch {
   title: string
   category: string
   icon: typeof Mail
-  color: string
   status: boolean
   desc: string
   tasksToday: number
@@ -46,58 +43,53 @@ export function Dashboard() {
   const { profile } = useAuth()
   const [hideBalance, setHideBalance] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
-  const [simulatedAlert, setSimulatedAlert] = useState<string | null>(null)
+  const [alertNotice, setAlertNotice] = useState<string | null>(null)
   const equity = useMemo(() => getEquitySeries(), [])
 
   const [workflows, setWorkflows] = useState<WorkflowSwitch[]>([
     {
       id: 'wf-email',
-      title: 'Smart Email Concierge & Auto-Reply',
-      category: 'INBOX AUTOPILOT',
+      title: 'Email correspondence',
+      category: 'Inbound parsing',
       icon: Mail,
-      color: '#6366F1',
       status: true,
       desc: 'Triages sales inquiries, parses RFQ attachments, sends personalized replies in 1.2s.',
       tasksToday: 74,
     },
     {
       id: 'wf-dispatch',
-      title: 'On-Demand Delivery & Okada Booking',
-      category: 'LOGISTICS DISPATCH',
+      title: 'Okada courier dispatch',
+      category: 'Logistics fleet',
       icon: Bike,
-      color: '#06B6D4',
       status: true,
-      desc: 'Auto-pings closest bike rider upon order checkout, calculates fee & sends WhatsApp tracking.',
+      desc: 'Pings closest bike rider upon order checkout, calculates fee, and shares live tracking.',
       tasksToday: 42,
     },
     {
       id: 'wf-support',
-      title: '24/7 AI Customer Care Representative',
-      category: 'WHATSAPP & WEB CARE',
+      title: '24/7 Customer support',
+      category: 'Conversational care',
       icon: Headphones,
-      color: '#10B981',
       status: true,
       desc: 'Handles order status, return queries & product questions in natural multilingual English & Pidgin.',
       tasksToday: 118,
     },
     {
       id: 'wf-invoice',
-      title: 'Autonomous Invoicing & Paystack Sync',
-      category: 'FINANCIAL OPS',
+      title: 'Invoicing & Paystack sync',
+      category: 'Financial operations',
       icon: Receipt,
-      color: '#F59E0B',
       status: true,
-      desc: 'Generates branded PDF invoices, syncs Paystack webhooks & reconciles accounting ledger.',
+      desc: 'Generates branded PDF invoices, syncs Paystack webhooks, and reconciles the accounting ledger.',
       tasksToday: 31,
     },
     {
       id: 'wf-cal',
-      title: 'Smart Meeting & Calendar Scheduler',
-      category: 'SALES SCHEDULING',
+      title: 'Sales meeting scheduler',
+      category: 'Calendar routing',
       icon: Calendar,
-      color: '#A855F7',
       status: true,
-      desc: 'Proactively books qualifying enterprise leads directly into executive Google Meet / Zoom.',
+      desc: 'Books qualifying enterprise leads directly into executive Google Meet and Zoom slots.',
       tasksToday: 19,
     },
   ])
@@ -108,234 +100,167 @@ export function Dashboard() {
     )
   }
 
-  const triggerManualTest = (wf: WorkflowSwitch) => {
-    setSimulatedAlert(`Successfully triggered test execution for [${wf.title}]. Task executed in 1.1s!`)
-    setTimeout(() => setSimulatedAlert(null), 4500)
+  const triggerTestRun = (wf: WorkflowSwitch) => {
+    setAlertNotice(`Test execution sent for ${wf.title}. Latency: 1.1s.`)
+    window.setTimeout(() => setAlertNotice(null), 3500)
   }
 
-  const name = profile?.full_name?.split(' ')[0] ?? 'Business Ops'
   const creditsBalance = profile?.wallet_balance ?? 125.0
-
   const referralUrl = `${window.location.origin}/auth?mode=register&ref=${profile?.referral_code || ''}`
 
   const copyReferral = async () => {
     try {
       await navigator.clipboard.writeText(referralUrl)
       setCopiedLink(true)
-      setTimeout(() => setCopiedLink(false), 2000)
+      window.setTimeout(() => setCopiedLink(false), 2000)
     } catch {
       // ignore
     }
   }
 
-  const todayLabel = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-
   return (
-    <div className="space-y-8 select-none">
-      {/* Top Greeting Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/8 pb-5">
+    <div className="space-y-6 select-none">
+      {/* Top Header without generic greeting */}
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/8 pb-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-mono text-[10px] text-slate-400 uppercase tracking-widest font-bold">
-              OPERATIONS COMMAND CENTER
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-            Welcome back, {name}
+          <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+            Operations console
           </h1>
-          <p className="mt-0.5 font-mono text-xs text-slate-400">{todayLabel} · Zhen Engine Active</p>
+          <p className="mt-0.5 text-xs text-[#8F95A3] font-mono">
+            All 14 clusters operational · 4 active engines running
+          </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-1.5 font-mono text-xs font-bold text-brand-300">
-            <Sparkles className="size-3.5 text-cyan-300" />
-            99.98% HEALTH SLA
-          </span>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/dashboard/deposit"
+            className="rounded-md border border-white/10 bg-[#16181F] px-3 py-1.5 text-xs text-white hover:bg-[#1E212B] transition-colors"
+          >
+            Provision credits
+          </Link>
+          <button
+            type="button"
+            onClick={copyReferral}
+            className="flex items-center gap-1.5 rounded-md border border-white/10 bg-[#16181F] px-3 py-1.5 font-mono text-xs text-[#8F95A3] hover:text-white transition-colors cursor-pointer"
+          >
+            {copiedLink ? <Check className="size-3 text-[#10B981]" /> : <Copy className="size-3" />}
+            <span>{copiedLink ? 'Copied' : 'Partner link'}</span>
+          </button>
         </div>
       </div>
 
-      {simulatedAlert && (
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/30 p-4 text-emerald-300 text-xs font-mono flex items-center justify-between shadow-lg animate-fade-up">
+      {alertNotice && (
+        <div className="rounded-lg border border-[#10B981]/30 bg-[#10B981]/10 px-4 py-2.5 text-xs font-mono text-[#10B981] flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <CheckCircle2 className="size-4 text-emerald-400" /> {simulatedAlert}
+            <CheckCircle2 className="size-4" /> {alertNotice}
           </span>
-          <button type="button" onClick={() => setSimulatedAlert(null)} className="text-slate-400 hover:text-white cursor-pointer">
+          <button type="button" onClick={() => setAlertNotice(null)} className="text-slate-400 hover:text-white cursor-pointer">
             Dismiss
           </button>
         </div>
       )}
 
-      {/* OPERATIONS HERO BALANCE CARD */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-gradient-to-br from-[#10172b] via-[#0b101f] to-[#070b14] p-6 sm:p-8 shadow-2xl">
-        {/* Ambient Glow Orbs */}
-        <div className="absolute -top-24 -right-24 size-80 rounded-full bg-brand-500/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 size-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-
-        {/* Card Header */}
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-400">
-              Automation Fuel Credits
-            </span>
-            <button
-              type="button"
-              onClick={() => setHideBalance((v) => !v)}
-              className="rounded-lg p-1 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-              title={hideBalance ? 'Show balance' : 'Hide balance'}
-            >
-              {hideBalance ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-            </button>
+      {/* Primary Status Banner */}
+      <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
+        <div className="grid gap-6 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/8">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-[#8F95A3]">
+              <span>Credit balance</span>
+              <button
+                type="button"
+                onClick={() => setHideBalance((v) => !v)}
+                className="text-slate-500 hover:text-white"
+              >
+                {hideBalance ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+              </button>
+            </div>
+            <p className="mt-1 font-mono text-2xl font-semibold text-white" data-tabular="true">
+              {hideBalance ? '••••••' : formatCurrency(creditsBalance)}
+            </p>
+            <p className="text-[11px] text-[#8F95A3] mt-0.5 font-mono">~12,500 compute tasks</p>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3 py-1 text-emerald-400 font-mono text-xs font-bold shadow-sm">
-            <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>AUTONOMOUS CLUSTER SYNCED</span>
+          <div className="pt-4 sm:pt-0 sm:pl-6">
+            <span className="text-xs text-[#8F95A3]">Tasks executed today</span>
+            <p className="mt-1 font-mono text-2xl font-semibold text-white" data-tabular="true">
+              284
+            </p>
+            <p className="text-[11px] text-[#10B981] mt-0.5 font-mono">100% autonomous</p>
           </div>
-        </div>
 
-        {/* Hero Figure */}
-        <div className="relative z-10 mt-4 flex flex-wrap items-baseline gap-4">
-          <p className="font-mono text-4xl sm:text-5xl font-extrabold tracking-tight text-white">
-            {hideBalance ? '••••••' : formatCurrency(creditsBalance)}
-          </p>
-          <span className="font-mono text-xs text-brand-300 font-semibold bg-brand-500/10 px-2 py-0.5 rounded-md border border-brand-500/20">
-            ~12,500 compute tasks available
-          </span>
-        </div>
+          <div className="pt-4 sm:pt-0 sm:pl-6">
+            <span className="text-xs text-[#8F95A3]">Hours saved this month</span>
+            <p className="mt-1 font-mono text-2xl font-semibold text-white" data-tabular="true">
+              142.5h
+            </p>
+            <p className="text-[11px] text-[#8F95A3] mt-0.5 font-mono">~3.5 work weeks</p>
+          </div>
 
-        {/* 3 Metrics inside hero card */}
-        <div className="relative z-10 mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3 border-t border-white/8 pt-6">
-          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
-            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Tasks Executed (Month)</p>
-            <p className="font-mono text-xl font-bold text-white mt-1">2,841 tasks</p>
-            <p className="text-[10px] text-emerald-400 mt-0.5">+18% vs last month</p>
+          <div className="pt-4 sm:pt-0 sm:pl-6">
+            <span className="text-xs text-[#8F95A3]">Average latency</span>
+            <p className="mt-1 font-mono text-2xl font-semibold text-[#10B981]" data-tabular="true">
+              1.2s
+            </p>
+            <p className="text-[11px] text-[#8F95A3] mt-0.5 font-mono">End-to-end</p>
           </div>
-          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
-            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Time Saved This Month</p>
-            <p className="font-mono text-xl font-bold text-cyan-300 mt-1">142.5 hours</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">~3.5 full work weeks</p>
-          </div>
-          <div className="rounded-xl border border-white/6 bg-black/25 p-3.5">
-            <p className="font-mono text-[10px] uppercase font-bold text-slate-400">Avg Execution Latency</p>
-            <p className="font-mono text-xl font-bold text-emerald-400 mt-1">1.2 seconds</p>
-            <p className="text-[10px] text-slate-400 mt-0.5">End-to-end multi-channel</p>
-          </div>
-        </div>
-
-        {/* Quick action triggers */}
-        <div className="relative z-10 mt-6 flex flex-wrap items-center gap-3">
-          <Link
-            to="/dashboard/deposit"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-brand-500/25 hover:from-brand-500 hover:to-brand-400 transition-all cursor-pointer"
-          >
-            <Zap className="size-4" /> Top Up Fuel Credits
-          </Link>
-          <Link
-            to="/dashboard/withdraw"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-xs font-bold text-white hover:bg-white/[0.1] transition-all cursor-pointer"
-          >
-            <Bike className="size-4 text-cyan-400" /> Dispatch Fleet Settings
-          </Link>
-          <Link
-            to="/dashboard/referrals"
-            className="inline-flex items-center gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 px-4 py-2.5 text-xs font-bold text-brand-300 hover:bg-brand-500/20 transition-all cursor-pointer"
-          >
-            <Gift className="size-4 text-brand-400" /> 20% Agency Program
-          </Link>
         </div>
       </div>
 
-      {/* ACTIVE WORKFLOWS SWITCHBOARD */}
-      <div className="rounded-3xl border border-white/10 bg-[#0a0f1d] p-6 shadow-xl">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 pb-4 mb-6">
-          <div>
-            <h2 className="text-lg font-bold text-white font-display flex items-center gap-2">
-              Active Autonomous Workflows
-              <span className="rounded-full bg-brand-500/15 border border-brand-500/30 px-2 py-0.5 font-mono text-[10px] text-brand-300 font-bold">
-                {workflows.filter((w) => w.status).length} / {workflows.length} RUNNING
-              </span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Toggle workflows on/off or test run live executions directly.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={copyReferral}
-            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 font-mono text-xs font-semibold text-slate-300 hover:bg-white/[0.08] transition-all cursor-pointer"
-          >
-            {copiedLink ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
-            <span>{copiedLink ? 'Link Copied!' : 'Copy Agency Link'}</span>
-          </button>
+      {/* Autonomous Engines Switchboard */}
+      <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
+        <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-4">
+          <h2 className="text-sm font-medium text-white">
+            Active workflows ({workflows.filter((w) => w.status).length} running)
+          </h2>
+          <span className="font-mono text-xs text-[#8F95A3]">Real-time switchboard</span>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="divide-y divide-white/6">
           {workflows.map((wf) => {
             const Icon = wf.icon
             return (
               <div
                 key={wf.id}
-                className={`rounded-2xl border p-4 transition-all ${
-                  wf.status
-                    ? 'border-white/10 bg-[#0e1528] shadow-md'
-                    : 'border-white/5 bg-white/[0.02] opacity-50'
-                }`}
+                className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
               >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="flex size-10 items-center justify-center rounded-xl border shrink-0"
-                      style={{
-                        backgroundColor: `${wf.color}15`,
-                        borderColor: `${wf.color}35`,
-                        color: wf.color,
-                      }}
-                    >
-                      <Icon className="size-5" />
-                    </span>
-                    <div>
-                      <span className="font-mono text-[9px] font-bold uppercase tracking-wider block" style={{ color: wf.color }}>
-                        {wf.category}
-                      </span>
-                      <h3 className="font-display text-sm font-bold text-white">{wf.title}</h3>
+                <div className="flex items-start gap-3">
+                  <span className="flex size-7 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416] shrink-0 mt-0.5">
+                    <Icon className="size-3.5" />
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-white">{wf.title}</span>
+                      <span className="font-mono text-[10px] text-[#8F95A3]">({wf.category})</span>
                     </div>
+                    <p className="text-[#8F95A3] mt-0.5">{wf.desc}</p>
                   </div>
+                </div>
 
-                  {/* Toggle Switch */}
+                <div className="flex items-center gap-4 self-end sm:self-center font-mono">
+                  <span className="text-[#8F95A3] text-[11px]">
+                    Today: <strong className="text-white">{wf.tasksToday}</strong>
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => triggerTestRun(wf)}
+                    className="flex items-center gap-1 text-[#8F95A3] hover:text-white transition-colors cursor-pointer"
+                  >
+                    <Play className="size-3" /> Test
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => toggleWorkflow(wf.id)}
-                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                      wf.status ? 'bg-brand-500' : 'bg-slate-700'
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out ${
+                      wf.status ? 'bg-[#FF5416]' : 'bg-[#262A36]'
                     }`}
                   >
                     <span
-                      className={`inline-block size-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                        wf.status ? 'translate-x-5' : 'translate-x-0'
+                      className={`inline-block size-4 transform rounded-full bg-white transition duration-150 ease-in-out ${
+                        wf.status ? 'translate-x-4' : 'translate-x-0'
                       }`}
                     />
-                  </button>
-                </div>
-
-                <p className="text-xs text-slate-300 mb-4">{wf.desc}</p>
-
-                <div className="flex items-center justify-between border-t border-white/5 pt-3 font-mono text-[11px]">
-                  <span className="text-slate-400">
-                    Tasks today: <span className="font-bold text-white">{wf.tasksToday}</span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => triggerManualTest(wf)}
-                    className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer"
-                  >
-                    <Play className="size-3" /> Test Run
                   </button>
                 </div>
               </div>
@@ -344,49 +269,46 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* LOWER SECTION: BOT TRACKER & LIVE STREAM */}
+      {/* Throughput Chart and Live Feed */}
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           <BotTracker />
 
-          {/* 30-Day Task Throughput Chart */}
-          <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl">
+          <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-display font-bold text-white">30-Day Automation Growth</h3>
-                <p className="text-[11px] font-mono text-slate-400">Cumulative tasks processed on autopilot</p>
+                <h3 className="text-sm font-medium text-white">30-day task throughput</h3>
+                <p className="text-xs text-[#8F95A3] font-mono">Cumulative automated executions</p>
               </div>
-              <span className="font-mono text-xs text-brand-300 font-bold bg-brand-500/10 px-2 py-0.5 rounded border border-brand-500/20">
-                +310% MOM
-              </span>
+              <span className="font-mono text-xs text-[#10B981]">+310% MoM</span>
             </div>
-            <div className="h-56 w-full">
+            <div className="h-48 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={equity}>
                   <defs>
-                    <linearGradient id="colorTasks" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366F1" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#6366F1" stopOpacity={0.0} />
+                    <linearGradient id="colorTasksClean" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#FF5416" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#FF5416" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" />
-                  <XAxis dataKey="day" stroke="#64748b" tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#64748b" tick={{ fontSize: 10 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
+                  <XAxis dataKey="day" stroke="#545A67" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#545A67" tick={{ fontSize: 10 }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#0c1220',
+                      backgroundColor: '#121419',
                       borderColor: '#ffffff15',
-                      borderRadius: 12,
-                      fontSize: 12,
+                      borderRadius: 6,
+                      fontSize: 11,
                     }}
                   />
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#818cf8"
-                    strokeWidth={2}
+                    stroke="#FF5416"
+                    strokeWidth={1.5}
                     fillOpacity={1}
-                    fill="url(#colorTasks)"
+                    fill="url(#colorTasksClean)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -394,23 +316,22 @@ export function Dashboard() {
           </div>
         </div>
 
-        {/* Right: Live Telemetry Event Feed */}
-        <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl flex flex-col justify-between">
+        {/* Live Execution Stream */}
+        <div className="rounded-xl border border-white/8 bg-[#121419] p-5 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between border-b border-white/8 pb-4 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-                <h3 className="text-sm font-display font-bold text-white">Live Execution Feed</h3>
-              </div>
-              <span className="font-mono text-[10px] text-slate-400">STREAMING</span>
+            <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-3">
+              <h3 className="text-sm font-medium text-white">Execution stream</h3>
+              <span className="font-mono text-[10px] text-[#10B981] flex items-center gap-1">
+                <span className="size-1.5 rounded-full bg-[#10B981]" /> Live
+              </span>
             </div>
             <TradeFeed />
           </div>
 
-          <div className="mt-4 pt-3 border-t border-white/6 flex items-center justify-between text-xs text-slate-400 font-mono">
-            <span>Audit Trail Protected</span>
-            <Link to="/dashboard/history" className="text-brand-300 hover:underline">
-              View All Logs →
+          <div className="mt-4 pt-3 border-t border-white/6 flex items-center justify-between text-xs text-[#8F95A3] font-mono">
+            <span>Immutable audit active</span>
+            <Link to="/dashboard/history" className="text-[#F4F5F7] hover:underline flex items-center gap-1">
+              Full ledger <ArrowRight className="size-3" />
             </Link>
           </div>
         </div>

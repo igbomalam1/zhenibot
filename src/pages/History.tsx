@@ -51,16 +51,16 @@ export function HistoryPage() {
     <div className="space-y-8 select-none">
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="size-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="font-mono text-[10px] text-brand-300 uppercase tracking-widest font-bold">
-            AUDIT TRAIL & LOGS
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="size-1.5 rounded-full bg-[#FF5416]" />
+          <span className="font-mono text-[11px] text-[#8F95A3] tracking-widest uppercase">
+            Audit trail & logs
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-          Execution Logs & Ledger
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F4F5F7]">
+          Execution logs & ledger
         </h1>
-        <p className="mt-1 text-xs text-slate-300">
+        <p className="mt-1 text-sm text-[#8F95A3]">
           Immutable audit record of all automated workflows, credit top-ups, courier calls, and agency payouts.
         </p>
       </div>
@@ -68,19 +68,19 @@ export function HistoryPage() {
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Credits Provisioned', value: formatCurrency(totals.deposit), icon: ArrowDownToLine, color: 'text-cyan-400' },
-          { label: 'Revenue Settled', value: formatCurrency(totals.withdrawal), icon: ArrowUpFromLine, color: 'text-amber-400' },
-          { label: 'Compute Credits', value: formatCurrency(totals.dividend), icon: Zap, color: 'text-emerald-400' },
-          { label: 'Agency Commissions', value: formatCurrency(totals.bonus), icon: Gift, color: 'text-brand-300' },
+          { label: 'Credits provisioned', value: formatCurrency(totals.deposit), icon: ArrowDownToLine, color: 'text-[#F4F5F7]' },
+          { label: 'Revenue settled', value: formatCurrency(totals.withdrawal), icon: ArrowUpFromLine, color: 'text-[#FF5416]' },
+          { label: 'Compute credits', value: formatCurrency(totals.dividend), icon: Zap, color: 'text-emerald-400' },
+          { label: 'Agency commissions', value: formatCurrency(totals.bonus), icon: Gift, color: 'text-[#8F95A3]' },
         ].map((s) => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="glass-card rounded-2xl p-4 border border-white/8 shadow-md">
+            <div key={s.label} className="rounded-xl p-4 border border-white/8 bg-[#13151A]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-slate-400">{s.label}</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#8F95A3]">{s.label}</span>
                 <Icon className={`size-4 ${s.color}`} />
               </div>
-              <p className="font-mono text-2xl font-bold text-white">{s.value}</p>
+              <p className="font-mono text-2xl font-bold text-[#F4F5F7] tnum">{s.value}</p>
             </div>
           )
         })}
@@ -94,10 +94,10 @@ export function HistoryPage() {
             type="button"
             onClick={() => setFilter(tab.id)}
             className={cn(
-              'rounded-xl px-3.5 py-1.5 font-mono text-xs font-semibold transition-all cursor-pointer',
+              'rounded-lg px-3 py-1.5 font-mono text-xs font-medium transition-colors cursor-pointer',
               filter === tab.id
-                ? 'bg-brand-500/15 border border-brand-500/40 text-brand-300 shadow-sm'
-                : 'text-slate-400 hover:bg-white/5 hover:text-white',
+                ? 'bg-white/10 border border-white/15 text-[#F4F5F7]'
+                : 'text-[#8F95A3] hover:bg-white/5 hover:text-[#F4F5F7]',
             )}
           >
             {tab.label}
@@ -106,30 +106,30 @@ export function HistoryPage() {
       </div>
 
       {/* Table Card */}
-      <div className="glass-card rounded-2xl border border-white/8 shadow-xl overflow-hidden">
+      <div className="rounded-xl border border-white/8 bg-[#13151A] overflow-hidden">
         {rows.length === 0 ? (
-          <div className="py-16 text-center text-xs text-slate-500 font-mono">
+          <div className="py-16 text-center text-xs text-[#545A67] font-mono">
             No transaction records match the active filter.
           </div>
         ) : (
-          <div className="divide-y divide-white/5">
+          <div className="divide-y divide-white/6">
             {rows.map((row) => (
               <div
                 key={row.id}
                 className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/[0.02] transition-colors gap-3"
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-white/[0.04] border border-white/8 text-slate-300 font-mono text-xs shrink-0 mt-0.5">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#0B0C0E] border border-white/8 text-[#8F95A3] font-mono text-xs shrink-0 mt-0.5">
                     {row.type === 'deposit' ? '⚡' : row.type === 'withdrawal' ? '📤' : row.type === 'referral_bonus' ? '🎁' : '⚙️'}
                   </span>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold text-brand-300 uppercase">
+                      <span className="font-mono text-[10px] font-medium text-[#8F95A3] uppercase tracking-wider">
                         {typeLabel[row.type]}
                       </span>
-                      <span className="font-mono text-[10px] text-slate-500">#{shortId(row.id)}</span>
+                      <span className="font-mono text-[10px] text-[#545A67]">#{shortId(row.id)}</span>
                     </div>
-                    <p className="font-mono text-xs text-slate-400 mt-0.5">
+                    <p className="font-mono text-xs text-[#8F95A3] mt-0.5">
                       {row.network || 'Zhen Automation Core'} {row.tx_hash && `· Tx: ${shortId(row.tx_hash)}`}
                     </p>
                   </div>
@@ -137,8 +137,8 @@ export function HistoryPage() {
 
                 <div className="flex items-center justify-between sm:justify-end gap-4 font-mono">
                   <div className="text-right">
-                    <p className="text-sm font-bold text-white">{formatCurrency(row.amount)}</p>
-                    <p className="text-[10px] text-slate-500">{formatDate(row.created_at)}</p>
+                    <p className="text-sm font-semibold text-[#F4F5F7] tnum">{formatCurrency(row.amount)}</p>
+                    <p className="text-[10px] text-[#545A67]">{formatDate(row.created_at)}</p>
                   </div>
                   <Badge tone={statusTone(row.status)}>
                     {row.status.toUpperCase()}

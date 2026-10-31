@@ -53,16 +53,16 @@ export function Referrals() {
     <div className="space-y-8 select-none">
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="size-2 rounded-full bg-brand-400 animate-pulse" />
-          <span className="font-mono text-[10px] text-brand-300 uppercase tracking-widest font-bold">
-            PARTNER & AGENCY PROGRAM
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="size-1.5 rounded-full bg-[#FF5416]" />
+          <span className="font-mono text-[11px] text-[#8F95A3] tracking-widest uppercase">
+            Partner & agency network
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display tracking-tight">
-          Agency & Referral Network
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F4F5F7]">
+          Agency & referral network
         </h1>
-        <p className="mt-1 text-xs text-slate-300">
+        <p className="mt-1 text-sm text-[#8F95A3]">
           Onboard other businesses to Zhen Automation and earn 20% recurring monthly revenue across all client subscriptions.
         </p>
       </div>
@@ -70,36 +70,36 @@ export function Referrals() {
       {/* Summary KPI Strip */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { label: 'Onboarded Businesses', value: totals.count, icon: Building2, color: 'text-brand-300' },
-          { label: 'Total Commission Earned', value: formatCurrency(totals.total), icon: Gift, color: 'text-emerald-400' },
-          { label: 'Direct 20% Payouts', value: formatCurrency(totals.tier1), icon: Percent, color: 'text-cyan-300' },
-          { label: 'Sub-Agency 5% Overrides', value: formatCurrency(totals.tier2), icon: Network, color: 'text-indigo-400' },
+          { label: 'Onboarded businesses', value: totals.count, icon: Building2, color: 'text-[#F4F5F7]' },
+          { label: 'Total commission earned', value: formatCurrency(totals.total), icon: Gift, color: 'text-emerald-400' },
+          { label: 'Direct 20% payouts', value: formatCurrency(totals.tier1), icon: Percent, color: 'text-[#FF5416]' },
+          { label: 'Sub-agency 5% overrides', value: formatCurrency(totals.tier2), icon: Network, color: 'text-[#8F95A3]' },
         ].map((s) => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="glass-card rounded-2xl p-4 border border-white/8 shadow-md">
+            <div key={s.label} className="rounded-xl p-4 border border-white/8 bg-[#13151A]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-slate-400">{s.label}</span>
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#8F95A3]">{s.label}</span>
                 <Icon className={`size-4 ${s.color}`} />
               </div>
-              <p className="font-mono text-2xl font-bold text-white">{s.value}</p>
+              <p className="font-mono text-2xl font-bold text-[#F4F5F7] tnum">{s.value}</p>
             </div>
           )
         })}
       </div>
 
       {/* Shareable Link Box */}
-      <div className="glass-card rounded-3xl p-6 sm:p-8 border border-white/10 shadow-xl">
+      <div className="rounded-xl p-6 sm:p-8 border border-white/8 bg-[#13151A]">
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center">
           <div className="space-y-4">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 px-3 py-1 text-xs font-bold text-brand-300 font-mono uppercase">
-              <Sparkles className="size-3.5" /> RECURRING MONTHLY PAYOUTS
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-[#FF5416]/20 bg-[#FF5416]/10 px-2.5 py-1 text-xs font-semibold text-[#FF5416] font-mono uppercase tracking-wider">
+              <Sparkles className="size-3.5" /> Recurring monthly payouts
             </span>
-            <h2 className="text-2xl font-bold text-white font-display">
-              Your Exclusive Agency Partner Link
+            <h2 className="text-xl sm:text-2xl font-bold text-[#F4F5F7] tracking-tight">
+              Your exclusive agency partner link
             </h2>
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Every company or client that creates an account through your link is tied to your agency code. Whenever they purchase automation credits or renew monthly plans, 20% is credited directly to your account.
+            <p className="text-xs text-[#8F95A3] leading-relaxed">
+              Every company or client that registers through your link is mapped to your agency profile. Whenever they top up automation compute credits or renew monthly tiers, 20% is credited directly to your settlement wallet.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-2 pt-2">
@@ -107,24 +107,24 @@ export function Referrals() {
                 type="text"
                 readOnly
                 value={referralUrl}
-                className="flex-1 rounded-xl border border-white/10 bg-[#0a0f1e] px-4 py-3 font-mono text-xs text-white truncate focus:outline-none"
+                className="flex-1 rounded-lg border border-white/10 bg-[#0B0C0E] px-3.5 py-2.5 font-mono text-xs text-[#F4F5F7] truncate focus:border-[#FF5416] focus:outline-none"
               />
               <Button
                 type="button"
                 onClick={copy}
-                className="bg-gradient-to-r from-brand-600 to-brand-500 text-white font-bold shrink-0 cursor-pointer"
+                className="bg-[#FF5416] hover:bg-[#E0480F] text-white font-semibold shrink-0"
               >
-                {copied ? <Check className="size-4 mr-1" /> : <Copy className="size-4 mr-1" />}
-                {copied ? 'Copied!' : 'Copy Partner Link'}
+                {copied ? <Check className="size-4 mr-1.5" /> : <Copy className="size-4 mr-1.5" />}
+                {copied ? 'Copied' : 'Copy partner link'}
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-white/8 bg-black/40 p-5 text-center">
-            <div className="rounded-xl bg-white p-3 shadow-md">
-              <QRCodeSVG value={referralUrl} size={130} level="M" />
+          <div className="flex flex-col items-center justify-center rounded-xl border border-white/6 bg-[#0B0C0E] p-6 text-center">
+            <div className="rounded-lg bg-white p-3">
+              <QRCodeSVG value={referralUrl} size={120} level="M" />
             </div>
-            <p className="mt-3 font-mono text-[10px] text-slate-400 uppercase">
+            <p className="mt-3 font-mono text-[10px] text-[#545A67] uppercase tracking-wider">
               Scan to open agency signup portal
             </p>
           </div>
@@ -132,16 +132,16 @@ export function Referrals() {
       </div>
 
       {/* Referral Client Ledger */}
-      <div className="glass-card rounded-2xl p-6 border border-white/8 shadow-xl">
+      <div className="rounded-xl p-6 border border-white/8 bg-[#13151A]">
         <div className="flex items-center justify-between border-b border-white/8 pb-4 mb-4">
-          <h3 className="text-base font-display font-bold text-white">Client Portfolio Roster</h3>
-          <span className="font-mono text-xs text-slate-400">
-            {referrals.length} Connected Businesses
+          <h3 className="text-sm font-semibold text-[#F4F5F7]">Client portfolio roster</h3>
+          <span className="font-mono text-xs text-[#8F95A3] tnum">
+            {referrals.length} connected businesses
           </span>
         </div>
 
         {referrals.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-500 font-mono">
+          <div className="py-12 text-center text-xs text-[#545A67] font-mono">
             No client accounts registered yet. Share your partner link to start earning 20% recurring.
           </div>
         ) : (
@@ -149,17 +149,17 @@ export function Referrals() {
             {referrals.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center justify-between rounded-xl border border-white/5 bg-[#0a0f1e] p-3.5 text-xs transition-colors hover:border-brand-500/20"
+                className="flex items-center justify-between rounded-lg border border-white/6 bg-[#0B0C0E] p-3.5 text-xs transition-colors hover:border-white/15"
               >
                 <div>
-                  <p className="font-display font-bold text-white">{maskName(r.referee?.full_name ?? null)}</p>
-                  <p className="font-mono text-[10px] text-slate-400">
+                  <p className="font-medium text-[#F4F5F7]">{maskName(r.referee?.full_name ?? null)}</p>
+                  <p className="font-mono text-[10px] text-[#8F95A3]">
                     {r.referee?.email ? maskEmail(r.referee.email) : '—'}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-mono font-bold text-emerald-400">+{formatCurrency(r.commission_amount)}</p>
-                  <span className="font-mono text-[9px] uppercase text-brand-300 font-semibold">
+                  <p className="font-mono font-bold text-emerald-400 tnum">+{formatCurrency(r.commission_amount)}</p>
+                  <span className="font-mono text-[9px] uppercase tracking-wider text-[#8F95A3] font-semibold">
                     Tier {r.tier} ({r.tier === 1 ? '20%' : '5%'})
                   </span>
                 </div>

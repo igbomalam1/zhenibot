@@ -13,22 +13,23 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand-500 text-white font-semibold shadow-md shadow-brand-500/25 hover:bg-brand-400 hover:shadow-brand-500/35 active:brightness-95',
+    'bg-[#FF5416] text-white font-medium hover:bg-[#E0440B] active:bg-[#C23805] shadow-xs',
   secondary:
-    'border border-white/10 bg-white/[0.05] text-white hover:bg-white/[0.1] hover:border-white/20 active:bg-white/[0.04]',
+    'border border-white/10 bg-[#16181F] text-[#F3F4F6] hover:bg-[#1E212B] hover:border-white/15 active:bg-[#13151A]',
   outline:
-    'border border-brand-400/40 text-brand-300 hover:bg-brand-500/10 hover:border-brand-400 active:bg-brand-500/20',
-  ghost: 'text-slate-300 hover:bg-white/5 hover:text-white',
+    'border border-white/15 bg-transparent text-[#F3F4F6] hover:bg-white/[0.04] hover:border-white/25 active:bg-white/[0.08]',
+  ghost:
+    'text-[#8F95A3] hover:text-white hover:bg-white/[0.04] active:bg-white/[0.08]',
   danger:
-    'bg-risk-500 text-white shadow-md shadow-risk-500/20 hover:bg-risk-400 active:bg-risk-600',
+    'bg-[#EF4444] text-white font-medium hover:bg-[#DC2626] active:bg-[#B91C1C]',
   success:
-    'bg-profit-500 text-white font-semibold shadow-md shadow-profit-500/20 hover:bg-profit-400',
+    'bg-[#10B981] text-white font-medium hover:bg-[#059669]',
 }
 
 const sizes: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3.5 text-xs font-semibold rounded-lg gap-1.5',
-  md: 'h-11 px-5 text-sm font-semibold rounded-xl gap-2',
-  lg: 'h-12 px-6 text-sm font-bold rounded-xl gap-2.5',
+  sm: 'h-8 px-3 text-xs rounded-md gap-1.5',
+  md: 'h-10 px-4 text-xs font-medium rounded-lg gap-2',
+  lg: 'h-11 px-5 text-sm font-medium rounded-lg gap-2',
 }
 
 export function buttonClass(
@@ -37,10 +38,10 @@ export function buttonClass(
   className?: string,
 ): string {
   return cn(
-    'inline-flex items-center justify-center tracking-tight transition-all duration-150',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-obsidian-900',
-    'disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none',
-    'active:scale-[0.985] whitespace-nowrap cursor-pointer select-none',
+    'inline-flex items-center justify-center tracking-tight transition-colors duration-100',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5416]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C0E]',
+    'disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
+    'active:scale-[0.99] whitespace-nowrap cursor-pointer select-none',
     variants[variant],
     sizes[size],
     className,
@@ -94,7 +95,7 @@ export function Button({
       onClick={handleClick}
       {...props}
     >
-      {isBusy && <Loader2 className="size-4 animate-spin shrink-0" />}
+      {isBusy && <Loader2 className="size-3.5 animate-spin shrink-0" />}
       {children}
     </button>
   )

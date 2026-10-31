@@ -7,7 +7,7 @@ import { Footer } from '@/components/landing/Footer'
 
 export function Landing() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#090d16] text-slate-300 antialiased selection:bg-brand-500/30 selection:text-white">
+    <div className="min-h-screen overflow-x-hidden bg-[#0B0C0E] text-[#8F95A3] antialiased selection:bg-[#FF5416]/25 selection:text-white">
       <Navbar />
       <main>
         <Hero />

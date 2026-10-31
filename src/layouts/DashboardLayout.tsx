@@ -11,7 +11,6 @@ import {
   ChevronRight,
   ShieldCheck,
   Zap,
-  Sparkles,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -29,44 +28,43 @@ interface NavItem {
 
 const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
   {
-    section: 'OPERATIONS & AUTOMATIONS',
+    section: 'OPERATIONS',
     items: [
       {
         to: '/dashboard',
-        label: 'Operations Center',
-        subtitle: 'Live Telemetry & AI Workflows',
+        label: 'Command console',
+        subtitle: 'Live workflows & telemetry',
         icon: LayoutDashboard,
         end: true,
       },
       {
         to: '/dashboard/deposit',
-        label: 'Automation Fuel & Credits',
-        subtitle: 'Compute Quota & Plan Top-Up',
+        label: 'Fuel & credits',
+        subtitle: 'Compute quota provisioning',
         icon: Zap,
-        badge: 'ACTIVE',
       },
       {
         to: '/dashboard/withdraw',
-        label: 'Dispatch & Fleet Settings',
-        subtitle: 'Courier APIs & Payout Rails',
+        label: 'Fleet & dispatch',
+        subtitle: 'Courier routes & payouts',
         icon: ArrowUpFromLine,
       },
     ],
   },
   {
-    section: 'GROWTH & AUDIT',
+    section: 'AGENCY & AUDIT',
     items: [
       {
         to: '/dashboard/referrals',
-        label: 'Agency & Partner Program',
-        subtitle: '20% Recurring Monthly Payouts',
+        label: 'Agency program',
+        subtitle: '20% recurring monthly cut',
         icon: Gift,
-        badge: '20% CUT',
+        badge: '20%',
       },
       {
         to: '/dashboard/history',
-        label: 'Execution Logs & Audit',
-        subtitle: 'Full Task Telemetry & Payloads',
+        label: 'Execution ledger',
+        subtitle: 'Full telemetry & audit log',
         icon: FileText,
       },
     ],
@@ -75,23 +73,23 @@ const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { profile, signOut } = useAuth()
-  const name = profile?.full_name ?? 'Business Ops'
+  const name = profile?.full_name ?? 'Operations'
 
   return (
-    <div className="flex h-full flex-col bg-[#070b14] border-r border-white/8 select-none">
+    <div className="flex h-full flex-col bg-[#0F1116] border-r border-white/8 select-none">
       {/* Brand Header */}
-      <div className="flex h-20 items-center justify-between px-5 border-b border-white/8 bg-[#090e1a]">
+      <div className="flex h-14 items-center justify-between px-4 border-b border-white/8">
         <Logo />
-        <span className="flex items-center gap-1 rounded-md border border-brand-400/25 bg-brand-500/10 px-2 py-0.5 font-mono text-[9px] font-bold text-brand-300">
-          <Sparkles className="size-3 text-cyan-300" /> PRO
+        <span className="font-mono text-[10px] text-[#8F95A3] border border-white/10 px-1.5 py-0.5 rounded">
+          PRO
         </span>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-5">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
         {NAV_GROUPS.map((group) => (
-          <div key={group.section} className="space-y-1.5">
-            <div className="px-3 pb-1 text-[10px] font-mono font-bold tracking-wider text-slate-500 uppercase">
+          <div key={group.section} className="space-y-1">
+            <div className="px-2 pb-1 text-[10px] font-mono font-medium tracking-wider text-[#545A67] uppercase">
               {group.section}
             </div>
             {group.items.map((item) => (
@@ -102,53 +100,38 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 onClick={onNavigate}
                 className={({ isActive }) =>
                   cn(
-                    'group relative flex items-center justify-between rounded-xl p-2.5 transition-all duration-150 active:scale-[0.98]',
+                    'group flex items-center justify-between rounded-lg px-2.5 py-2 transition-colors',
                     isActive
-                      ? 'bg-[#12192e] border border-brand-500/40 shadow-lg shadow-black/40 text-white'
-                      : 'border border-transparent text-slate-400 hover:bg-white/[0.04] hover:border-white/6 hover:text-slate-200',
+                      ? 'bg-[#181A21] text-white border border-white/10 font-medium'
+                      : 'text-[#8F95A3] hover:text-white hover:bg-white/[0.04]',
                   )
                 }
               >
                 {({ isActive }) => (
                   <>
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <item.icon
                         className={cn(
-                          'flex size-9 shrink-0 items-center justify-center rounded-xl transition-all',
-                          isActive
-                            ? 'bg-gradient-to-br from-brand-600 to-brand-500 text-white font-bold shadow-md shadow-brand-500/30'
-                            : 'bg-white/[0.05] border border-white/8 text-slate-400 group-hover:bg-white/[0.09] group-hover:text-white',
+                          'size-4 shrink-0',
+                          isActive ? 'text-[#FF5416]' : 'text-[#8F95A3] group-hover:text-white',
                         )}
-                      >
-                        <item.icon className="size-4.5" />
-                      </div>
+                      />
                       <div className="min-w-0 text-left">
-                        <p
-                          className={cn(
-                            'text-xs font-display font-bold tracking-tight truncate',
-                            isActive ? 'text-white' : 'text-slate-300 group-hover:text-white',
-                          )}
-                        >
-                          {item.label}
-                        </p>
-                        <p className="text-[10px] font-mono text-slate-500 truncate group-hover:text-slate-400">
-                          {item.subtitle}
-                        </p>
+                        <p className="text-xs truncate">{item.label}</p>
+                        <p className="text-[10px] text-[#545A67] truncate font-mono">{item.subtitle}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5 pl-2 shrink-0">
                       {item.badge && (
-                        <span className="rounded bg-brand-500/15 border border-brand-500/30 px-1.5 py-0.5 font-mono text-[9px] font-bold text-brand-300">
+                        <span className="font-mono text-[9px] text-[#FF5416] bg-[#FF5416]/10 px-1.5 py-0.2 rounded">
                           {item.badge}
                         </span>
                       )}
                       <ChevronRight
                         className={cn(
-                          'size-3.5 transition-transform duration-150',
-                          isActive
-                            ? 'text-brand-400 translate-x-0.5'
-                            : 'text-slate-600 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5',
+                          'size-3.5 transition-transform duration-100',
+                          isActive ? 'text-[#FF5416]' : 'text-[#545A67] opacity-60 group-hover:opacity-100',
                         )}
                       />
                     </div>
@@ -164,64 +147,35 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <NavLink
               to="/admin"
               onClick={onNavigate}
-              className="group flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-amber-400 hover:bg-amber-500/15 transition-all"
+              className="flex items-center justify-between rounded-lg border border-white/8 bg-[#16181F] p-2 text-xs text-[#8F95A3] hover:text-white hover:bg-[#1E212B] transition-colors"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 font-bold">
-                  <ShieldCheck className="size-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-display font-bold text-white tracking-tight">Enterprise Admin</p>
-                  <p className="text-[10px] font-mono text-amber-400/80">Cluster & Fleets Control</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-4 text-[#FF5416]" />
+                <span>Enterprise admin</span>
               </div>
-              <ChevronRight className="size-4 text-amber-400" />
+              <ChevronRight className="size-3.5" />
             </NavLink>
           </div>
         )}
       </nav>
 
-      {/* User Organization Card */}
-      <div className="border-t border-white/8 p-3.5 bg-[#080d18]">
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-b from-[#11172a] to-[#0a0f1d] p-3 shadow-xl">
-          <div className="flex items-center gap-3">
-            <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#141c32]">
-              <img
-                src="/default-avatar.svg"
-                alt={name}
-                className="size-full object-cover"
-              />
-              <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#0f1320] bg-emerald-400" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-display font-bold text-white tracking-tight">
-                {name}
-              </p>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="font-mono text-[10px] uppercase font-bold text-slate-500">
-                  CREDITS:
-                </span>
-                <span className="font-mono text-xs text-brand-300 font-bold truncate">
-                  {formatCurrency(profile?.wallet_balance ?? 0)}
-                </span>
-              </div>
-            </div>
+      {/* Account Info */}
+      <div className="border-t border-white/8 p-3 bg-[#0B0C0E]">
+        <div className="flex items-center justify-between">
+          <div className="min-w-0">
+            <p className="truncate text-xs font-medium text-white">{name}</p>
+            <p className="font-mono text-[11px] text-[#8F95A3] mt-0.5" data-tabular="true">
+              Credits: <span className="text-[#F4F5F7] font-semibold">{formatCurrency(profile?.wallet_balance ?? 0)}</span>
+            </p>
           </div>
-
-          <div className="mt-3 flex items-center justify-between border-t border-white/6 pt-2.5">
-            <span className="inline-flex items-center gap-1 font-mono text-[9px] font-semibold text-emerald-400 uppercase">
-              <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" /> 14 CLUSTERS SYNCED
-            </span>
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-[11px] font-mono text-slate-400 transition-colors hover:bg-risk-500/15 hover:text-risk-400 active:scale-95 cursor-pointer"
-              title="Sign Out"
-            >
-              <LogOut className="size-3" />
-              <span>Sign out</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="p-1.5 rounded-md text-[#8F95A3] hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+            title="Sign out"
+          >
+            <LogOut className="size-3.5" />
+          </button>
         </div>
       </div>
     </div>
@@ -233,23 +187,23 @@ export function DashboardLayout() {
   const { profile } = useAuth()
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-300">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 lg:block">
+    <div className="min-h-screen bg-[#0B0C0E] text-[#8F95A3]">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 lg:block">
         <SidebarContent />
       </aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-xs"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <aside className="absolute inset-y-0 left-0 w-72 animate-fade-up">
+          <aside className="absolute inset-y-0 left-0 w-64 animate-fade-up">
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="absolute right-3 top-4 flex size-8 items-center justify-center rounded-lg border border-white/10 text-slate-400 hover:text-white"
+              className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md border border-white/10 text-slate-400 hover:text-white"
               aria-label="Close menu"
             >
               <X className="size-4" />
@@ -259,25 +213,25 @@ export function DashboardLayout() {
         </div>
       )}
 
-      <div className="lg:pl-64">
+      <div className="lg:pl-60">
         {/* Top Header */}
-        <header className="sticky top-0 z-20 flex h-20 items-center justify-between gap-3 border-b border-white/8 bg-[#090d16]/90 px-4 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-white/8 bg-[#0B0C0E]/90 px-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="flex size-10 items-center justify-center rounded-xl border border-white/10 text-slate-300 hover:bg-white/5 lg:hidden"
+              className="flex size-8 items-center justify-center rounded-md border border-white/10 text-[#8F95A3] hover:bg-white/5 lg:hidden"
               aria-label="Open menu"
             >
-              <Menu className="size-5" />
+              <Menu className="size-4" />
             </button>
 
             <div>
-              <p className="text-base font-display font-bold text-white tracking-tight">
-                Operations Command Center
+              <p className="text-xs font-medium text-white">
+                Command console
               </p>
-              <p className="hidden text-[11px] font-mono text-slate-400 sm:block">
-                Zhen Autonomous AI Operations Engine · 99.98% SLA
+              <p className="hidden text-[10px] font-mono text-[#545A67] sm:block">
+                Region: Cluster Lagos-01 · Operational
               </p>
             </div>
           </div>
@@ -286,32 +240,19 @@ export function DashboardLayout() {
             {profile?.is_admin && (
               <NavLink
                 to="/admin"
-                className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-400 hover:bg-amber-500/20 transition-colors"
+                className="flex items-center gap-1 rounded border border-white/10 px-2 py-0.5 text-[10px] text-[#8F95A3] hover:text-white"
               >
-                <ShieldCheck className="size-3.5" />
-                <span>Admin</span>
+                Admin
               </NavLink>
             )}
-            <span className="hidden items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-bold text-emerald-400 sm:flex">
-              <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
-              ENGINE LIVE
+            <span className="flex items-center gap-1.5 text-[11px] text-[#10B981]">
+              <span className="size-1.5 rounded-full bg-[#10B981]" />
+              Online
             </span>
-            <div className="flex items-center gap-2 rounded-xl border border-white/8 bg-[#0e1424] py-1.5 px-3">
-              <div className="size-6 overflow-hidden rounded-full border border-white/10 bg-[#141c30]">
-                <img
-                  src="/default-avatar.svg"
-                  alt="User"
-                  className="size-full object-cover"
-                />
-              </div>
-              <span className="font-display font-semibold text-xs text-white max-w-[130px] truncate">
-                {profile?.full_name?.split(' ')[0] ?? 'Business Ops'}
-              </span>
-            </div>
           </div>
         </header>
 
-        <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
           <Outlet />
         </main>
       </div>
