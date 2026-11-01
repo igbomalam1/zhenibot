@@ -74,13 +74,16 @@ export function Hero() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1.05fr] items-start">
           {/* Left Column: Heading & Value Proposition */}
           <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-md bg-[#16181F] border border-white/10 px-2.5 py-1 text-xs font-mono text-[#F4F5F7]">
-              <span className="size-1.5 rounded-full bg-[#FF5416]" />
+            <div className="inline-flex items-center gap-2 rounded-md bg-[#142410] border border-white/10 px-2.5 py-1 text-xs font-mono text-[#F4F5F7]">
+              <span className="size-1.5 rounded-full bg-[#459F34]" />
               <span>Zhen Operations Engine</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-[#F4F5F7] leading-[1.12]">
-              Your business operations run 24 hours a day without you.
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-[#F4F5F7] leading-[1.15]">
+              Autonomous business operations,{' '}
+              <span className="text-[#459F34] underline decoration-[#459F34] decoration-4 underline-offset-8">
+                running 24 hours a day.
+              </span>
             </h1>
 
             <p className="text-sm sm:text-base text-[#8F95A3] leading-relaxed max-w-lg">
@@ -121,7 +124,7 @@ export function Hero() {
           </div>
 
           {/* Right Column: Live Operational Switchboard */}
-          <div className="rounded-xl border border-white/10 bg-[#121419] p-5 sm:p-6 shadow-sm">
+          <div className="rounded-xl border border-white/10 bg-[#0e1a0b] p-5 sm:p-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-white/8 pb-4 mb-5">
               <div>
                 <h3 className="text-sm font-medium text-[#F4F5F7]">Live execution switchboard</h3>
@@ -131,15 +134,15 @@ export function Hero() {
                 type="button"
                 onClick={handleRun}
                 disabled={running}
-                className="flex items-center gap-1.5 rounded-md border border-white/10 bg-[#181A21] px-2.5 py-1 text-xs font-mono text-[#F4F5F7] hover:bg-[#20232C] transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 rounded-md border border-white/10 bg-[#142410] px-2.5 py-1 text-xs font-mono text-[#F4F5F7] hover:bg-[#20232C] transition-colors cursor-pointer"
               >
-                <RefreshCw className={`size-3 text-[#FF5416] ${running ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`size-3 text-[#459F34] ${running ? 'animate-spin' : ''}`} />
                 <span>{running ? 'Running...' : 'Execute'}</span>
               </button>
             </div>
 
             {/* Mode Selector */}
-            <div className="flex flex-wrap gap-1.5 mb-5 p-1 rounded-lg bg-[#0B0C0E] border border-white/6">
+            <div className="flex flex-wrap gap-1.5 mb-5 p-1 rounded-lg bg-[#081106] border border-white/6">
               {SCENARIOS.map((s) => (
                 <button
                   key={s.id}
@@ -147,7 +150,7 @@ export function Hero() {
                   onClick={() => setActiveId(s.id)}
                   className={`flex-1 min-w-[120px] rounded-md px-2.5 py-1.5 text-xs text-center transition-colors cursor-pointer ${
                     s.id === activeId
-                      ? 'bg-[#181A21] text-[#F4F5F7] font-medium border border-white/10'
+                      ? 'bg-[#142410] text-[#F4F5F7] font-medium border border-white/10'
                       : 'text-[#8F95A3] hover:text-[#F4F5F7]'
                   }`}
                 >
@@ -158,15 +161,15 @@ export function Hero() {
 
             {/* Event Docket */}
             <div className="space-y-3 font-mono text-xs">
-              <div className="rounded-lg border border-white/6 bg-[#0B0C0E] p-3.5 space-y-1">
+              <div className="rounded-lg border border-white/6 bg-[#081106] p-3.5 space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#8F95A3]">
                   <span>01 / INBOUND EVENT</span>
-                  <span className="text-[#FF5416]">Received</span>
+                  <span className="text-[#459F34]">Received</span>
                 </div>
                 <p className="text-[#F4F5F7] font-sans text-xs pt-1">{active.trigger}</p>
               </div>
 
-              <div className="rounded-lg border border-white/6 bg-[#0B0C0E] p-3.5 space-y-1">
+              <div className="rounded-lg border border-white/6 bg-[#081106] p-3.5 space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#8F95A3]">
                   <span>02 / COGNITIVE PROCESSING</span>
                   <span className="text-[#8F95A3]">{active.latency}</span>
@@ -174,7 +177,7 @@ export function Hero() {
                 <p className="text-[#8F95A3] font-sans text-xs pt-1">{active.detail}</p>
               </div>
 
-              <div className="rounded-lg border border-white/6 bg-[#16181F] p-3.5 space-y-1">
+              <div className="rounded-lg border border-white/6 bg-[#142410] p-3.5 space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#8F95A3]">
                   <span className="flex items-center gap-1.5 text-[#10B981]">
                     <CheckCircle2 className="size-3" /> 03 / ACTION DISPATCHED

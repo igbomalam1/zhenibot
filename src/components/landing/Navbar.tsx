@@ -19,7 +19,7 @@ export function Logo({ className }: { className?: string }) {
       to="/"
       className={cn('flex items-center gap-2.5 text-[#F4F5F7] group select-none', className)}
     >
-      <div className="flex size-7 items-center justify-center rounded-md bg-[#16181F] border border-white/10 text-[#FF5416] transition-colors group-hover:border-[#FF5416]/50">
+      <div className="flex size-7 items-center justify-center rounded-md bg-[#142410] border border-white/10 text-[#459F34] transition-colors group-hover:border-[#459F34]/50">
         <svg viewBox="0 0 20 20" fill="none" className="size-4 stroke-current" strokeWidth="2.2">
           <path d="M3 5h14M3 15h14M8 5l-4 5 4 5M12 5l4 5-4 5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -52,7 +52,7 @@ export function Navbar() {
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-all duration-150',
         scrolled
-          ? 'border-b border-white/[0.08] bg-[#0B0C0E]/90 backdrop-blur-md'
+          ? 'border-b border-white/[0.08] bg-[#081106]/90 backdrop-blur-md'
           : 'bg-transparent',
       )}
     >
@@ -95,7 +95,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="border-t border-white/8 bg-[#0B0C0E] px-4 pb-5 pt-3 md:hidden">
+        <div className="border-t border-white/8 bg-[#081106] px-4 pb-5 pt-3 md:hidden">
           <nav className="flex flex-col gap-1">
             {LINKS.map((l) => (
               <a

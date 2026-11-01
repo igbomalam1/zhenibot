@@ -134,14 +134,14 @@ export function Dashboard() {
         <div className="flex items-center gap-2">
           <Link
             to="/dashboard/deposit"
-            className="rounded-md border border-white/10 bg-[#16181F] px-3 py-1.5 text-xs text-white hover:bg-[#1E212B] transition-colors"
+            className="rounded-md border border-white/10 bg-[#142410] px-3 py-1.5 text-xs text-white hover:bg-[#1E212B] transition-colors"
           >
             Provision credits
           </Link>
           <button
             type="button"
             onClick={copyReferral}
-            className="flex items-center gap-1.5 rounded-md border border-white/10 bg-[#16181F] px-3 py-1.5 font-mono text-xs text-[#8F95A3] hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 rounded-md border border-white/10 bg-[#142410] px-3 py-1.5 font-mono text-xs text-[#8F95A3] hover:text-white transition-colors cursor-pointer"
           >
             {copiedLink ? <Check className="size-3 text-[#10B981]" /> : <Copy className="size-3" />}
             <span>{copiedLink ? 'Copied' : 'Partner link'}</span>
@@ -161,7 +161,7 @@ export function Dashboard() {
       )}
 
       {/* Primary Status Banner */}
-      <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
+      <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-5">
         <div className="grid gap-6 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/8">
           <div>
             <div className="flex items-center gap-2 text-xs text-[#8F95A3]">
@@ -207,7 +207,7 @@ export function Dashboard() {
       </div>
 
       {/* Autonomous Engines Switchboard */}
-      <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
+      <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-5">
         <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-4">
           <h2 className="text-sm font-medium text-white">
             Active workflows ({workflows.filter((w) => w.status).length} running)
@@ -224,7 +224,7 @@ export function Dashboard() {
                 className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex size-7 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416] shrink-0 mt-0.5">
+                  <span className="flex size-7 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34] shrink-0 mt-0.5">
                     <Icon className="size-3.5" />
                   </span>
                   <div>
@@ -253,7 +253,7 @@ export function Dashboard() {
                     type="button"
                     onClick={() => toggleWorkflow(wf.id)}
                     className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-150 ease-in-out ${
-                      wf.status ? 'bg-[#FF5416]' : 'bg-[#262A36]'
+                      wf.status ? 'bg-[#459F34]' : 'bg-[#262A36]'
                     }`}
                   >
                     <span
@@ -274,7 +274,7 @@ export function Dashboard() {
         <div className="space-y-6">
           <BotTracker />
 
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-5">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-medium text-white">30-day task throughput</h3>
@@ -287,8 +287,8 @@ export function Dashboard() {
                 <AreaChart data={equity}>
                   <defs>
                     <linearGradient id="colorTasksClean" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#FF5416" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#FF5416" stopOpacity={0.0} />
+                      <stop offset="5%" stopColor="#459F34" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#459F34" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" />
@@ -296,7 +296,7 @@ export function Dashboard() {
                   <YAxis stroke="#545A67" tick={{ fontSize: 10 }} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#121419',
+                      backgroundColor: '#0e1a0b',
                       borderColor: '#ffffff15',
                       borderRadius: 6,
                       fontSize: 11,
@@ -305,7 +305,7 @@ export function Dashboard() {
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#FF5416"
+                    stroke="#459F34"
                     strokeWidth={1.5}
                     fillOpacity={1}
                     fill="url(#colorTasksClean)"
@@ -317,7 +317,7 @@ export function Dashboard() {
         </div>
 
         {/* Live Execution Stream */}
-        <div className="rounded-xl border border-white/8 bg-[#121419] p-5 flex flex-col justify-between">
+        <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-3">
               <h3 className="text-sm font-medium text-white">Execution stream</h3>

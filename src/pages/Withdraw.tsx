@@ -131,7 +131,7 @@ export function Withdraw() {
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="size-1.5 rounded-full bg-[#FF5416]" />
+          <span className="size-1.5 rounded-full bg-[#459F34]" />
           <span className="font-mono text-[11px] text-[#8F95A3] tracking-widest uppercase">
             Logistics & revenue settlement
           </span>
@@ -147,9 +147,9 @@ export function Withdraw() {
       <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           {/* Balance readout card */}
-          <div className="flex items-center justify-between rounded-xl p-5 border border-white/8 bg-[#13151A]">
+          <div className="flex items-center justify-between rounded-xl p-5 border border-white/8 bg-[#0e1a0b]">
             <div className="flex items-center gap-3.5">
-              <span className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-[#181A21] text-[#FF5416]">
+              <span className="flex size-10 items-center justify-center rounded-lg border border-white/10 bg-[#142410] text-[#459F34]">
                 <Wallet className="size-4" />
               </span>
               <div>
@@ -167,10 +167,10 @@ export function Withdraw() {
           </div>
 
           {/* Courier & Logistics Fleet Configuration */}
-          <div className="rounded-xl p-6 border border-white/8 bg-[#13151A] space-y-4">
+          <div className="rounded-xl p-6 border border-white/8 bg-[#0e1a0b] space-y-4">
             <div className="flex items-center justify-between border-b border-white/8 pb-3">
               <div className="flex items-center gap-2">
-                <Bike className="size-4 text-[#FF5416]" />
+                <Bike className="size-4 text-[#459F34]" />
                 <h3 className="font-semibold text-[#F4F5F7] text-sm">On-demand courier dispatch rules</h3>
               </div>
               <span className="font-mono text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">Fleet online</span>
@@ -187,7 +187,7 @@ export function Withdraw() {
                     setPickupCity(e.target.value)
                     toast.success('Pickup hub updated')
                   }}
-                  className="w-full rounded-lg border border-white/10 bg-[#0B0C0E] p-2.5 text-xs font-mono text-[#F4F5F7] focus:border-[#FF5416] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-[#081106] p-2.5 text-xs font-mono text-[#F4F5F7] focus:border-[#459F34] focus:outline-none"
                 >
                   <option value="Abuja (Wuse 2)">Abuja Central Hub (Wuse 2, Abuja)</option>
                   <option value="Lagos (Ikeja)">Lagos Mainland Hub (Ikeja, Lagos)</option>
@@ -206,7 +206,7 @@ export function Withdraw() {
                     setSelectedFleet(e.target.value)
                     toast.success('Preferred courier partner updated')
                   }}
-                  className="w-full rounded-lg border border-white/10 bg-[#0B0C0E] p-2.5 text-xs font-mono text-[#F4F5F7] focus:border-[#FF5416] focus:outline-none"
+                  className="w-full rounded-lg border border-white/10 bg-[#081106] p-2.5 text-xs font-mono text-[#F4F5F7] focus:border-[#459F34] focus:outline-none"
                 >
                   <option value="SendMe Okada Express">SendMe Okada Express (Fastest Okada Rider Dispatch)</option>
                   <option value="GIG Logistics API">GIG Logistics (Interstate & Express)</option>
@@ -215,7 +215,7 @@ export function Withdraw() {
                 </select>
               </div>
 
-              <div className="flex items-center justify-between rounded-lg border border-white/6 bg-[#0B0C0E] p-3">
+              <div className="flex items-center justify-between rounded-lg border border-white/6 bg-[#081106] p-3">
                 <div>
                   <p className="text-xs font-medium text-[#F4F5F7]">Auto-dispatch upon payment confirmation</p>
                   <p className="text-[11px] text-[#8F95A3]">Pings closest okada rider immediately when Paystack or Stripe verifies order settlement.</p>
@@ -227,7 +227,7 @@ export function Withdraw() {
                     toast.info(autoDispatchOnPaid ? 'Auto-dispatch paused' : 'Auto-dispatch activated')
                   }}
                   className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                    autoDispatchOnPaid ? 'bg-[#FF5416]' : 'bg-[#262A34]'
+                    autoDispatchOnPaid ? 'bg-[#459F34]' : 'bg-[#262A34]'
                   }`}
                 >
                   <span
@@ -242,9 +242,9 @@ export function Withdraw() {
 
           {/* Step 1: Cashout Form */}
           {step === 'form' && (
-            <Card className="border border-white/8 bg-[#13151A] p-6">
+            <Card className="border border-white/8 bg-[#0e1a0b] p-6">
               <div className="flex items-center gap-2 mb-4">
-                <ArrowUpFromLine className="size-4 text-[#FF5416]" />
+                <ArrowUpFromLine className="size-4 text-[#459F34]" />
                 <h3 className="font-semibold text-[#F4F5F7] text-sm">Withdraw partner revenue</h3>
               </div>
               <form onSubmit={requestWithdrawal} className="space-y-4">
@@ -293,7 +293,7 @@ export function Withdraw() {
                   type="submit"
                   size="lg"
                   loading={sending}
-                  className="w-full bg-[#FF5416] hover:bg-[#E0480F] text-white font-semibold"
+                  className="w-full bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold"
                 >
                   Request payout settlement
                 </Button>
@@ -303,8 +303,8 @@ export function Withdraw() {
 
           {/* Step 2: 2FA Verification */}
           {step === 'verify' && (
-            <Card className="border border-[#FF5416]/40 bg-[#13151A] p-6">
-              <div className="flex items-center gap-2 mb-3 text-[#FF5416]">
+            <Card className="border border-[#459F34]/40 bg-[#0e1a0b] p-6">
+              <div className="flex items-center gap-2 mb-3 text-[#459F34]">
                 <KeyRound className="size-4" />
                 <h3 className="font-semibold text-[#F4F5F7] text-sm">2FA email verification</h3>
               </div>
@@ -322,7 +322,7 @@ export function Withdraw() {
                   type="submit"
                   size="lg"
                   loading={confirming}
-                  className="w-full bg-[#FF5416] hover:bg-[#E0480F] text-white font-semibold"
+                  className="w-full bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold"
                 >
                   Confirm & finalize payout
                 </Button>
@@ -348,7 +348,7 @@ export function Withdraw() {
         </div>
 
         {/* Right Column: Historical Withdrawals Ledger */}
-        <div className="rounded-xl p-6 border border-white/8 bg-[#13151A] flex flex-col justify-between">
+        <div className="rounded-xl p-6 border border-white/8 bg-[#0e1a0b] flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between border-b border-white/8 pb-3 mb-4">
               <h3 className="font-semibold text-[#F4F5F7] text-sm">Recent settlement history</h3>
@@ -364,7 +364,7 @@ export function Withdraw() {
                 {withdrawals.slice(0, 6).map((w) => (
                   <div
                     key={w.id}
-                    className="flex items-center justify-between rounded-lg border border-white/6 bg-[#0B0C0E] p-3 text-xs"
+                    className="flex items-center justify-between rounded-lg border border-white/6 bg-[#081106] p-3 text-xs"
                   >
                     <div>
                       <p className="font-mono font-medium text-[#F4F5F7] tnum">{formatCurrency(w.amount)}</p>
@@ -384,7 +384,7 @@ export function Withdraw() {
 
           <div className="mt-6 pt-3 border-t border-white/6 flex items-center justify-between text-xs text-[#8F95A3] font-mono">
             <span className="flex items-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-[#FF5416]" /> Multi-sig cold vault guarded
+              <ShieldCheck className="size-3.5 text-[#459F34]" /> Multi-sig cold vault guarded
             </span>
           </div>
         </div>

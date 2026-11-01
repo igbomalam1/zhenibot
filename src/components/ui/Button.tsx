@@ -13,9 +13,9 @@ export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#FF5416] text-white font-medium hover:bg-[#E0440B] active:bg-[#C23805] shadow-xs',
+    'bg-[#459F34] text-white font-medium hover:bg-[#3a862b] active:bg-[#26591b] shadow-xs',
   secondary:
-    'border border-white/10 bg-[#16181F] text-[#F3F4F6] hover:bg-[#1E212B] hover:border-white/15 active:bg-[#13151A]',
+    'border border-white/10 bg-[#142410] text-[#F3F4F6] hover:bg-[#1E212B] hover:border-white/15 active:bg-[#0e1a0b]',
   outline:
     'border border-white/15 bg-transparent text-[#F3F4F6] hover:bg-white/[0.04] hover:border-white/25 active:bg-white/[0.08]',
   ghost:
@@ -39,7 +39,7 @@ export function buttonClass(
 ): string {
   return cn(
     'inline-flex items-center justify-center tracking-tight transition-colors duration-100',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5416]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0C0E]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#459F34]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#081106]',
     'disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
     'active:scale-[0.99] whitespace-nowrap cursor-pointer select-none',
     variants[variant],

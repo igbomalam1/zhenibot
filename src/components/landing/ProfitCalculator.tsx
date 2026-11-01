@@ -29,7 +29,7 @@ export function ProfitCalculator() {
     <section id="calculator" className="py-20 sm:py-28 border-b border-white/8">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="max-w-xl">
-          <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+          <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
             Operational economics
           </p>
           <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -42,7 +42,7 @@ export function ProfitCalculator() {
 
         <div className="mt-14 grid gap-8 lg:grid-cols-[1.1fr_0.9fr] items-start">
           {/* Controls */}
-          <div className="space-y-6 rounded-xl border border-white/8 bg-[#121419] p-6">
+          <div className="space-y-6 rounded-xl border border-white/8 bg-[#0e1a0b] p-6">
             <div>
               <div className="flex items-center justify-between text-xs mb-2">
                 <span className="text-[#F4F5F7]">Inbound correspondence / day</span>
@@ -57,7 +57,7 @@ export function ProfitCalculator() {
                 step={5}
                 value={emailsPerDay}
                 onChange={(e) => setEmailsPerDay(Number(e.target.value))}
-                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#FF5416] cursor-pointer"
+                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#459F34] cursor-pointer"
               />
             </div>
 
@@ -75,7 +75,7 @@ export function ProfitCalculator() {
                 step={5}
                 value={supportTicketsPerDay}
                 onChange={(e) => setSupportTicketsPerDay(Number(e.target.value))}
-                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#FF5416] cursor-pointer"
+                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#459F34] cursor-pointer"
               />
             </div>
 
@@ -93,7 +93,7 @@ export function ProfitCalculator() {
                 step={5}
                 value={deliveriesPerWeek}
                 onChange={(e) => setDeliveriesPerWeek(Number(e.target.value))}
-                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#FF5416] cursor-pointer"
+                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#459F34] cursor-pointer"
               />
             </div>
 
@@ -111,13 +111,13 @@ export function ProfitCalculator() {
                 step={1}
                 value={hourlyRate}
                 onChange={(e) => setHourlyRate(Number(e.target.value))}
-                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#FF5416] cursor-pointer"
+                className="w-full h-1.5 rounded-lg bg-[#1C1F28] accent-[#459F34] cursor-pointer"
               />
             </div>
           </div>
 
           {/* Result Docket */}
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 space-y-6">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-6">
             <div>
               <p className="font-mono text-xs text-[#8F95A3] uppercase tracking-wider">
                 Monthly time restored

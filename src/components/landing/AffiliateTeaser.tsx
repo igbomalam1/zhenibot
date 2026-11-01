@@ -39,7 +39,7 @@ export function AffiliateTeaser() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Section 1: Integrations */}
         <div className="max-w-xl">
-          <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+          <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
             Integrations
           </p>
           <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -59,7 +59,7 @@ export function AffiliateTeaser() {
               onClick={() => setActiveCategory(cat)}
               className={`rounded-md px-3 py-1.5 text-xs transition-colors cursor-pointer ${
                 activeCategory === cat
-                  ? 'bg-[#181A21] text-[#F4F5F7] border border-white/10 font-medium'
+                  ? 'bg-[#142410] text-[#F4F5F7] border border-white/10 font-medium'
                   : 'text-[#8F95A3] hover:text-[#F4F5F7]'
               }`}
             >
@@ -73,7 +73,7 @@ export function AffiliateTeaser() {
           {filtered.map((item) => (
             <div
               key={item.name}
-              className="rounded-lg border border-white/8 bg-[#121419] p-4 flex flex-col justify-between space-y-3"
+              className="rounded-lg border border-white/8 bg-[#0e1a0b] p-4 flex flex-col justify-between space-y-3"
             >
               <div>
                 <div className="flex items-center justify-between text-xs mb-1.5">
@@ -94,10 +94,10 @@ export function AffiliateTeaser() {
 
         {/* Section 2: Agency Partner Program */}
         <div id="affiliate" className="mt-24 pt-16 border-t border-white/8">
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 sm:p-10">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 sm:p-10">
             <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
               <div className="space-y-4">
-                <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+                <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
                   Agency & consultant program
                 </p>
                 <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -109,15 +109,15 @@ export function AffiliateTeaser() {
 
                 <ul className="space-y-2 text-xs text-[#F4F5F7] pt-2">
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                    <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                     <span>20% monthly recurring commission on all client plans and fuel top-ups</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                    <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                     <span>Multi-client agency dashboard with shared template deployment</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                    <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                     <span>Direct monthly settlements via Bank Wire, Paystack, or Crypto USDT</span>
                   </li>
                 </ul>
@@ -131,17 +131,17 @@ export function AffiliateTeaser() {
 
               {/* Commission Structure */}
               <div className="space-y-3 font-mono text-xs">
-                <div className="rounded-lg border border-white/8 bg-[#0B0C0E] p-4">
+                <div className="rounded-lg border border-white/8 bg-[#081106] p-4">
                   <div className="flex items-center justify-between text-[#F4F5F7] font-medium mb-1">
                     <span>Tier 1: Direct client accounts</span>
-                    <span className="text-[#FF5416]">20% recurring</span>
+                    <span className="text-[#459F34]">20% recurring</span>
                   </div>
                   <p className="text-[#8F95A3] font-sans text-xs">
                     Credited monthly on every active workflow subscription referred through your partner link.
                   </p>
                 </div>
 
-                <div className="rounded-lg border border-white/8 bg-[#0B0C0E] p-4">
+                <div className="rounded-lg border border-white/8 bg-[#081106] p-4">
                   <div className="flex items-center justify-between text-[#F4F5F7] font-medium mb-1">
                     <span>Tier 2: Sub-agency referrals</span>
                     <span className="text-[#F4F5F7]">5% override</span>
@@ -151,7 +151,7 @@ export function AffiliateTeaser() {
                   </p>
                 </div>
 
-                <div className="rounded-lg border border-white/6 bg-[#16181F] p-3 text-[11px] text-[#8F95A3] flex items-center justify-between">
+                <div className="rounded-lg border border-white/6 bg-[#142410] p-3 text-[11px] text-[#8F95A3] flex items-center justify-between">
                   <span>Average monthly agency earnings:</span>
                   <span className="text-[#10B981] font-semibold">$1,850 / month</span>
                 </div>

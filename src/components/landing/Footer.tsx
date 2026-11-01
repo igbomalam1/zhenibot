@@ -124,12 +124,12 @@ export function Faq() {
 
 export function Footer() {
   return (
-    <footer className="pt-20 pb-12 bg-[#0B0C0E]">
+    <footer className="pt-20 pb-12 bg-[#081106]">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Pricing Section */}
         <div id="pricing" className="mb-24 pb-20 border-b border-white/8">
           <div className="max-w-xl mb-12">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
               Transparent plans
             </p>
             <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -147,15 +147,15 @@ export function Footer() {
                 className={cn(
                   'rounded-xl border p-6 flex flex-col justify-between space-y-6',
                   plan.highlight
-                    ? 'border-[#FF5416]/50 bg-[#14161D]'
-                    : 'border-white/8 bg-[#121419]',
+                    ? 'border-[#459F34]/50 bg-[#14161D]'
+                    : 'border-white/8 bg-[#0e1a0b]',
                 )}
               >
                 <div>
                   <div className="flex items-center justify-between">
                     <h3 className="text-base font-medium text-[#F4F5F7]">{plan.name}</h3>
                     {plan.highlight && (
-                      <span className="font-mono text-[10px] text-[#FF5416] border border-[#FF5416]/30 px-2 py-0.5 rounded">
+                      <span className="font-mono text-[10px] text-[#459F34] border border-[#459F34]/30 px-2 py-0.5 rounded">
                         Most popular
                       </span>
                     )}
@@ -170,7 +170,7 @@ export function Footer() {
                   <ul className="mt-5 space-y-2.5 text-xs text-[#F4F5F7]">
                     {plan.features.map((feat) => (
                       <li key={feat} className="flex items-start gap-2">
-                        <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                        <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </li>
                     ))}
@@ -197,7 +197,7 @@ export function Footer() {
         {/* FAQ Section */}
         <div id="faq" className="mb-24 pb-20 border-b border-white/8">
           <div className="max-w-xl mb-10">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
               Questions
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#F4F5F7]">

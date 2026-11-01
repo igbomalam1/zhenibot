@@ -1,10 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ground: #0b0c0e;
-  --color-raised: #13151a;
-  --color-surface: #181a21;
-  --color-surface-hover: #1f222b;
+  --color-ground: #081106;
+  --color-raised: #0e1a0b;
+  --color-surface: #142410;
+  --color-surface-hover: #1a2f15;
   --color-rule: rgba(255, 255, 255, 0.08);
 
   /* Stepped Inks */
@@ -14,35 +14,35 @@
 
   /* Backward compatibility for previous classes */
   --color-obsidian-950: #07080a;
-  --color-obsidian-900: #0b0c0e;
-  --color-obsidian-850: #13151a;
-  --color-obsidian-800: #181a21;
+  --color-obsidian-900: #081106;
+  --color-obsidian-850: #0e1a0b;
+  --color-obsidian-800: #142410;
   --color-obsidian-750: #1e212a;
   --color-obsidian-700: #262a36;
 
   --color-navy-950: #07080a;
-  --color-navy-900: #0b0c0e;
-  --color-navy-850: #13151a;
-  --color-navy-800: #181a21;
+  --color-navy-900: #081106;
+  --color-navy-850: #0e1a0b;
+  --color-navy-800: #142410;
   --color-navy-700: #1e212a;
   --color-navy-600: #262a36;
 
-  /* One defended accent: Signal Orange */
-  --color-brand-700: #c23805;
-  --color-brand-600: #e0440b;
-  --color-brand-500: #ff5416;
-  --color-brand-400: #ff723f;
-  --color-brand-300: #ffa180;
+  /* One defended accent: Brand Leaf Green (portfolio-v2) */
+  --color-brand-700: #26591b;
+  --color-brand-600: #357b25;
+  --color-brand-500: #459F34;
+  --color-brand-400: #5cb949;
+  --color-brand-300: #88d479;
 
   /* Functional states only */
-  --color-profit-600: #0e9355;
-  --color-profit-500: #10b981;
-  --color-profit-400: #34d399;
-  --color-profit-300: #6ee7b7;
+  --color-profit-600: #26591b;
+  --color-profit-500: #459F34;
+  --color-profit-400: #5cb949;
+  --color-profit-300: #88d479;
 
-  --color-cyan-500: #0ea5e9;
-  --color-cyan-400: #38bdf8;
-  --color-cyan-300: #7dd3fc;
+  --color-cyan-500: #459F34;
+  --color-cyan-400: #5cb949;
+  --color-cyan-300: #88d479;
 
   --color-risk-500: #ef4444;
   --color-risk-400: #f87171;
@@ -79,7 +79,7 @@
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #0b0c0e;
+    background-color: #081106;
     color: #8f95a3;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -103,7 +103,7 @@
   }
 
   ::selection {
-    background: rgba(255, 84, 22, 0.3);
+    background: rgba(69, 159, 52, 0.3);
     color: #ffffff;
   }
 
@@ -113,23 +113,23 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #0b0c0e;
+    background: #081106;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1e212a;
+    background: #193114;
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #2a2f3c;
+    background: #459F34;
   }
 }
 
 @layer components {
   /* Restrained, non-gimmicky panels */
   .panel {
-    background-color: #13151a;
+    background-color: #0e1a0b;
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -140,7 +140,7 @@
 
   /* Backward compatibility for previous classes */
   .glass-card {
-    background-color: #13151a;
+    background-color: #0e1a0b;
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
@@ -157,3 +157,4 @@
     border-color: rgba(255, 255, 255, 0.08);
   }
 }
+

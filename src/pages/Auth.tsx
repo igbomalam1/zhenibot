@@ -17,7 +17,7 @@ const YEAR = new Date().getFullYear()
 
 function SidePanel() {
   return (
-    <div className="relative hidden overflow-hidden border-r border-white/8 bg-[#0B0C0E] lg:flex lg:flex-col lg:justify-between lg:p-12">
+    <div className="relative hidden overflow-hidden border-r border-white/8 bg-[#081106] lg:flex lg:flex-col lg:justify-between lg:p-12">
       {/* Background Architectural Canvas */}
       <div className="absolute inset-0 pointer-events-none opacity-40">
         <QuantRadarCanvas className="w-full h-full" />
@@ -28,8 +28,8 @@ function SidePanel() {
       </div>
 
       <div className="relative z-10">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#13151A] px-3 py-1 font-mono text-[11px] text-[#8F95A3]">
-          <span className="size-1.5 rounded-full bg-[#FF5416]" />
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0e1a0b] px-3 py-1 font-mono text-[11px] text-[#8F95A3]">
+          <span className="size-1.5 rounded-full bg-[#459F34]" />
           <span className="tracking-wider uppercase">Autonomous operations engine</span>
         </div>
 
@@ -47,7 +47,7 @@ function SidePanel() {
             { label: 'Avg dispatch time', value: '1.2s' },
             { label: 'Cluster uptime', value: '99.98%' },
           ].map((s) => (
-            <div key={s.label} className="rounded-lg border border-white/8 bg-[#13151A] p-3.5">
+            <div key={s.label} className="rounded-lg border border-white/8 bg-[#0e1a0b] p-3.5">
               <p className="font-mono text-lg font-bold text-[#F4F5F7] tracking-tight tnum">{s.value}</p>
               <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-[#545A67]">
                 {s.label}
@@ -56,7 +56,7 @@ function SidePanel() {
           ))}
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-lg border border-white/8 bg-[#13151A] p-3.5">
+        <div className="mt-6 flex items-center gap-3 rounded-lg border border-white/8 bg-[#0e1a0b] p-3.5">
           <span className="flex size-2 rounded-full bg-emerald-400" />
           <p className="text-xs font-mono text-[#8F95A3]">
             <span className="font-semibold text-[#F4F5F7]">System status:</span> All 14 automation clusters operational.
@@ -149,24 +149,24 @@ export function Auth() {
   }
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-[1.1fr_0.9fr] bg-[#0B0C0E] text-[#8F95A3]">
+    <div className="grid min-h-screen lg:grid-cols-[1.1fr_0.9fr] bg-[#081106] text-[#8F95A3]">
       <SidePanel />
 
-      <div className="flex flex-col justify-between p-6 sm:p-12 bg-[#0B0C0E]">
+      <div className="flex flex-col justify-between p-6 sm:p-12 bg-[#081106]">
         <div className="flex items-center justify-between lg:hidden mb-8">
           <Logo />
         </div>
 
         <div className="mx-auto w-full max-w-sm my-auto">
           {/* Mode Switcher */}
-          <div className="grid grid-cols-2 gap-1 rounded-lg border border-white/8 bg-[#13151A] p-1 mb-8">
+          <div className="grid grid-cols-2 gap-1 rounded-lg border border-white/8 bg-[#0e1a0b] p-1 mb-8">
             <button
               type="button"
               onClick={() => setMode('login')}
               className={cn(
                 'rounded-md py-2 font-mono text-xs font-semibold transition-colors cursor-pointer',
                 mode === 'login'
-                  ? 'bg-[#FF5416] text-white'
+                  ? 'bg-[#459F34] text-white'
                   : 'text-[#8F95A3] hover:text-[#F4F5F7]',
               )}
             >
@@ -178,7 +178,7 @@ export function Auth() {
               className={cn(
                 'rounded-md py-2 font-mono text-xs font-semibold transition-colors cursor-pointer',
                 mode === 'register'
-                  ? 'bg-[#FF5416] text-white'
+                  ? 'bg-[#459F34] text-white'
                   : 'text-[#8F95A3] hover:text-[#F4F5F7]',
               )}
             >
@@ -258,7 +258,7 @@ export function Auth() {
               type="submit"
               size="lg"
               loading={loading}
-              className="w-full bg-[#FF5416] hover:bg-[#E0480F] text-white font-semibold mt-2"
+              className="w-full bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold mt-2"
             >
               {mode === 'login' ? 'Sign in to console' : 'Launch operations workspace'}
               <ArrowRight className="size-4 ml-1" />
@@ -267,7 +267,7 @@ export function Auth() {
 
           <div className="mt-8 pt-6 border-t border-white/6 text-center text-xs text-[#8F95A3]">
             <span className="flex items-center justify-center gap-1.5">
-              <ShieldCheck className="size-3.5 text-[#FF5416]" /> Enterprise-grade 256-bit AES encryption
+              <ShieldCheck className="size-3.5 text-[#459F34]" /> Enterprise-grade 256-bit AES encryption
             </span>
           </div>
         </div>

@@ -52,7 +52,7 @@ export function HistoryPage() {
       {/* Title */}
       <div className="border-b border-white/8 pb-5">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="size-1.5 rounded-full bg-[#FF5416]" />
+          <span className="size-1.5 rounded-full bg-[#459F34]" />
           <span className="font-mono text-[11px] text-[#8F95A3] tracking-widest uppercase">
             Audit trail & logs
           </span>
@@ -69,13 +69,13 @@ export function HistoryPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: 'Credits provisioned', value: formatCurrency(totals.deposit), icon: ArrowDownToLine, color: 'text-[#F4F5F7]' },
-          { label: 'Revenue settled', value: formatCurrency(totals.withdrawal), icon: ArrowUpFromLine, color: 'text-[#FF5416]' },
+          { label: 'Revenue settled', value: formatCurrency(totals.withdrawal), icon: ArrowUpFromLine, color: 'text-[#459F34]' },
           { label: 'Compute credits', value: formatCurrency(totals.dividend), icon: Zap, color: 'text-emerald-400' },
           { label: 'Agency commissions', value: formatCurrency(totals.bonus), icon: Gift, color: 'text-[#8F95A3]' },
         ].map((s) => {
           const Icon = s.icon
           return (
-            <div key={s.label} className="rounded-xl p-4 border border-white/8 bg-[#13151A]">
+            <div key={s.label} className="rounded-xl p-4 border border-white/8 bg-[#0e1a0b]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-[#8F95A3]">{s.label}</span>
                 <Icon className={`size-4 ${s.color}`} />
@@ -106,7 +106,7 @@ export function HistoryPage() {
       </div>
 
       {/* Table Card */}
-      <div className="rounded-xl border border-white/8 bg-[#13151A] overflow-hidden">
+      <div className="rounded-xl border border-white/8 bg-[#0e1a0b] overflow-hidden">
         {rows.length === 0 ? (
           <div className="py-16 text-center text-xs text-[#545A67] font-mono">
             No transaction records match the active filter.
@@ -119,7 +119,7 @@ export function HistoryPage() {
                 className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/[0.02] transition-colors gap-3"
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#0B0C0E] border border-white/8 text-[#8F95A3] font-mono text-xs shrink-0 mt-0.5">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#081106] border border-white/8 text-[#8F95A3] font-mono text-xs shrink-0 mt-0.5">
                     {row.type === 'deposit' ? '⚡' : row.type === 'withdrawal' ? '📤' : row.type === 'referral_bonus' ? '🎁' : '⚙️'}
                   </span>
                   <div>

@@ -102,7 +102,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   cn(
                     'group flex items-center justify-between rounded-lg px-2.5 py-2 transition-colors',
                     isActive
-                      ? 'bg-[#181A21] text-white border border-white/10 font-medium'
+                      ? 'bg-[#142410] text-white border border-white/10 font-medium'
                       : 'text-[#8F95A3] hover:text-white hover:bg-white/[0.04]',
                   )
                 }
@@ -113,7 +113,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                       <item.icon
                         className={cn(
                           'size-4 shrink-0',
-                          isActive ? 'text-[#FF5416]' : 'text-[#8F95A3] group-hover:text-white',
+                          isActive ? 'text-[#459F34]' : 'text-[#8F95A3] group-hover:text-white',
                         )}
                       />
                       <div className="min-w-0 text-left">
@@ -124,14 +124,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
                     <div className="flex items-center gap-1.5 pl-2 shrink-0">
                       {item.badge && (
-                        <span className="font-mono text-[9px] text-[#FF5416] bg-[#FF5416]/10 px-1.5 py-0.2 rounded">
+                        <span className="font-mono text-[9px] text-[#459F34] bg-[#459F34]/10 px-1.5 py-0.2 rounded">
                           {item.badge}
                         </span>
                       )}
                       <ChevronRight
                         className={cn(
                           'size-3.5 transition-transform duration-100',
-                          isActive ? 'text-[#FF5416]' : 'text-[#545A67] opacity-60 group-hover:opacity-100',
+                          isActive ? 'text-[#459F34]' : 'text-[#545A67] opacity-60 group-hover:opacity-100',
                         )}
                       />
                     </div>
@@ -147,10 +147,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <NavLink
               to="/admin"
               onClick={onNavigate}
-              className="flex items-center justify-between rounded-lg border border-white/8 bg-[#16181F] p-2 text-xs text-[#8F95A3] hover:text-white hover:bg-[#1E212B] transition-colors"
+              className="flex items-center justify-between rounded-lg border border-white/8 bg-[#142410] p-2 text-xs text-[#8F95A3] hover:text-white hover:bg-[#1E212B] transition-colors"
             >
               <div className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-[#FF5416]" />
+                <ShieldCheck className="size-4 text-[#459F34]" />
                 <span>Enterprise admin</span>
               </div>
               <ChevronRight className="size-3.5" />
@@ -160,7 +160,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       {/* Account Info */}
-      <div className="border-t border-white/8 p-3 bg-[#0B0C0E]">
+      <div className="border-t border-white/8 p-3 bg-[#081106]">
         <div className="flex items-center justify-between">
           <div className="min-w-0">
             <p className="truncate text-xs font-medium text-white">{name}</p>
@@ -187,7 +187,7 @@ export function DashboardLayout() {
   const { profile } = useAuth()
 
   return (
-    <div className="min-h-screen bg-[#0B0C0E] text-[#8F95A3]">
+    <div className="min-h-screen bg-[#081106] text-[#8F95A3]">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 lg:block">
         <SidebarContent />
       </aside>
@@ -215,7 +215,7 @@ export function DashboardLayout() {
 
       <div className="lg:pl-60">
         {/* Top Header */}
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-white/8 bg-[#0B0C0E]/90 px-4 backdrop-blur-md sm:px-6">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-white/8 bg-[#081106]/90 px-4 backdrop-blur-md sm:px-6">
           <div className="flex items-center gap-3">
             <button
               type="button"

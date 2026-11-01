@@ -198,7 +198,7 @@ export function LiveChatWidget() {
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className="group relative flex size-12 items-center justify-center rounded-xl border border-white/10 bg-[#13151A] text-[#FF5416] shadow-xl transition-all hover:border-[#FF5416]/50"
+          className="group relative flex size-12 items-center justify-center rounded-xl border border-white/10 bg-[#0e1a0b] text-[#459F34] shadow-xl transition-all hover:border-[#459F34]/50"
           aria-label="Open Live Chat"
         >
           <MessageSquare className="size-5 transition-transform group-hover:scale-105" />
@@ -206,7 +206,7 @@ export function LiveChatWidget() {
             <span className="relative inline-flex size-2.5 rounded-full bg-emerald-400" />
           </span>
           {unreadCount > 0 && (
-            <span className="absolute -top-2 -left-2 flex size-4 items-center justify-center rounded-full bg-[#FF5416] font-mono text-[9px] font-bold text-white tnum">
+            <span className="absolute -top-2 -left-2 flex size-4 items-center justify-center rounded-full bg-[#459F34] font-mono text-[9px] font-bold text-white tnum">
               {unreadCount}
             </span>
           )}
@@ -215,13 +215,13 @@ export function LiveChatWidget() {
 
       {/* Chat Window Panel */}
       {isOpen && (
-        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#0B0C0E] shadow-2xl">
+        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#081106] shadow-2xl">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/8 bg-[#13151A] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/8 bg-[#0e1a0b] px-4 py-3">
             <div className="flex items-center gap-2.5">
-              <div className="relative flex size-8 items-center justify-center rounded-lg border border-white/10 bg-[#181A21] text-[#FF5416]">
+              <div className="relative flex size-8 items-center justify-center rounded-lg border border-white/10 bg-[#142410] text-[#459F34]">
                 <Bot className="size-4" />
-                <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-400 ring-2 ring-[#13151A]" />
+                <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-400 ring-2 ring-[#0e1a0b]" />
               </div>
               <div>
                 <h4 className="text-xs font-semibold text-[#F4F5F7] tracking-tight">
@@ -255,7 +255,7 @@ export function LiveChatWidget() {
           {/* Body Content */}
           {!hasStarted ? (
             <div className="flex flex-1 flex-col justify-center p-6 text-center">
-              <div className="mx-auto flex size-11 items-center justify-center rounded-lg border border-white/10 bg-[#13151A] text-[#FF5416] mb-3">
+              <div className="mx-auto flex size-11 items-center justify-center rounded-lg border border-white/10 bg-[#0e1a0b] text-[#459F34] mb-3">
                 <MessageSquare className="size-5" />
               </div>
               <h5 className="text-sm font-semibold text-[#F4F5F7]">Consult operations AI</h5>
@@ -276,7 +276,7 @@ export function LiveChatWidget() {
                         value={guestName}
                         onChange={(e) => setGuestName(e.target.value)}
                         placeholder="Alex Smith"
-                        className="w-full rounded-lg border border-white/10 bg-[#13151A] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#FF5416] focus:outline-none"
+                        className="w-full rounded-lg border border-white/10 bg-[#0e1a0b] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
                       />
                     </div>
                     <div>
@@ -288,14 +288,14 @@ export function LiveChatWidget() {
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         placeholder="alex@company.com"
-                        className="w-full rounded-lg border border-white/10 bg-[#13151A] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#FF5416] focus:outline-none"
+                        className="w-full rounded-lg border border-white/10 bg-[#0e1a0b] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
                       />
                     </div>
                   </>
                 )}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#FF5416] hover:bg-[#E0480F] py-2.5 text-xs font-semibold text-white transition-colors cursor-pointer"
+                  className="w-full rounded-lg bg-[#459F34] hover:bg-[#3a862b] py-2.5 text-xs font-semibold text-white transition-colors cursor-pointer"
                 >
                   Start conversation
                 </button>
@@ -319,8 +319,8 @@ export function LiveChatWidget() {
                         className={cn(
                           'rounded-lg px-3.5 py-2.5 text-xs leading-relaxed',
                           isUser
-                            ? 'bg-[#FF5416] text-white font-medium'
-                            : 'border border-white/8 bg-[#13151A] text-[#F4F5F7]',
+                            ? 'bg-[#459F34] text-white font-medium'
+                            : 'border border-white/8 bg-[#0e1a0b] text-[#F4F5F7]',
                         )}
                       >
                         {m.message}
@@ -332,19 +332,19 @@ export function LiveChatWidget() {
               </div>
 
               {/* Chat Input */}
-              <form onSubmit={handleSendMessage} className="border-t border-white/8 bg-[#13151A] p-3">
+              <form onSubmit={handleSendMessage} className="border-t border-white/8 bg-[#0e1a0b] p-3">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Type your message…"
-                    className="flex-1 rounded-lg border border-white/10 bg-[#0B0C0E] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#FF5416] focus:outline-none"
+                    className="flex-1 rounded-lg border border-white/10 bg-[#081106] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={!text.trim() || sending}
-                    className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#FF5416] hover:bg-[#E0480F] text-white transition-colors disabled:opacity-40 cursor-pointer"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#459F34] hover:bg-[#3a862b] text-white transition-colors disabled:opacity-40 cursor-pointer"
                   >
                     {sending ? <Loader2 className="size-4 animate-spin text-white" /> : <Send className="size-3.5" />}
                   </button>

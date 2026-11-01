@@ -15,7 +15,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Section Heading */}
         <div className="max-w-xl">
-          <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+          <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
             System capabilities
           </p>
           <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -29,10 +29,10 @@ export function HowItWorks() {
         {/* 4 Core Capabilities Grid */}
         <div className="mt-14 grid gap-6 md:grid-cols-2">
           {/* Engine 1: Email Correspondence */}
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 space-y-5">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/6 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416]">
+                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
                   <Mail className="size-4" />
                 </span>
                 <div>
@@ -49,15 +49,15 @@ export function HowItWorks() {
 
             <ul className="space-y-2 text-xs text-[#F4F5F7]">
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Parses unstructured PDF quotes, order tables, and line items</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Drafts context-aware responses or responds autonomously based on pricing limits</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Routes enterprise VIP inquiries directly to human account executives</span>
               </li>
             </ul>
@@ -69,10 +69,10 @@ export function HowItWorks() {
           </div>
 
           {/* Engine 2: Okada & Courier Dispatch */}
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 space-y-5">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/6 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416]">
+                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
                   <Bike className="size-4" />
                 </span>
                 <div>
@@ -89,15 +89,15 @@ export function HowItWorks() {
 
             <ul className="space-y-2 text-xs text-[#F4F5F7]">
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Assigns closest bike or van courier based on real-time location</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Sends live WhatsApp map tracking link to the buyer with 1-click driver call</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Automatic reassignment if rider rejects or experiences route delay</span>
               </li>
             </ul>
@@ -109,10 +109,10 @@ export function HowItWorks() {
           </div>
 
           {/* Engine 3: 24/7 Customer Care */}
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 space-y-5">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/6 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416]">
+                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
                   <Headphones className="size-4" />
                 </span>
                 <div>
@@ -129,15 +129,15 @@ export function HowItWorks() {
 
             <ul className="space-y-2 text-xs text-[#F4F5F7]">
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Directly connected to order database and rider GPS telemetry</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Resolves 88% of inquiries without transferring to human agents</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Seamless hand-off to your staff whenever nuanced human discretion is required</span>
               </li>
             </ul>
@@ -149,10 +149,10 @@ export function HowItWorks() {
           </div>
 
           {/* Engine 4: Invoicing & Payment Reconciliation */}
-          <div className="rounded-xl border border-white/8 bg-[#121419] p-6 space-y-5">
+          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/6 pb-4">
               <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#181A21] border border-white/8 text-[#FF5416]">
+                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
                   <Receipt className="size-4" />
                 </span>
                 <div>
@@ -169,15 +169,15 @@ export function HowItWorks() {
 
             <ul className="space-y-2 text-xs text-[#F4F5F7]">
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Instant PDF invoice generation from approved orders</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Automatic matching of incoming Paystack and bank transfer webhooks</span>
               </li>
               <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#FF5416] shrink-0 mt-0.5" />
+                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
                 <span>Daily balance reconciliation sync with Google Sheets or accounting ledger</span>
               </li>
             </ul>
@@ -192,7 +192,7 @@ export function HowItWorks() {
         {/* 4-Step Process Section */}
         <div id="dispatch" className="mt-24 pt-16 border-t border-white/8">
           <div className="max-w-xl mb-12">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#FF5416] font-medium">
+            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
               Architecture
             </p>
             <h3 className="mt-2 text-2xl font-semibold tracking-tight text-[#F4F5F7]">
@@ -224,7 +224,7 @@ export function HowItWorks() {
               },
             ].map((st) => (
               <div key={st.step} className="border-t border-white/10 pt-4 space-y-2">
-                <span className="font-mono text-xs text-[#FF5416] font-semibold">{st.step}</span>
+                <span className="font-mono text-xs text-[#459F34] font-semibold">{st.step}</span>
                 <h4 className="text-sm font-medium text-[#F4F5F7]">{st.title}</h4>
                 <p className="text-xs text-[#8F95A3] leading-relaxed">{st.desc}</p>
               </div>
