@@ -1,271 +1,187 @@
 import { useState } from 'react'
-import { ChevronDown, Check } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { cn } from '@/lib/utils'
-import { Logo } from '@/components/landing/Navbar'
-import { buttonClass } from '@/components/ui/Button'
+import { ChevronDown, MessageSquare, ShieldCheck, Mail, MapPin } from 'lucide-react'
 
 const YEAR = new Date().getFullYear()
 
 const FAQS = [
   {
-    q: 'How does Zhen Automation handle incoming correspondence without hallucinating or making errors?',
-    a: 'Zhen Automation enforces deterministic policy guardrails on top of foundation models. It extracts structured entities (products, quantities, client IDs, quotation formats) and verifies them against your connected database or spreadsheet before generating a response. If an inquiry exceeds your configured confidence threshold, it drafts the reply and requests human approval.',
+    q: 'What exactly does Zhen Automation do for my business?',
+    a: 'We are an agency that builds custom software automations for businesses. If your team spends hours typing the same replies on WhatsApp, preparing invoices, confirming bank transfers, booking delivery riders, or updating spreadsheets, we connect your tools so these tasks happen automatically in seconds without human delay.',
   },
   {
-    q: 'Can Zhen Automation book and dispatch local bike and okada riders in Nigerian cities?',
-    a: 'Yes. Zhen integrates directly with local on-demand courier networks (like SendMe, GIGL, Bolt Delivery) as well as your own in-house fleet of riders in Lagos, Abuja, and Port Harcourt. The moment an order is confirmed, Zhen validates the recipient address, calculates the distance fee, pings the nearest rider, and sends a live GPS tracking link to the customer over WhatsApp.',
+    q: 'Do I or my staff need to know how to code?',
+    a: 'Not at all. You never touch any code. Our agency handles the setup, connections, testing, and maintenance. Your staff simply continues using WhatsApp, their email, or spreadsheets, and the automation works quietly in the background.',
   },
   {
-    q: 'Does the 24/7 AI Customer Care Representative speak Pidgin and understand regional nuances?',
-    a: 'Yes. Zhen AI is tuned for conversational commerce in Nigeria and West Africa. It comprehends and responds in English, Nigerian Pidgin, French, Hausa, Yoruba, and Spanish, ensuring your customers feel understood and assisted at any hour of the night.',
+    q: 'Can you automate our WhatsApp customer inquiries and sales?',
+    a: 'Yes! We configure smart WhatsApp and Instagram assistants that know your product catalog, answer pricing questions, take customer orders, collect delivery addresses, and generate Paystack or bank payment links 24 hours a day.',
   },
   {
-    q: 'How quickly can our business launch our first automation?',
-    a: 'Most businesses go live within 10 to 15 minutes. With 1-click OAuth connectors for Gmail, Outlook, WhatsApp Business, Paystack, and Shopify, you select your desired automation blueprint and switch it on.',
+    q: 'How long does it take to set up an automation for our company?',
+    a: 'Most standard business automations (like WhatsApp order bots, invoicing, or spreadsheet syncs) take between 3 to 7 business days from the initial consultation to full live deployment.',
   },
   {
-    q: 'Can Zhen generate compliant PDF invoices and reconcile Paystack payments?',
-    a: 'Yes. Zhen monitors approved deals or new orders, autonomously generates branded PDF invoices with Paystack/Stripe/bank transfer details, and automatically reconciles your accounts when payment webhooks arrive. Unpaid bills trigger courteous automated follow-ups.',
+    q: 'What if we already have existing software or a custom system?',
+    a: 'That is what we specialize in. We do not force you to change your software. We build bridges between whatever you currently use — Gmail, Outlook, Google Sheets, Excel, Paystack, Shopify, WooCommerce, or your in-house database.',
   },
   {
-    q: 'Do we need a programmer or software engineer on our team?',
-    a: 'Zero coding is required. The Zhen Automation console is visual. You can use our pre-built automation playbooks or drag-and-drop triggers, conditions, and actions with zero code.',
-  },
-  {
-    q: 'How is company and customer data protected?',
-    a: 'All data in transit and at rest is encrypted using AES-256 and TLS 1.3 enterprise standards. We never train public foundation models on your proprietary business communications or customer lists.',
+    q: 'How do we get started?',
+    a: 'Simply send us a message through the contact form on this page or tap the "Chat on WhatsApp" button. We will schedule a free 15-minute process audit to map out what you can automate and give you a clear proposal.',
   },
 ]
-
-const PRICING_PLANS = [
-  {
-    name: 'Starter',
-    price: '$49',
-    period: '/ month',
-    description: 'For single founders and small shops needing email auto-replies and courier dispatch.',
-    features: [
-      'Up to 3,500 automated tasks / month',
-      'Smart email concierge (1 inbox)',
-      'WhatsApp AI customer care rep',
-      'Instant courier dispatching',
-      'Standard support via email',
-    ],
-    highlight: false,
-    cta: 'Start 14-day trial',
-  },
-  {
-    name: 'Growth Pro',
-    price: '$129',
-    period: '/ month',
-    description: 'For growing e-commerce stores, logistics fleets, and busy operational teams.',
-    features: [
-      'Up to 25,000 automated tasks / month',
-      'Unlimited business inboxes & WhatsApp lines',
-      'Automated dispatch to 5+ courier fleets',
-      'Autonomous invoicing & Paystack sync',
-      'Custom visual workflow editor',
-      'Priority technical support',
-    ],
-    highlight: true,
-    cta: 'Start 14-day trial',
-  },
-  {
-    name: 'Enterprise Fleet',
-    price: '$399',
-    period: '/ month',
-    description: 'For high-volume operations requiring dedicated clusters, private VPCs, and custom SLAs.',
-    features: [
-      'Unlimited monthly task executions',
-      'Dedicated private webhook cluster (14ms latency)',
-      'Custom ERP & proprietary database connectors',
-      'Multi-tier human approval workflows',
-      'Dedicated solutions architect & 99.99% SLA',
-    ],
-    highlight: false,
-    cta: 'Contact enterprise team',
-  },
-]
-
-export function Faq() {
-  const [open, setOpen] = useState<number | null>(0)
-  return (
-    <div className="mx-auto max-w-3xl divide-y divide-white/8">
-      {FAQS.map((f, i) => {
-        const isOpen = open === i
-        return (
-          <div key={f.q} className="py-4">
-            <button
-              type="button"
-              className="flex w-full items-center justify-between gap-4 text-left text-sm font-medium text-[#F4F5F7] hover:text-white transition-colors cursor-pointer"
-              onClick={() => setOpen(isOpen ? null : i)}
-            >
-              <span>{f.q}</span>
-              <ChevronDown
-                className={cn(
-                  'size-4 shrink-0 text-[#8F95A3] transition-transform duration-150',
-                  isOpen && 'rotate-180 text-white',
-                )}
-              />
-            </button>
-            {isOpen && (
-              <div className="pt-3 pr-8">
-                <p className="text-xs leading-relaxed text-[#8F95A3]">
-                  {f.a}
-                </p>
-              </div>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 export function Footer() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index)
+  }
+
   return (
-    <footer className="pt-20 pb-12 bg-[#081106]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Pricing Section */}
-        <div id="pricing" className="mb-24 pb-20 border-b border-white/8">
-          <div className="max-w-xl mb-12">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
-              Transparent plans
-            </p>
-            <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
-              Simple pricing that scales with your operations
+    <footer className="w-full bg-[#081106] text-white border-t border-[#459F34]/20">
+      
+      {/* FAQ Section */}
+      <div className="py-20 md:py-28 border-b border-white/10">
+        <div className="container px-6 md:px-12 max-w-4xl mx-auto">
+          
+          <div className="text-center space-y-4 mb-16">
+            <span className="text-xs uppercase font-bold tracking-wider text-[#459F34] bg-[#459F34]/10 px-3 py-1 border border-[#459F34]/20">
+              Frequently Asked Questions
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-white">
+              Got <span className="text-[#459F34] underline decoration-[#459F34] decoration-4 underline-offset-8">Questions?</span>
             </h2>
-            <p className="mt-3 text-sm text-[#8F95A3]">
-              Every tier includes a 14-day free trial. No credit card required to start.
+            <p className="text-sm md:text-base text-white/70 max-w-lg mx-auto">
+              Everything you need to know about working with Zhen Automation.
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {PRICING_PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={cn(
-                  'rounded-xl border p-6 flex flex-col justify-between space-y-6',
-                  plan.highlight
-                    ? 'border-[#459F34]/50 bg-[#14161D]'
-                    : 'border-white/8 bg-[#0e1a0b]',
-                )}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-medium text-[#F4F5F7]">{plan.name}</h3>
-                    {plan.highlight && (
-                      <span className="font-mono text-[10px] text-[#459F34] border border-[#459F34]/30 px-2 py-0.5 rounded">
-                        Most popular
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-2 text-xs text-[#8F95A3] leading-relaxed">{plan.description}</p>
-
-                  <div className="mt-5 flex items-baseline gap-1 border-y border-white/8 py-3 font-mono">
-                    <span className="text-3xl font-semibold text-[#F4F5F7]" data-tabular="true">{plan.price}</span>
-                    <span className="text-xs text-[#8F95A3]">{plan.period}</span>
-                  </div>
-
-                  <ul className="mt-5 space-y-2.5 text-xs text-[#F4F5F7]">
-                    {plan.features.map((feat) => (
-                      <li key={feat} className="flex items-start gap-2">
-                        <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                        <span>{feat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="pt-2">
-                  <Link
-                    to="/auth?mode=register"
-                    className={buttonClass(
-                      plan.highlight ? 'primary' : 'secondary',
-                      'md',
-                      'w-full font-medium',
-                    )}
+          <div className="space-y-4">
+            {FAQS.map((faq, idx) => {
+              const isOpen = openFaq === idx
+              return (
+                <div
+                  key={idx}
+                  className="border border-white/10 bg-white/5 transition-colors overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full text-left p-6 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/[0.03]"
                   >
-                    {plan.cta}
-                  </Link>
+                    <span className="font-bold text-base text-white">
+                      {faq.q}
+                    </span>
+                    <ChevronDown
+                      className={`size-5 text-[#459F34] shrink-0 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-6 pt-2 border-t border-white/5 text-sm text-white/75 leading-relaxed">
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
+              )
+            })}
+          </div>
+
+          {/* Direct CTA under FAQs */}
+          <div className="mt-14 p-8 border border-[#459F34]/40 bg-[#459F34]/10 text-center space-y-4">
+            <h3 className="text-xl font-bold uppercase text-white">
+              Still have a specific question about your process?
+            </h3>
+            <p className="text-sm text-white/80 max-w-md mx-auto">
+              Chat directly with our automation engineers on WhatsApp for quick, straight answers.
+            </p>
+            <a
+              href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20have%20a%20question%20about%20automating%20my%20business."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold text-sm py-3 px-8 transition-colors"
+            >
+              <MessageSquare className="size-4" />
+              <span>Chat with Us on WhatsApp</span>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Main Footer Links */}
+      <div className="py-16">
+        <div className="container px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            
+            {/* Col 1: Brand Info */}
+            <div className="md:col-span-2 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-9 items-center justify-center bg-[#459F34] text-white font-bold text-lg">
+                  Z
+                </div>
+                <span className="font-bold text-lg tracking-tight text-white uppercase">
+                  ZHEN <span className="text-[#459F34]">AUTOMATION</span>
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* FAQ Section */}
-        <div id="faq" className="mb-24 pb-20 border-b border-white/8">
-          <div className="max-w-xl mb-10">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
-              Questions
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#F4F5F7]">
-              Frequently asked questions
-            </h2>
-          </div>
-          <Faq />
-        </div>
-
-        {/* Bottom Navigation */}
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 pb-12">
-          <div>
-            <Logo />
-            <p className="mt-3 text-xs text-[#8F95A3] leading-relaxed">
-              Autonomous operations engine for modern businesses. Inbound email triage, courier dispatching, and 24/7 care reps on autopilot.
-            </p>
-            <div className="mt-4 flex items-center gap-2 font-mono text-[11px] text-[#8F95A3]">
-              <span className="size-1.5 rounded-full bg-[#10B981]" />
-              <span>14 automation clusters operational</span>
+              <p className="text-sm text-white/70 max-w-sm leading-relaxed">
+                We are a business automation agency in Nigeria. We build custom software workflows that eliminate repetitive daily chores, speed up sales, and help businesses scale smoothly.
+              </p>
+              <div className="pt-2 flex items-center gap-2 text-xs text-[#459F34] font-semibold">
+                <ShieldCheck className="size-4" />
+                <span>100% Reliable & Secure Cloud Automation Architecture</span>
+              </div>
             </div>
+
+            {/* Col 2: Navigation */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">
+                Services
+              </h4>
+              <ul className="space-y-2.5 text-xs text-white/70">
+                <li><a href="#services" className="hover:text-[#459F34]">WhatsApp Sales Assistants</a></li>
+                <li><a href="#services" className="hover:text-[#459F34]">Bank & Payment Reconciliation</a></li>
+                <li><a href="#services" className="hover:text-[#459F34]">Delivery & Courier Dispatch</a></li>
+                <li><a href="#services" className="hover:text-[#459F34]">Email & PDF Quote Automations</a></li>
+                <li><a href="#services" className="hover:text-[#459F34]">Spreadsheet & CRM Syncing</a></li>
+                <li><a href="#services" className="hover:text-[#459F34]">Custom Business Workflows</a></li>
+              </ul>
+            </div>
+
+            {/* Col 3: Direct Contact */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">
+                Contact & Support
+              </h4>
+              <ul className="space-y-3 text-xs text-white/70">
+                <li className="flex items-center gap-2">
+                  <Mail className="size-4 text-[#459F34]" />
+                  <span>contact@zhenautomation.com</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MessageSquare className="size-4 text-[#459F34]" />
+                  <span>WhatsApp: +234 (0) 800-000-0000</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="size-4 text-[#459F34]" />
+                  <span>Abuja & Lagos, Nigeria</span>
+                </li>
+              </ul>
+            </div>
+
           </div>
 
-          <div>
-            <p className="font-mono text-xs font-medium text-[#F4F5F7] uppercase tracking-wider mb-3">
-              Engines
+          {/* Bottom Copyright */}
+          <div className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/50">
+            <p>© {YEAR} Zhen Automation Agency. All rights reserved.</p>
+            <p className="flex items-center gap-1">
+              <span>Built with precision for growing Nigerian businesses</span>
             </p>
-            <ul className="space-y-2 text-xs text-[#8F95A3]">
-              <li><a href="#solutions" className="hover:text-white transition-colors">Email correspondence</a></li>
-              <li><a href="#solutions" className="hover:text-white transition-colors">Okada courier dispatch</a></li>
-              <li><a href="#solutions" className="hover:text-white transition-colors">24/7 Customer support</a></li>
-              <li><a href="#solutions" className="hover:text-white transition-colors">Invoicing & Paystack sync</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="font-mono text-xs font-medium text-[#F4F5F7] uppercase tracking-wider mb-3">
-              Platform
-            </p>
-            <ul className="space-y-2 text-xs text-[#8F95A3]">
-              <li><a href="#integrations" className="hover:text-white transition-colors">Integrations</a></li>
-              <li><a href="#calculator" className="hover:text-white transition-colors">Economics calculator</a></li>
-              <li><a href="#affiliate" className="hover:text-white transition-colors">Agency partner program</a></li>
-              <li><a href="#pricing" className="hover:text-white transition-colors">Pricing tiers</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <p className="font-mono text-xs font-medium text-[#F4F5F7] uppercase tracking-wider mb-3">
-              Standards
-            </p>
-            <ul className="space-y-2 text-xs text-[#8F95A3]">
-              <li>AES-256 encrypted at rest</li>
-              <li>Deterministic guardrails</li>
-              <li>Zero customer data training</li>
-              <li>99.98% operational uptime</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="pt-8 border-t border-white/6 flex flex-wrap items-center justify-between gap-4 text-xs text-[#8F95A3]">
-          <p>© {YEAR} Zhen Automation Inc. All rights reserved.</p>
-          <div className="flex gap-5">
-            <a href="#" className="hover:text-white">Privacy policy</a>
-            <a href="#" className="hover:text-white">Terms of service</a>
-            <a href="#" className="hover:text-white">Security report</a>
           </div>
         </div>
       </div>
+
     </footer>
   )
 }

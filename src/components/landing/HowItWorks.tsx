@@ -1,242 +1,176 @@
 import {
-  Mail,
-  Bike,
-  Headphones,
+  MessageSquareCode,
+  FileSpreadsheet,
   Receipt,
-  ArrowRight,
-  Check,
+  Truck,
+  Repeat,
+  Mail,
+  Workflow,
+  CheckCircle,
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { buttonClass } from '@/components/ui/Button'
+
+const AUTOMATION_SERVICES = [
+  {
+    icon: MessageSquareCode,
+    title: '24/7 WhatsApp & Social Sales Bots',
+    summary: 'Never leave a buyer waiting again, even at midnight.',
+    description:
+      'We build intelligent WhatsApp, Instagram, and web chat assistants that answer customer questions, send product catalogs, take orders, and qualify serious buyers on complete autopilot.',
+    deliverables: [
+      'Instant answers to prices, availability & delivery fees',
+      'Automatic collection of buyer name, phone, and address',
+      'Direct checkout link generation (Paystack / Flutterwave)',
+    ],
+  },
+  {
+    icon: Receipt,
+    title: 'Automated Invoicing & Bank Reconciliation',
+    summary: 'Stop manually confirming fake bank alerts and sending manual receipts.',
+    description:
+      'When a customer pays, your system automatically verifies the transaction, sends an official branded PDF receipt via WhatsApp/email, and logs it into your sales records with zero mistakes.',
+    deliverables: [
+      'Instant PDF receipt generation with company logo',
+      'Bank & Paystack payment confirmation webhooks',
+      'Gentle automated payment reminder messages for pending bills',
+    ],
+  },
+  {
+    icon: Truck,
+    title: 'Delivery, Booking & Courier Dispatch',
+    summary: 'Coordinate pickups and dispatch riders without back-and-forth calls.',
+    description:
+      'The moment an order is confirmed or a client books a slot, delivery addresses are checked, waybills are prepared, and your internal or third-party courier riders are notified immediately.',
+    deliverables: [
+      'Automatic order detail routing to okada & dispatch riders',
+      'Live tracking link sent to the customer via SMS/WhatsApp',
+      'Delivery status auto-updated in your inventory records',
+    ],
+  },
+  {
+    icon: Mail,
+    title: 'Inbound Email Triage & Quote Generator',
+    summary: 'Turn quote requests into official PDF quotes in 30 seconds.',
+    description:
+      'If your company receives RFQs, procurement emails, or quotation requests every day, we automate extracting line items, calculating accurate pricing, and drafting professional replies.',
+    deliverables: [
+      'Scans incoming customer requests and reads attached files',
+      'Drafts professional quotes adhering to your price rules',
+      'Syncs correspondence directly with your CRM or Google Drive',
+    ],
+  },
+  {
+    icon: FileSpreadsheet,
+    title: 'Google Sheets & Database Synchronization',
+    summary: 'Eliminate duplicate data entry across different departments.',
+    description:
+      'Whenever anything happens — a sale, a return, an inquiry, or a new client signup — every team spreadsheet, inventory tracker, and accounting book updates simultaneously in real-time.',
+    deliverables: [
+      'Connects your forms, stores, and inboxes into one live Sheet',
+      'Low inventory and daily restock alerts sent to manager phones',
+      'Daily end-of-day sales and performance summary reports',
+    ],
+  },
+  {
+    icon: Workflow,
+    title: 'Tailored Business Operations Workflow',
+    summary: 'Have a specific, unique way you run your business? We automate it.',
+    description:
+      'Every business has its own unique headache. Whether you run a school, real estate agency, clinic, law firm, or wholesale warehouse, we map out your exact daily process and put it on rails.',
+    deliverables: [
+      'Full process audit and custom logic diagram',
+      'Connection across all software you currently use',
+      'Staff onboarding and hands-on operational training',
+    ],
+  },
+]
 
 export function HowItWorks() {
   return (
-    <section id="solutions" className="py-20 sm:py-28 border-b border-white/8">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        {/* Section Heading */}
-        <div className="max-w-xl">
-          <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
-            System capabilities
-          </p>
-          <h2 className="mt-2 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-[#F4F5F7]">
-            Four core engines for everyday operations
+    <section id="services" className="w-full bg-white py-16 md:py-24 border-b border-black/10">
+      <div className="container px-6 md:px-12 max-w-7xl mx-auto">
+        
+        {/* Section Heading matching portfolio-v2 */}
+        <div className="flex flex-col items-start md:items-center text-left md:text-center space-y-4 mb-16">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#459F34]/10 border border-[#459F34]/30 text-[#459F34] text-xs font-bold uppercase tracking-wider">
+            <Repeat className="size-3.5" />
+            <span>End-to-End Automation Services</span>
+          </div>
+
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight uppercase text-black">
+            <span>What We </span>
+            <span className="text-[#459F34] underline decoration-[#459F34] decoration-4 underline-offset-8">
+              Automate For You
+            </span>
           </h2>
-          <p className="mt-3 text-sm text-[#8F95A3] leading-relaxed">
-            Every business repeats the same manual actions every morning: answering quote requests, calling dispatch riders, checking delivery locations, and matching bank transfers. Zhen handles all four.
+
+          <div className="h-1 w-20 bg-[#459F34] md:mx-auto" />
+
+          <p className="max-w-[700px] text-black/80 text-base md:text-lg">
+            We take the repetitive, boring, time-consuming tasks your team does manually every single day and turn them into fast, error-free automated workflows.
           </p>
         </div>
 
-        {/* 4 Core Capabilities Grid */}
-        <div className="mt-14 grid gap-6 md:grid-cols-2">
-          {/* Engine 1: Email Correspondence */}
-          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/6 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
-                  <Mail className="size-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-medium text-[#F4F5F7]">Email correspondence engine</h3>
-                  <p className="text-xs text-[#8F95A3]">Gmail & Outlook workspace integration</p>
+        {/* Services Grid (Flat clean cards with #459F34 accent) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {AUTOMATION_SERVICES.map((service, index) => {
+            const Icon = service.icon
+            return (
+              <div
+                key={index}
+                className="group flex flex-col p-8 border border-black/10 bg-white hover:border-[#459F34] hover:shadow-[0_4px_24px_rgba(69,159,52,0.12)] transition-all duration-300"
+              >
+                {/* Icon box */}
+                <div className="p-4 bg-[#459F34]/10 text-[#459F34] w-fit mb-6 border border-[#459F34]/20 group-hover:bg-[#459F34] group-hover:text-white transition-colors duration-300">
+                  <Icon size={28} strokeWidth={1.75} />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold uppercase tracking-tight text-black group-hover:text-[#459F34] transition-colors mb-2">
+                  {service.title}
+                </h3>
+
+                {/* Summary */}
+                <p className="text-sm font-semibold text-[#459F34] mb-3">
+                  {service.summary}
+                </p>
+
+                {/* Description */}
+                <p className="text-sm text-black/70 leading-relaxed mb-6">
+                  {service.description}
+                </p>
+
+                {/* Bullet Points */}
+                <div className="mt-auto pt-6 border-t border-black/5 space-y-2.5">
+                  {service.deliverables.map((item, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs text-black/80 font-medium">
+                      <CheckCircle className="size-4 text-[#459F34] shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <span className="font-mono text-xs text-[#10B981]">1.2s avg response</span>
-            </div>
-
-            <p className="text-xs text-[#8F95A3] leading-relaxed">
-              Zhen monitors sales and support inboxes, parses incoming RFQs and attached PDFs, validates wholesale volume pricing against live inventory, and sends precise personalized replies with quotation attachments.
-            </p>
-
-            <ul className="space-y-2 text-xs text-[#F4F5F7]">
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Parses unstructured PDF quotes, order tables, and line items</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Drafts context-aware responses or responds autonomously based on pricing limits</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Routes enterprise VIP inquiries directly to human account executives</span>
-              </li>
-            </ul>
-
-            <div className="pt-3 border-t border-white/6 flex items-center justify-between text-xs font-mono text-[#8F95A3]">
-              <span>Coverage: 100% of inbound inboxes</span>
-              <span>22 hours saved/week</span>
-            </div>
-          </div>
-
-          {/* Engine 2: Okada & Courier Dispatch */}
-          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/6 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
-                  <Bike className="size-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-medium text-[#F4F5F7]">On-demand courier dispatch</h3>
-                  <p className="text-xs text-[#8F95A3]">SendMe, GIGL, Bolt & in-house riders</p>
-                </div>
-              </div>
-              <span className="font-mono text-xs text-[#10B981]">1.8s instant booking</span>
-            </div>
-
-            <p className="text-xs text-[#8F95A3] leading-relaxed">
-              When an order is paid on Shopify, WooCommerce, or WhatsApp, Zhen automatically calculates distance, validates recipient addresses, pings the nearest bike rider, and generates waybills without manual intervention.
-            </p>
-
-            <ul className="space-y-2 text-xs text-[#F4F5F7]">
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Assigns closest bike or van courier based on real-time location</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Sends live WhatsApp map tracking link to the buyer with 1-click driver call</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Automatic reassignment if rider rejects or experiences route delay</span>
-              </li>
-            </ul>
-
-            <div className="pt-3 border-t border-white/6 flex items-center justify-between text-xs font-mono text-[#8F95A3]">
-              <span>Coverage: Lagos, Abuja, Port Harcourt</span>
-              <span>98.6% on-time dispatch</span>
-            </div>
-          </div>
-
-          {/* Engine 3: 24/7 Customer Care */}
-          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/6 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
-                  <Headphones className="size-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-medium text-[#F4F5F7]">24/7 Customer care representative</h3>
-                  <p className="text-xs text-[#8F95A3]">WhatsApp, Web Chat & Instagram DMs</p>
-                </div>
-              </div>
-              <span className="font-mono text-xs text-[#10B981]">0.9s response</span>
-            </div>
-
-            <p className="text-xs text-[#8F95A3] leading-relaxed">
-              Provides conversational customer service across WhatsApp and web around the clock. Naturally handles delivery status inquiries, return requests, and product questions in English, Nigerian Pidgin, and French.
-            </p>
-
-            <ul className="space-y-2 text-xs text-[#F4F5F7]">
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Directly connected to order database and rider GPS telemetry</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Resolves 88% of inquiries without transferring to human agents</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Seamless hand-off to your staff whenever nuanced human discretion is required</span>
-              </li>
-            </ul>
-
-            <div className="pt-3 border-t border-white/6 flex items-center justify-between text-xs font-mono text-[#8F95A3]">
-              <span>Multilingual: English, Pidgin, French</span>
-              <span>4.9 / 5.0 satisfaction</span>
-            </div>
-          </div>
-
-          {/* Engine 4: Invoicing & Payment Reconciliation */}
-          <div className="rounded-xl border border-white/8 bg-[#0e1a0b] p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-white/6 pb-4">
-              <div className="flex items-center gap-3">
-                <span className="flex size-8 items-center justify-center rounded-md bg-[#142410] border border-white/8 text-[#459F34]">
-                  <Receipt className="size-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-medium text-[#F4F5F7]">Invoicing & ledger reconciliation</h3>
-                  <p className="text-xs text-[#8F95A3]">Paystack, Stripe, QuickBooks & Xero</p>
-                </div>
-              </div>
-              <span className="font-mono text-xs text-[#10B981]">100% matched</span>
-            </div>
-
-            <p className="text-xs text-[#8F95A3] leading-relaxed">
-              Automates invoice generation upon quote approval, attaches Paystack/Stripe checkout links, reconciles bank webhooks against open ledger entries, and sends receipts and payment reminders.
-            </p>
-
-            <ul className="space-y-2 text-xs text-[#F4F5F7]">
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Instant PDF invoice generation from approved orders</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Automatic matching of incoming Paystack and bank transfer webhooks</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <Check className="size-3.5 text-[#459F34] shrink-0 mt-0.5" />
-                <span>Daily balance reconciliation sync with Google Sheets or accounting ledger</span>
-              </li>
-            </ul>
-
-            <div className="pt-3 border-t border-white/6 flex items-center justify-between text-xs font-mono text-[#8F95A3]">
-              <span>Zero manual journal entry</span>
-              <span>Instant receipts</span>
-            </div>
-          </div>
+            )
+          })}
         </div>
 
-        {/* 4-Step Process Section */}
-        <div id="dispatch" className="mt-24 pt-16 border-t border-white/8">
-          <div className="max-w-xl mb-12">
-            <p className="font-mono text-xs uppercase tracking-wider text-[#459F34] font-medium">
-              Architecture
+        {/* CTA below services */}
+        <div className="mt-16 p-8 border border-[#459F34]/30 bg-[#459F34]/5 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <h4 className="text-xl font-bold uppercase text-black">
+              Have a custom workflow not listed here?
+            </h4>
+            <p className="text-sm text-black/70 mt-1">
+              If your staff does it manually on a computer or phone, we can automate it. Tell us your process and we will design it for you.
             </p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-tight text-[#F4F5F7]">
-              How it integrates into your existing business
-            </h3>
           </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                step: '01',
-                title: 'Connect your channels',
-                desc: 'Link Gmail, Outlook, WhatsApp Business, Paystack, and Shopify in under two minutes via standard OAuth.',
-              },
-              {
-                step: '02',
-                title: 'Set business policies',
-                desc: 'Define price discount thresholds, courier dispatch hubs, and escalation rules for high-value contracts.',
-              },
-              {
-                step: '03',
-                title: 'Autonomous execution',
-                desc: 'Zhen processes inbound traffic around the clock, logging every decision and payload in an audit trail.',
-              },
-              {
-                step: '04',
-                title: 'Human oversight',
-                desc: 'Review live telemetry from your command center. Intervene or pause any workflow with a single toggle.',
-              },
-            ].map((st) => (
-              <div key={st.step} className="border-t border-white/10 pt-4 space-y-2">
-                <span className="font-mono text-xs text-[#459F34] font-semibold">{st.step}</span>
-                <h4 className="text-sm font-medium text-[#F4F5F7]">{st.title}</h4>
-                <p className="text-xs text-[#8F95A3] leading-relaxed">{st.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 pt-6">
-            <Link to="/auth" className={buttonClass('primary', 'lg')}>
-              Deploy to your business <ArrowRight className="size-4 ml-1" />
-            </Link>
-          </div>
+          <a
+            href="#contact"
+            className="bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold text-sm py-3.5 px-8 transition-colors shrink-0"
+          >
+            Request Custom Workflow
+          </a>
         </div>
+
       </div>
     </section>
   )
