@@ -1,40 +1,26 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, ArrowRight, MessageSquare } from 'lucide-react'
+import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ZhenbotLogo } from '@/components/ui/ZhenbotLogo'
 
 const NAV_LINKS = [
+  { href: '#', label: 'Home' },
   { href: '#services', label: 'What We Automate' },
   { href: '#how-it-works', label: 'How It Works' },
-  { href: '#integrations', label: 'Apps We Connect' },
-  { href: '#calculator', label: 'Savings Calculator' },
-  { href: '#contact', label: 'Contact Us' },
+  { href: '#industries', label: 'Industries' },
+  { href: '#why-zhenbot', label: 'About Us' },
 ]
-
-export function Logo({ className }: { className?: string }) {
-  return (
-    <Link to="/" className={cn('flex items-center gap-3 select-none group', className)}>
-      <div className="flex size-9 items-center justify-center bg-[#459F34] text-white font-bold text-lg">
-        Z
-      </div>
-      <div className="flex flex-col">
-        <span className="font-bold text-base tracking-tight text-black leading-none">
-          ZHEN <span className="text-[#459F34]">AUTOMATION</span>
-        </span>
-        <span className="text-[10px] tracking-wider text-black/60 uppercase font-medium mt-0.5">
-          Business Automation Agency
-        </span>
-      </div>
-    </Link>
-  )
-}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [activeHash, setActiveHash] = useState('#')
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
+    const onScroll = () => {
+      setScrolled(window.scrollY > 12)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -45,52 +31,69 @@ export function Navbar() {
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-200 border-b',
         scrolled
-          ? 'bg-white/95 backdrop-blur-md border-[#459F34]/20 shadow-xs'
-          : 'bg-white border-black/10'
+          ? 'bg-white/95 backdrop-blur-md border-[#E5E7EB] shadow-[0_2px_12px_rgba(0,0,0,0.03)]'
+          : 'bg-white border-[#E5E7EB]'
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
-        <Logo />
+      <div className="max-w-[1240px] mx-auto px-6 h-20 flex items-center justify-between">
+        {/* Left: Reusable Zhenbot Logo */}
+        <div className="hidden sm:block">
+          <ZhenbotLogo variant="full" size="sm" />
+        </div>
+        <div className="block sm:hidden">
+          <ZhenbotLogo variant="compact" size="sm" />
+        </div>
 
-        {/* Desktop Nav Items */}
-        <nav className="hidden lg:flex items-center space-x-8">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-sm font-semibold text-black/80 hover:text-[#459F34] transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
+        {/* Middle: Navigation Links */}
+        <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
+          {NAV_LINKS.map((link) => {
+            const isActive = activeHash === link.href
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setActiveHash(link.href)}
+                className={cn(
+                  'px-3.5 py-2 text-[14px] font-medium transition-colors relative rounded-md',
+                  isActive
+                    ? 'text-[#00B82E]'
+                    : 'text-[#64748B] hover:text-[#111827] hover:bg-[#F8FAFC]'
+                )}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute bottom-0 left-3.5 right-3.5 h-[2px] bg-[#00B82E] rounded-full" />
+                )}
+              </a>
+            )
+          })}
         </nav>
 
-        {/* Right CTA */}
-        <div className="hidden sm:flex items-center gap-4">
-          <a
-            href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20want%20to%20automate%20my%20business%20workflow."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 text-sm font-semibold text-black hover:text-[#459F34] transition-colors"
+        {/* Right: Portal Link & Primary CTA Button */}
+        <div className="hidden sm:flex items-center gap-3">
+          <Link
+            to="/portal"
+            className="flex items-center gap-1.5 text-[14px] font-semibold text-[#111827] hover:text-[#00B82E] px-3.5 py-2 rounded-xl hover:bg-[#F8FAFC] transition-colors"
           >
-            <MessageSquare className="size-4 text-[#459F34]" />
-            <span>Chat on WhatsApp</span>
-          </a>
+            <ShieldCheck className="size-4 text-[#00B82E]" />
+            <span>Client Portal</span>
+          </Link>
+
           <a
             href="#contact"
-            className="bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold text-sm py-3 px-6 transition-colors border border-[#459F34] flex items-center gap-2"
+            className="bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-[14px] h-11 px-5 rounded-[12px] transition-all flex items-center gap-2 shadow-xs hover:shadow-sm"
           >
-            <span>Start Your Setup</span>
+            <span>Automate My Business</span>
             <ArrowRight className="size-4" />
           </a>
         </div>
 
-        {/* Mobile Hamburger */}
-        <div className="flex lg:hidden">
+        {/* Mobile Hamburger Toggle */}
+        <div className="flex md:hidden">
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className="text-black hover:text-[#459F34] p-2 focus:outline-none cursor-pointer"
+            className="text-[#111827] hover:text-[#00B82E] p-2 rounded-lg hover:bg-[#F8FAFC] focus:outline-none cursor-pointer"
             aria-label="Toggle menu"
           >
             {open ? <X className="size-6" /> : <Menu className="size-6" />}
@@ -100,34 +103,37 @@ export function Navbar() {
 
       {/* Mobile Drawer */}
       {open && (
-        <div className="lg:hidden bg-white border-b border-[#459F34] px-6 py-6 space-y-4">
-          <nav className="flex flex-col space-y-3">
+        <div className="md:hidden border-t border-[#E5E7EB] bg-white px-6 py-6 space-y-4">
+          <div className="flex flex-col space-y-3">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="text-base font-semibold text-black hover:text-[#459F34] py-1 border-b border-black/5"
+                className="text-base font-medium text-[#111827] hover:text-[#00B82E]"
               >
                 {link.label}
               </a>
             ))}
-          </nav>
-          <div className="pt-2 flex flex-col gap-3">
-            <a
-              href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20want%20to%20automate%20my%20business%20workflow."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full text-center py-3 border border-[#459F34] text-[#459F34] font-semibold text-sm hover:bg-[#459F34]/5"
+
+            <Link
+              to="/portal"
+              onClick={() => setOpen(false)}
+              className="text-base font-bold text-[#00B82E] pt-2 flex items-center gap-2"
             >
-              Chat on WhatsApp
-            </a>
+              <ShieldCheck className="size-4" />
+              <span>Client Portal</span>
+            </Link>
+          </div>
+
+          <div className="pt-4 border-t border-[#E5E7EB]">
             <a
               href="#contact"
               onClick={() => setOpen(false)}
-              className="w-full text-center py-3 bg-[#459F34] hover:bg-[#3a862b] text-white font-semibold text-sm"
+              className="w-full bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-[15px] h-12 rounded-[12px] transition-all flex items-center justify-center gap-2"
             >
-              Start Your Setup
+              <span>Automate My Business</span>
+              <ArrowRight className="size-4" />
             </a>
           </div>
         </div>

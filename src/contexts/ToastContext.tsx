@@ -57,28 +57,39 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[min(92vw,380px)] flex-col gap-2">
+      <div className="pointer-events-none fixed top-5 right-5 z-[100] flex w-[min(92vw,380px)] flex-col gap-2.5">
         {toasts.map((t) => {
           const Icon = icons[t.kind]
           return (
             <div
               key={t.id}
               className={cn(
-                'pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 shadow-2xl backdrop-blur-xl animate-fade-up',
+                'pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.12)] backdrop-blur-md animate-in fade-in slide-in-from-top-3 duration-200 transition-all bg-white',
                 t.kind === 'success' &&
-                  'border-profit-500/30 bg-navy-850/90 text-profit-400',
+                  'border-[#00B82E]/30 bg-white text-[#111827]',
                 t.kind === 'error' &&
-                  'border-risk-500/30 bg-navy-850/90 text-risk-400',
+                  'border-[#EF4444]/30 bg-white text-[#111827]',
                 t.kind === 'info' &&
-                  'border-brand-400/30 bg-navy-850/90 text-brand-300',
+                  'border-[#0090FE]/30 bg-white text-[#111827]',
               )}
             >
-              <Icon className="mt-0.5 size-5 shrink-0" />
-              <p className="flex-1 text-sm leading-snug text-slate-200">{t.message}</p>
+              <div
+                className={cn(
+                  'size-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5',
+                  t.kind === 'success' && 'bg-[#F0FDF4] text-[#00B82E]',
+                  t.kind === 'error' && 'bg-[#FEF2F2] text-[#EF4444]',
+                  t.kind === 'info' && 'bg-[#EFF6FF] text-[#0090FE]',
+                )}
+              >
+                <Icon className="size-4.5" />
+              </div>
+              <p className="flex-1 text-xs sm:text-[13px] font-semibold leading-relaxed text-[#111827] pt-1">
+                {t.message}
+              </p>
               <button
                 type="button"
                 onClick={() => dismiss(t.id)}
-                className="text-slate-500 transition-colors hover:text-white"
+                className="text-[#9CA3AF] transition-colors hover:text-[#111827] p-1 rounded-lg hover:bg-[#F3F4F6] cursor-pointer text-xs shrink-0"
                 aria-label="Dismiss"
               >
                 ✕

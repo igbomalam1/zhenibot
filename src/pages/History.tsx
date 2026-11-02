@@ -119,8 +119,16 @@ export function HistoryPage() {
                 className="flex flex-col sm:flex-row sm:items-center justify-between p-4 hover:bg-white/[0.02] transition-colors gap-3"
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#081106] border border-white/8 text-[#8F95A3] font-mono text-xs shrink-0 mt-0.5">
-                    {row.type === 'deposit' ? '⚡' : row.type === 'withdrawal' ? '📤' : row.type === 'referral_bonus' ? '🎁' : '⚙️'}
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-[#081106] border border-white/8 text-[#00B82E] shrink-0 mt-0.5">
+                    {row.type === 'deposit' ? (
+                      <ArrowDownToLine className="size-4" />
+                    ) : row.type === 'withdrawal' ? (
+                      <ArrowUpFromLine className="size-4" />
+                    ) : row.type === 'referral_bonus' ? (
+                      <Gift className="size-4" />
+                    ) : (
+                      <Zap className="size-4" />
+                    )}
                   </span>
                   <div>
                     <div className="flex items-center gap-2">

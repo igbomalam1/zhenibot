@@ -19,11 +19,11 @@ export const BRAND = {
 }
 
 export const APP_NAME = import.meta.env.VITE_APP_NAME ?? 'Zhen Automation'
-export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? 'support@zhenautomation.io'
-export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? 'ops@zhenautomation.io'
+export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL ?? 'automate@zhenibot.com'
+export const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL ?? 'automate@zhenibot.com'
 export const REFERRAL_BASE_URL =
   import.meta.env.VITE_REFERRAL_BASE_URL ??
-  (typeof window !== 'undefined' ? window.location.origin : 'https://zhenautomation.io')
+  (typeof window !== 'undefined' ? window.location.origin : 'https://zhenibot.com')
 
 export type NetworkId = 'bep20' | 'trc20' | 'erc20'
 

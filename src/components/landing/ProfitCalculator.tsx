@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Calculator, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { formatNumber } from '@/lib/format'
 
 export function ProfitCalculator() {
@@ -23,11 +23,6 @@ export function ProfitCalculator() {
         
         {/* Section Heading */}
         <div className="flex flex-col items-start md:items-center text-left md:text-center space-y-4 mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#459F34]/20 border border-[#459F34]/40 text-[#459F34] text-xs font-bold uppercase tracking-wider">
-            <Calculator className="size-3.5" />
-            <span>Time & Money Saved</span>
-          </div>
-
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight uppercase text-white">
             <span>Calculate Your </span>
             <span className="text-[#459F34] underline decoration-[#459F34] decoration-4 underline-offset-8">

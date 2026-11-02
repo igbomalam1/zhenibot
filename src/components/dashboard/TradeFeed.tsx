@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Mail, Bike, MessageSquare, Zap } from 'lucide-react'
 import { LIVE_AUTOMATION_EVENTS } from '@/lib/demo'
 import type { AutomationEvent } from '@/lib/demo'
 
@@ -67,8 +67,16 @@ export function TradeFeed() {
           className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-white/6 bg-[#0a0f1e] p-3.5 transition-all hover:border-brand-500/30 hover:bg-[#0d1428]"
         >
           <div className="flex items-start gap-3 min-w-0">
-            <span className="flex size-7 items-center justify-center rounded-lg border border-white/10 bg-[#12192e] font-mono text-[11px] font-bold text-white shrink-0 mt-0.5">
-              {evt.type === 'email' ? '✉️' : evt.type === 'dispatch' ? '🛵' : evt.type === 'support' ? '💬' : '⚡'}
+            <span className="flex size-7 items-center justify-center rounded-lg border border-white/10 bg-[#12192e] text-[#00B82E] shrink-0 mt-0.5">
+              {evt.type === 'email' ? (
+                <Mail className="size-3.5" />
+              ) : evt.type === 'dispatch' ? (
+                <Bike className="size-3.5" />
+              ) : evt.type === 'support' ? (
+                <MessageSquare className="size-3.5" />
+              ) : (
+                <Zap className="size-3.5" />
+              )}
             </span>
             <div className="min-w-0">
               <div className="flex items-center gap-2">

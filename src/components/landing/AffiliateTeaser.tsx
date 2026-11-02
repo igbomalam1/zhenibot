@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Layers } from 'lucide-react'
 
 interface Integration {
   name: string
@@ -37,11 +36,6 @@ export function AffiliateTeaser() {
         
         {/* Section Heading */}
         <div className="flex flex-col items-start md:items-center text-left md:text-center space-y-4 mb-14">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#459F34]/10 border border-[#459F34]/30 text-[#459F34] text-xs font-bold uppercase tracking-wider">
-            <Layers className="size-3.5" />
-            <span>Seamless Integration</span>
-          </div>
-
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight uppercase text-black">
             <span>Connects With Tools </span>
             <span className="text-[#459F34] underline decoration-[#459F34] decoration-4 underline-offset-8">

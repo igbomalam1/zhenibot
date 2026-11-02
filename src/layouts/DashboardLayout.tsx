@@ -15,7 +15,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/format'
-import { Logo } from '@/components/landing/Navbar'
+import { ZhenbotLogo as Logo } from '@/components/ui/ZhenbotLogo'
 
 interface NavItem {
   to: string

@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { MessageSquare, X, Send, Bot, Minimize2, Loader2 } from 'lucide-react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { MessageSquare, X, Send, Minimize2, Loader2, Sparkles, ExternalLink } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ZhenbotChatMessage, ZhenbotChatThread } from '@/types/database'
 import { cn } from '@/lib/utils'
 import { sendChatAlertToAdmin } from '@/lib/email'
+import { trackClick } from '@/lib/analytics'
 
 export function LiveChatWidget() {
   const { user, profile } = useAuth()
@@ -37,7 +39,7 @@ export function LiveChatWidget() {
   // Look for existing thread in localStorage or by user_id
   useEffect(() => {
     const initThread = async () => {
-      let existingThreadId = localStorage.getItem('zhenbot_chat_thread_id')
+      const existingThreadId = localStorage.getItem('zhenbot_chat_thread_id')
 
       if (user?.id) {
         const { data } = await supabase
@@ -119,72 +121,83 @@ export function LiveChatWidget() {
     }
   }, [thread?.id, isOpen])
 
-  const startConversation = async (e: React.FormEvent) => {
+  const startConversation = async (e: FormEvent) => {
     e.preventDefault()
-    const name = profile?.full_name || guestName.trim() || 'Visitor'
-    const email = profile?.email || guestEmail.trim() || null
 
-    const { data, error } = await supabase
+    const name = profile?.full_name || guestName || 'Guest User'
+    const email = profile?.email || guestEmail || null
+
+    // Create a new thread
+    const { data: newThread, error } = await supabase
       .from(TABLE.chatThreads)
       .insert({
-        user_id: user?.id ?? null,
+        user_id: user?.id || null,
         user_name: name,
         user_email: email,
-        last_message: 'Conversation started',
-        unread_by_admin: true,
+        status: 'open',
+        last_message_at: new Date().toISOString(),
       })
-      .select('*')
+      .select()
       .single()
 
-    if (error || !data) return
+    if (error || !newThread) {
+      console.error('Failed to start chat thread:', error)
+      return
+    }
 
-    setThread(data)
-    localStorage.setItem('zhenbot_chat_thread_id', data.id)
-    setHasStarted(true)
-
-    // Automated welcome bot message
+    // Set initial welcome message from admin
     await supabase.from(TABLE.chatMessages).insert({
-      thread_id: data.id,
+      thread_id: newThread.id,
+      sender_name: 'Zhenbot Automation',
       sender_role: 'admin',
-      sender_name: 'Zhenbot Support',
-      message: `Hello ${name}! Welcome to Zhenbot support. An agent or automated system is here to help with your deposits, withdrawals, and questions.`,
+      message: `Hello ${name}! Welcome to Zhenbot. What business process would you like to automate today?`,
+    })
+
+    setThread(newThread)
+    localStorage.setItem('zhenbot_chat_thread_id', newThread.id)
+    setHasStarted(true)
+    void trackClick('chat_conversation_started', {
+      section: 'live_chat',
+      metadata: { name, email },
     })
   }
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault()
     if (!text.trim() || !thread?.id || sending) return
 
+    setSending(true)
     const messageText = text.trim()
     setText('')
-    setSending(true)
 
-    const senderName = profile?.full_name || thread.user_name || 'User'
+    const senderName = profile?.full_name || thread.user_name || 'Guest'
 
+    // Optimistic UI could be added, but Supabase insert is fast enough
     const { error } = await supabase.from(TABLE.chatMessages).insert({
       thread_id: thread.id,
-      sender_role: 'user',
-      sender_id: user?.id ?? null,
       sender_name: senderName,
+      sender_role: 'user',
       message: messageText,
     })
 
     if (!error) {
+      // Update thread last_message_at
       await supabase
         .from(TABLE.chatThreads)
-        .update({
-          last_message: messageText,
-          last_message_at: new Date().toISOString(),
-          unread_by_admin: true,
-        })
+        .update({ last_message_at: new Date().toISOString(), status: 'open' })
         .eq('id', thread.id)
 
-      // Alert admin email blessedjohnny2552@gmail.com
+      // Alert admin email
       void sendChatAlertToAdmin({
         userName: senderName,
         userEmail: profile?.email || thread.user_email || undefined,
         message: messageText,
         threadId: thread.id,
+      })
+
+      void trackClick('chat_message_sent', {
+        section: 'live_chat',
+        metadata: { thread_id: thread.id },
       })
     }
 
@@ -192,21 +205,39 @@ export function LiveChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 font-sans">
-      {/* Floating Toggle Button */}
+    <div className="fixed bottom-6 right-6 z-50 font-sans">
+      {/* Floating Toggle Pill / Bubble - Redesigned to Match Zhenbot Design Sense */}
       {!isOpen && (
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
-          className="group relative flex size-12 items-center justify-center rounded-xl border border-white/10 bg-[#0e1a0b] text-[#459F34] shadow-xl transition-all hover:border-[#459F34]/50"
+          onClick={() => {
+            setIsOpen(true)
+            void trackClick('click_open_live_chat_bubble', { section: 'floating_chat' })
+          }}
+          className="group relative flex items-center gap-3 h-13 pl-3 pr-4.5 rounded-full bg-white text-[#111827] shadow-[0_10px_35px_rgba(0,184,46,0.18),0_2px_8px_rgba(0,0,0,0.06)] border border-[#E5E7EB] hover:border-[#00B82E]/50 hover:bg-[#F0FDF4]/30 transition-all duration-200 hover:scale-[1.02] cursor-pointer"
           aria-label="Open Live Chat"
         >
-          <MessageSquare className="size-5 transition-transform group-hover:scale-105" />
-          <span className="absolute -top-1 -right-1 flex size-2.5">
-            <span className="relative inline-flex size-2.5 rounded-full bg-emerald-400" />
-          </span>
+          {/* Green Pulse Orb */}
+          <div className="relative flex size-8 items-center justify-center rounded-full bg-[#00B82E] text-white shrink-0 shadow-xs">
+            <MessageSquare className="size-4" />
+            <span className="absolute -top-0.5 -right-0.5 flex size-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00B82E] opacity-75" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-[#00B82E] ring-2 ring-white" />
+            </span>
+          </div>
+
+          <div className="hidden sm:flex flex-col text-left">
+            <span className="text-xs font-bold leading-tight text-[#111827] group-hover:text-[#00B82E] transition-colors">
+              Chat with Zhenbot
+            </span>
+            <span className="text-[10px] text-[#64748B] leading-tight flex items-center gap-1 mt-0.5">
+              <span className="size-1.5 rounded-full bg-[#00B82E] inline-block animate-pulse" />
+              <span>We reply in minutes</span>
+            </span>
+          </div>
+
           {unreadCount > 0 && (
-            <span className="absolute -top-2 -left-2 flex size-4 items-center justify-center rounded-full bg-[#459F34] font-mono text-[9px] font-bold text-white tnum">
+            <span className="flex size-5 items-center justify-center rounded-full bg-[#00B82E] text-[10px] font-bold text-white shadow-xs">
               {unreadCount}
             </span>
           )}
@@ -215,112 +246,133 @@ export function LiveChatWidget() {
 
       {/* Chat Window Panel */}
       {isOpen && (
-        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-xl border border-white/10 bg-[#081106] shadow-2xl">
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/8 bg-[#0e1a0b] px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <div className="relative flex size-8 items-center justify-center rounded-lg border border-white/10 bg-[#142410] text-[#459F34]">
-                <Bot className="size-4" />
-                <span className="absolute -bottom-0.5 -right-0.5 size-2 rounded-full bg-emerald-400 ring-2 ring-[#0e1a0b]" />
+        <div className="flex h-[550px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-[0_20px_60px_rgba(17,24,39,0.14)] animate-in fade-in slide-in-from-bottom-4 duration-200">
+          {/* Header - Zhenbot Modern Clean Design */}
+          <div className="border-b border-[#E5E7EB] bg-white text-[#111827] px-5 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="relative flex size-10 items-center justify-center rounded-xl bg-[#F0FDF4] text-[#00B82E] border border-[#00B82E]/20">
+                  <Sparkles className="size-5" />
+                  <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-[#00B82E] ring-2 ring-white" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#111827] leading-tight">
+                    Zhenbot Automation Support
+                  </h4>
+                  <p className="text-xs text-[#00B82E] font-medium flex items-center gap-1.5 mt-0.5">
+                    <span className="inline-block size-1.5 rounded-full bg-[#00B82E]" />
+                    <span>Live · Replies in minutes</span>
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-xs font-semibold text-[#F4F5F7] tracking-tight">
-                  Zhen Operations AI
-                </h4>
-                <p className="font-mono text-[10px] text-emerald-400 uppercase tracking-wider">
-                  Online · 24/7 Operations triage
-                </p>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#111827] transition-colors cursor-pointer"
+                  aria-label="Minimize Chat"
+                >
+                  <Minimize2 className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="flex size-8 items-center justify-center rounded-lg text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#111827] transition-colors cursor-pointer"
+                  aria-label="Close Chat"
+                >
+                  <X className="size-4" />
+                </button>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="flex size-7 items-center justify-center rounded text-[#8F95A3] hover:bg-white/5 hover:text-[#F4F5F7] transition-colors"
-                aria-label="Minimize Chat"
+
+            {/* Quick WhatsApp Jump */}
+            <div className="mt-3 pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
+              <span className="text-[#64748B] text-[11px]">Prefer direct WhatsApp?</span>
+              <a
+                href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20would%20like%20to%20automate%20my%20business."
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => void trackClick('click_chat_header_whatsapp', { section: 'chat_header' })}
+                className="inline-flex items-center gap-1.5 text-[#00B82E] hover:text-[#008F27] font-semibold text-[11px] bg-[#F0FDF4] px-2.5 py-1 rounded-full border border-[#00B82E]/20 transition-colors"
               >
-                <Minimize2 className="size-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="flex size-7 items-center justify-center rounded text-[#8F95A3] hover:bg-white/5 hover:text-[#F4F5F7] transition-colors"
-                aria-label="Close Chat"
-              >
-                <X className="size-3.5" />
-              </button>
+                <WhatsAppIcon className="size-3.5" />
+                <span>Switch to WhatsApp</span>
+                <ExternalLink className="size-3" />
+              </a>
             </div>
           </div>
 
           {/* Body Content */}
           {!hasStarted ? (
-            <div className="flex flex-1 flex-col justify-center p-6 text-center">
-              <div className="mx-auto flex size-11 items-center justify-center rounded-lg border border-white/10 bg-[#0e1a0b] text-[#459F34] mb-3">
-                <MessageSquare className="size-5" />
+            <div className="flex flex-1 flex-col justify-center p-6 text-center bg-[#F8FAFC]">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-[#F0FDF4] text-[#00B82E] border border-[#00B82E]/20 mb-3.5">
+                <MessageSquare className="size-6" />
               </div>
-              <h5 className="text-sm font-semibold text-[#F4F5F7]">Consult operations AI</h5>
-              <p className="mt-1 text-xs text-[#8F95A3] leading-relaxed">
-                Have questions about email triage, dispatching local bike couriers, or configuring custom automations? Chat with our team.
+              <h5 className="text-base font-bold text-[#111827]">
+                Start a Conversation
+              </h5>
+              <p className="mt-1.5 text-xs text-[#64748B] leading-relaxed max-w-[280px] mx-auto">
+                Have questions about automating your business processes, social channels, or workflows? Chat directly with our team.
               </p>
 
-              <form onSubmit={startConversation} className="mt-5 space-y-3 text-left">
+              <form onSubmit={startConversation} className="mt-6 space-y-3.5 text-left bg-white p-5 rounded-xl border border-[#E5E7EB]">
                 {!user && (
                   <>
                     <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wider text-[#8F95A3] mb-1">
-                        Your name
+                      <label className="block text-xs font-semibold text-[#111827] mb-1.5">
+                        Your Name
                       </label>
                       <input
                         type="text"
                         required
                         value={guestName}
                         onChange={(e) => setGuestName(e.target.value)}
-                        placeholder="Alex Smith"
-                        className="w-full rounded-lg border border-white/10 bg-[#0e1a0b] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
+                        placeholder="e.g. Alex Bello"
+                        className="w-full h-10 rounded-lg border border-[#E5E7EB] bg-white px-3 text-xs text-[#111827] placeholder:text-[#64748B]/50 focus:border-[#00B82E] focus:ring-2 focus:ring-[#00B82E]/10 focus:outline-none transition-all"
                       />
                     </div>
                     <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wider text-[#8F95A3] mb-1">
-                        Email address
+                      <label className="block text-xs font-semibold text-[#111827] mb-1.5">
+                        Email Address
                       </label>
                       <input
                         type="email"
                         value={guestEmail}
                         onChange={(e) => setGuestEmail(e.target.value)}
                         placeholder="alex@company.com"
-                        className="w-full rounded-lg border border-white/10 bg-[#0e1a0b] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
+                        className="w-full h-10 rounded-lg border border-[#E5E7EB] bg-white px-3 text-xs text-[#111827] placeholder:text-[#64748B]/50 focus:border-[#00B82E] focus:ring-2 focus:ring-[#00B82E]/10 focus:outline-none transition-all"
                       />
                     </div>
                   </>
                 )}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#459F34] hover:bg-[#3a862b] py-2.5 text-xs font-semibold text-white transition-colors cursor-pointer"
+                  className="w-full h-10 rounded-lg bg-[#00B82E] hover:bg-[#008F27] text-xs font-semibold text-white transition-all shadow-xs cursor-pointer"
                 >
-                  Start conversation
+                  Start Conversation
                 </button>
               </form>
             </div>
           ) : (
             <>
               {/* Message Feed */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#F8FAFC]">
                 {messages.map((m) => {
                   const isUser = m.sender_role === 'user'
                   return (
                     <div
                       key={m.id}
-                      className={cn('flex flex-col max-w-[80%]', isUser ? 'ml-auto items-end' : 'mr-auto items-start')}
+                      className={cn('flex flex-col max-w-[82%]', isUser ? 'ml-auto items-end' : 'mr-auto items-start')}
                     >
-                      <span className="font-mono text-[9px] text-[#545A67] mb-1 px-1">
+                      <span className="text-[10px] text-[#64748B] mb-1 px-1">
                         {m.sender_name}
                       </span>
                       <div
                         className={cn(
-                          'rounded-lg px-3.5 py-2.5 text-xs leading-relaxed',
+                          'rounded-2xl px-4 py-2.5 text-xs leading-relaxed shadow-xs',
                           isUser
-                            ? 'bg-[#459F34] text-white font-medium'
-                            : 'border border-white/8 bg-[#0e1a0b] text-[#F4F5F7]',
+                            ? 'bg-[#00B82E] text-white font-medium rounded-tr-xs'
+                            : 'border border-[#E5E7EB] bg-white text-[#111827] rounded-tl-xs',
                         )}
                       >
                         {m.message}
@@ -332,21 +384,21 @@ export function LiveChatWidget() {
               </div>
 
               {/* Chat Input */}
-              <form onSubmit={handleSendMessage} className="border-t border-white/8 bg-[#0e1a0b] p-3">
+              <form onSubmit={handleSendMessage} className="border-t border-[#E5E7EB] bg-white p-3">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Type your message…"
-                    className="flex-1 rounded-lg border border-white/10 bg-[#081106] px-3 py-2 text-xs text-[#F4F5F7] placeholder-[#545A67] focus:border-[#459F34] focus:outline-none"
+                    className="flex-1 h-10 rounded-xl border border-[#E5E7EB] bg-white px-3.5 text-xs text-[#111827] placeholder:text-[#64748B]/60 focus:border-[#00B82E] focus:ring-2 focus:ring-[#00B82E]/10 focus:outline-none transition-all"
                   />
                   <button
                     type="submit"
                     disabled={!text.trim() || sending}
-                    className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#459F34] hover:bg-[#3a862b] text-white transition-colors disabled:opacity-40 cursor-pointer"
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white transition-all disabled:opacity-40 shadow-xs cursor-pointer"
                   >
-                    {sending ? <Loader2 className="size-4 animate-spin text-white" /> : <Send className="size-3.5" />}
+                    {sending ? <Loader2 className="size-4 animate-spin text-white" /> : <Send className="size-4" />}
                   </button>
                 </div>
               </form>

@@ -1,62 +1,26 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ground: #081106;
-  --color-raised: #0e1a0b;
-  --color-surface: #142410;
-  --color-surface-hover: #1a2f15;
-  --color-rule: rgba(255, 255, 255, 0.08);
+  /* Brand Colour Tokens */
+  --color-primary-green: #00B82E;
+  --color-dark-green: #008F27;
+  --color-deep-charcoal: #111827;
+  --color-secondary-text: #64748B;
+  --color-border-subtle: #E5E7EB;
+  --color-soft-green-bg: #F0FDF4;
+  --color-light-grey-bg: #F8FAFC;
 
-  /* Stepped Inks */
-  --color-ink: #f4f5f7;
-  --color-ink-2: #8f95a3;
-  --color-ink-3: #545a67;
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif;
 
-  /* Backward compatibility for previous classes */
-  --color-obsidian-950: #07080a;
-  --color-obsidian-900: #081106;
-  --color-obsidian-850: #0e1a0b;
-  --color-obsidian-800: #142410;
-  --color-obsidian-750: #1e212a;
-  --color-obsidian-700: #262a36;
-
-  --color-navy-950: #07080a;
-  --color-navy-900: #081106;
-  --color-navy-850: #0e1a0b;
-  --color-navy-800: #142410;
-  --color-navy-700: #1e212a;
-  --color-navy-600: #262a36;
-
-  /* One defended accent: Brand Leaf Green (portfolio-v2) */
-  --color-brand-700: #26591b;
-  --color-brand-600: #357b25;
-  --color-brand-500: #459F34;
-  --color-brand-400: #5cb949;
-  --color-brand-300: #88d479;
-
-  /* Functional states only */
-  --color-profit-600: #26591b;
-  --color-profit-500: #459F34;
-  --color-profit-400: #5cb949;
-  --color-profit-300: #88d479;
-
-  --color-cyan-500: #459F34;
-  --color-cyan-400: #5cb949;
-  --color-cyan-300: #88d479;
-
-  --color-risk-500: #ef4444;
-  --color-risk-400: #f87171;
-
-  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-  --font-display: 'Geist', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-  --font-mono: 'Geist Mono', -apple-system, 'SF Mono', monospace;
-
-  --animate-fade-up: fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Animations */
+  --animate-fade-up: fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 
   @keyframes fade-up {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(12px);
     }
     to {
       opacity: 1;
@@ -67,94 +31,77 @@
 
 @layer base {
   * {
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: #E5E7EB;
+    box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     margin: 0;
     min-height: 100vh;
-    background-color: #081106;
-    color: #8f95a3;
+    background-color: #FFFFFF;
+    color: #111827;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4 {
-    color: #f4f5f7;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-  }
-
-  .font-mono, [data-tabular="true"], [data-num="true"] {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-  }
-
-  #root {
-    min-height: 100vh;
+  h1, h2, h3, h4, h5, h6 {
+    color: #111827;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
   }
 
   ::selection {
-    background: rgba(69, 159, 52, 0.3);
-    color: #ffffff;
+    background: rgba(0, 184, 46, 0.2);
+    color: #111827;
   }
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #081106;
+    background: #F8FAFC;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #193114;
-    border-radius: 3px;
+    background: #CBD5E1;
+    border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #459F34;
+    background: #00B82E;
   }
 }
 
 @layer components {
-  /* Restrained, non-gimmicky panels */
-  .panel {
-    background-color: #0e1a0b;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Standardized Card System */
+  .card-standard {
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 28px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .panel-subtle {
-    background-color: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+  .card-standard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 184, 46, 0.4);
+    box-shadow: 0 10px 30px -8px rgba(0, 184, 46, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
   }
 
-  /* Backward compatibility for previous classes */
-  .glass-card {
-    background-color: #0e1a0b;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .glass-card-hover {
-    transition: border-color 0.15s ease, background-color 0.15s ease;
-  }
-
-  .glass-card-hover:hover {
-    border-color: rgba(255, 255, 255, 0.16);
-    background-color: #171920;
-  }
-
-  .hairline {
-    border-color: rgba(255, 255, 255, 0.08);
+  /* Grid dot pattern for hero section subtle depth */
+  .bg-grid-dots {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
   }
 }
-

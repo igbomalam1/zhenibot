@@ -7,7 +7,7 @@ import { useToast } from '@/contexts/ToastContext'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
-import { Logo } from '@/components/landing/Navbar'
+import { ZhenbotLogo as Logo } from '@/components/ui/ZhenbotLogo'
 import { QuantRadarCanvas } from '@/components/landing/QuantRadarCanvas'
 import { sendWelcomeEmail } from '@/lib/email'
 

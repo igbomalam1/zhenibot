@@ -2,34 +2,24 @@ import { useState, type ButtonHTMLAttributes, type MouseEvent } from 'react'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'outline'
-  | 'ghost'
-  | 'danger'
-  | 'success'
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#459F34] text-white font-medium hover:bg-[#3a862b] active:bg-[#26591b] shadow-xs',
+    'bg-[#00B82E] text-white font-semibold hover:bg-[#008F27] active:bg-[#007A21] shadow-xs border border-transparent',
   secondary:
-    'border border-white/10 bg-[#142410] text-[#F3F4F6] hover:bg-[#1E212B] hover:border-white/15 active:bg-[#0e1a0b]',
+    'bg-white text-[#111827] border border-[#E5E7EB] font-semibold hover:bg-[#F0FDF4] hover:border-[#00B82E]/40 active:bg-[#DCFCE7]',
   outline:
-    'border border-white/15 bg-transparent text-[#F3F4F6] hover:bg-white/[0.04] hover:border-white/25 active:bg-white/[0.08]',
+    'bg-transparent text-[#111827] border border-[#E5E7EB] font-semibold hover:bg-black/[0.03] active:bg-black/[0.06]',
   ghost:
-    'text-[#8F95A3] hover:text-white hover:bg-white/[0.04] active:bg-white/[0.08]',
-  danger:
-    'bg-[#EF4444] text-white font-medium hover:bg-[#DC2626] active:bg-[#B91C1C]',
-  success:
-    'bg-[#10B981] text-white font-medium hover:bg-[#059669]',
+    'bg-transparent text-[#64748B] hover:text-[#111827] hover:bg-black/[0.04] active:bg-black/[0.07]',
 }
 
 const sizes: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-xs rounded-md gap-1.5',
-  md: 'h-10 px-4 text-xs font-medium rounded-lg gap-2',
-  lg: 'h-11 px-5 text-sm font-medium rounded-lg gap-2',
+  sm: 'h-10 px-4 text-xs rounded-[10px] gap-2',
+  md: 'h-12 px-6 text-sm rounded-[12px] gap-2.5',
+  lg: 'h-[52px] px-7 text-base rounded-[12px] gap-2.5',
 }
 
 export function buttonClass(
@@ -38,9 +28,9 @@ export function buttonClass(
   className?: string,
 ): string {
   return cn(
-    'inline-flex items-center justify-center tracking-tight transition-colors duration-100',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#459F34]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#081106]',
-    'disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none',
+    'inline-flex items-center justify-center font-sans tracking-normal transition-all duration-150',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00B82E]/50 focus-visible:ring-offset-2',
+    'disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none',
     'active:scale-[0.99] whitespace-nowrap cursor-pointer select-none',
     variants[variant],
     sizes[size],
@@ -75,11 +65,8 @@ export function Button({
     if (!onClick) return
 
     try {
-      const result = onClick(e) as unknown
-      if (result && typeof (result as Promise<unknown>).then === 'function') {
-        setInternalLoading(true)
-        await result
-      }
+      setInternalLoading(true)
+      await onClick(e)
     } finally {
       setInternalLoading(false)
     }
@@ -87,15 +74,12 @@ export function Button({
 
   return (
     <button
-      className={cn(
-        buttonClass(variant, size, className),
-        isBusy && 'opacity-80 pointer-events-none cursor-wait',
-      )}
+      {...props}
       disabled={disabled || isBusy}
       onClick={handleClick}
-      {...props}
+      className={buttonClass(variant, size, className)}
     >
-      {isBusy && <Loader2 className="size-3.5 animate-spin shrink-0" />}
+      {isBusy && <Loader2 className="size-4 animate-spin shrink-0" />}
       {children}
     </button>
   )

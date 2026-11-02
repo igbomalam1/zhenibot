@@ -16,6 +16,9 @@ dist-ssr
 .env
 .env.*
 
+# Utility scripts with private tokens
+scripts/
+
 # Supabase
 supabase/.branches/
 supabase/.temp/
