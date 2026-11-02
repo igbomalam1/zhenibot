@@ -56,9 +56,11 @@ export default function App() {
             {/* 1. Public Website */}
             <Route path="/" element={withSuspense(<Landing />)} />
 
-            {/* 2. Client Portal Workspace */}
+            {/* 2. Dashboard Workspace & Sign In */}
             <Route path="/portal" element={withSuspense(<ClientPortal />)} />
             <Route path="/portal/login" element={withSuspense(<PortalLogin />)} />
+            <Route path="/login" element={withSuspense(<PortalLogin />)} />
+            <Route path="/signin" element={withSuspense(<PortalLogin />)} />
             <Route path="/portal/activate" element={withSuspense(<PortalActivate />)} />
 
             {/* 3. Auth & Legacy User Routes */}

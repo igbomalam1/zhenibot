@@ -52,16 +52,16 @@ export function ClientPortal() {
   if (!session) {
     return (
       <div className="min-h-screen bg-[#F8FAFC] flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="text-xl font-bold text-[#111827]">Sign in to your Client Portal</h2>
+        <h2 className="text-xl font-bold text-[#111827]">Sign in to Dashboard</h2>
         <p className="text-xs text-[#64748B] mt-1 mb-4">
-          Please authenticate with your business credentials.
+          Please authenticate with your credentials.
         </p>
         <button
           type="button"
           onClick={() => navigate('/portal/login')}
           className="h-10 px-5 rounded-xl bg-[#00B82E] text-white text-xs font-semibold cursor-pointer"
         >
-          Go to Sign In
+          Sign In
         </button>
       </div>
     )

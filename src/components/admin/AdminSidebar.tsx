@@ -138,7 +138,7 @@ export function AdminSidebar({
           <div className="flex flex-col">
             <ZhenbotLogo variant="compact" size="sm" />
             <span className="text-[9px] font-mono uppercase font-bold tracking-widest text-[#00B82E] mt-0.5">
-              Operations OS
+              Dashboard
             </span>
           </div>
         ) : (

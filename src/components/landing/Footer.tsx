@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ZhenbotLogo } from '@/components/ui/ZhenbotLogo'
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
-import { Mail, Globe, ArrowUpRight, ShieldCheck } from 'lucide-react'
+import { Mail, Globe, ArrowUpRight } from 'lucide-react'
 
 const YEAR = new Date().getFullYear()
 
@@ -45,9 +45,8 @@ export function Footer() {
                 <li><a href="#industries" className="hover:text-[#00B82E] transition-colors">Industries</a></li>
                 <li><a href="#faq" className="hover:text-[#00B82E] transition-colors">FAQ</a></li>
                 <li>
-                  <Link to="/portal" className="text-[#00B82E] font-semibold hover:underline inline-flex items-center gap-1">
-                    <ShieldCheck className="size-3.5" />
-                    <span>Client Portal</span>
+                  <Link to="/portal" className="text-[#00B82E] font-semibold hover:underline">
+                    Dashboard
                   </Link>
                 </li>
               </ul>
@@ -108,7 +107,7 @@ export function Footer() {
           <p>© {YEAR} Zhenbot (Zhen Automation). All rights reserved.</p>
           <div className="flex items-center space-x-6">
             <Link to="/portal/login" className="hover:text-[#111827] transition-colors">
-              Client Portal Sign In
+              Sign In
             </Link>
             <a href="#" className="hover:text-[#111827] transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-[#111827] transition-colors">Terms of Service</a>

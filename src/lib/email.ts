@@ -28,7 +28,7 @@ export async function sendWelcomeEmail(params: {
       } to eliminate repetitive manual workflows through custom software automation.
     </p>
     <p style="font-size: 14px; line-height: 1.6; color: #4B5563; margin: 0 0 20px 0;">
-      Your workspace is active. You can log into your private client portal at any time to monitor your live automation pipelines, view execution logs, download invoices, and coordinate directly with our engineering team.
+      Your dashboard is active. You can log in at any time to monitor your live automation pipelines, view execution logs, download invoices, and coordinate directly with our engineering team.
     </p>
   `
 
@@ -166,7 +166,7 @@ export async function sendDirectClientMessageEmail(params: {
     recipientName,
     subject,
     messageHtml,
-    actionText: 'Open Client Portal &rarr;',
+    actionText: 'Open Dashboard &rarr;',
     actionUrl: `${OFFICIAL_WEBSITE_URL}/portal`,
   })
 

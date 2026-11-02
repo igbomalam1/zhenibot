@@ -125,7 +125,7 @@ export function renderZhenbotEmailHtml(options: EmailTemplateRenderOptions): str
   }
 
   const name = options.recipientName || 'Valued Partner'
-  const actionText = options.actionText || 'Visit Client Portal &rarr;'
+  const actionText = options.actionText || 'Open Dashboard &rarr;'
   const actionUrl = options.actionUrl || `${OFFICIAL_WEBSITE_URL}/portal`
   const preheader = options.preheader || 'Zhenbot Automation: Intelligent software automations for your business operations.'
 

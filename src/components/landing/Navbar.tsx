@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, X, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Menu, X, ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ZhenbotLogo } from '@/components/ui/ZhenbotLogo'
 
@@ -69,14 +69,13 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right: Portal Link & Primary CTA Button */}
+        {/* Right: Sign In Button & Primary CTA Button */}
         <div className="hidden sm:flex items-center gap-3">
           <Link
             to="/portal"
-            className="flex items-center gap-1.5 text-[14px] font-semibold text-[#111827] hover:text-[#00B82E] px-3.5 py-2 rounded-xl hover:bg-[#F8FAFC] transition-colors"
+            className="text-[14px] font-semibold text-[#111827] hover:text-[#00B82E] px-3.5 py-2 rounded-xl hover:bg-[#F8FAFC] transition-colors"
           >
-            <ShieldCheck className="size-4 text-[#00B82E]" />
-            <span>Client Portal</span>
+            Sign In
           </Link>
 
           <a
@@ -119,10 +118,9 @@ export function Navbar() {
             <Link
               to="/portal"
               onClick={() => setOpen(false)}
-              className="text-base font-bold text-[#00B82E] pt-2 flex items-center gap-2"
+              className="text-base font-bold text-[#00B82E] pt-2"
             >
-              <ShieldCheck className="size-4" />
-              <span>Client Portal</span>
+              Sign In
             </Link>
           </div>
 

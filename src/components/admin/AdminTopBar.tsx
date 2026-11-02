@@ -88,7 +88,7 @@ export function AdminTopBar({
       case 'settings':
         return 'Business Configuration & Settings'
       default:
-        return 'Operations Dashboard'
+        return 'Dashboard'
     }
   }
 
@@ -102,7 +102,7 @@ export function AdminTopBar({
       <div className="flex items-center gap-3">
         <div>
           <div className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#64748B]">
-            Zhenbot Admin / <span className="text-[#00B82E] capitalize">{currentSection}</span>
+            Dashboard / <span className="text-[#00B82E] capitalize">{currentSection}</span>
           </div>
           <h1 className="text-base font-bold text-[#111827] leading-tight">
             {getSectionTitle(currentSection)}

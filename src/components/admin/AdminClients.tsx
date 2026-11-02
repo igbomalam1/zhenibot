@@ -341,7 +341,7 @@ export function AdminClients({ clients, projects, invoices, onRefresh }: AdminCl
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white text-xs font-bold transition-colors cursor-pointer"
                 >
-                  Save & Enable Portal
+                  Save Client
                 </button>
               </div>
             </form>
@@ -370,19 +370,19 @@ export function AdminClients({ clients, projects, invoices, onRefresh }: AdminCl
               </button>
             </div>
 
-            {/* Portal Workspace Integration */}
+            {/* Dashboard Access */}
             <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#00B82E]/30 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="size-4 text-[#00B82E]" />
-                  <span className="text-xs font-bold text-[#111827]">Client Portal Integration</span>
+                  <span className="text-xs font-bold text-[#111827]">Dashboard Access</span>
                 </div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#00B82E] border border-[#00B82E]/30">
                   Ready
                 </span>
               </div>
               <p className="text-xs text-[#64748B] leading-relaxed">
-                Client has private workspace access to view live automations, project milestones, invoices, and support tickets.
+                Client has dashboard access to view live automations, project milestones, invoices, and support tickets.
               </p>
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <button
@@ -399,7 +399,7 @@ export function AdminClients({ clients, projects, invoices, onRefresh }: AdminCl
                   className="h-8 px-3.5 rounded-lg bg-[#00B82E] hover:bg-[#008F27] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <ExternalLink className="size-3.5" />
-                  <span>Open Client Portal</span>
+                  <span>Open Dashboard</span>
                 </button>
               </div>
             </div>

@@ -652,7 +652,7 @@ export function AdminSystem({ section, logs }: AdminSystemProps) {
 
                 <div className="text-center pt-2">
                   <span className="inline-block px-6 py-2.5 rounded-xl bg-[#00B82E] text-white text-xs font-bold shadow-xs">
-                    Open Zhenbot Client Portal &rarr;
+                    Open Dashboard &rarr;
                   </span>
                 </div>
               </div>

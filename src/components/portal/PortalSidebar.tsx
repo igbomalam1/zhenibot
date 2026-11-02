@@ -122,7 +122,7 @@ export function PortalSidebar({
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="size-2 rounded-full bg-[#00B82E]" />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#00B82E]">
-                  Client Portal
+                  Dashboard
                 </span>
               </div>
             </div>
@@ -155,7 +155,7 @@ export function PortalSidebar({
               <div className="text-xs font-bold text-[#111827] truncate">{companyName}</div>
               <div className="text-[11px] text-[#64748B] flex items-center gap-1 truncate">
                 <ShieldCheck className="size-3 text-[#00B82E]" />
-                <span>Verified Workspace</span>
+                <span>Active Account</span>
               </div>
             </div>
           </div>

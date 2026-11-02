@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ArrowRight, ShieldCheck } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { ZhenbotLogo } from '@/components/ui/ZhenbotLogo'
 import { portalStore } from '@/lib/portalStore'
 import { useToast } from '@/contexts/ToastContext'
@@ -47,15 +47,11 @@ export function PortalActivate() {
         <div className="flex justify-center">
           <ZhenbotLogo variant="full" size="md" />
         </div>
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F0FDF4] text-[#00B82E] text-xs font-bold border border-[#00B82E]/30">
-          <ShieldCheck className="size-3.5" />
-          <span>Client Account Activation</span>
-        </div>
-        <h2 className="text-xl sm:text-2xl font-extrabold text-[#111827] tracking-tight">
-          Activate Your Portal Workspace
+        <h2 className="text-2xl font-bold text-[#111827] tracking-tight">
+          Activate Account
         </h2>
         <p className="text-xs text-[#64748B]">
-          Complete your profile setup to access your custom automation dashboard
+          Complete your profile setup to access your dashboard
         </p>
       </div>
 
@@ -103,7 +99,7 @@ export function PortalActivate() {
               disabled={isSubmitting}
               className="w-full h-11 rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow-md"
             >
-              <span>{isSubmitting ? 'Activating Workspace...' : 'Activate & Enter Dashboard'}</span>
+              <span>{isSubmitting ? 'Activating...' : 'Activate Account'}</span>
               <ArrowRight className="size-4" />
             </button>
           </form>

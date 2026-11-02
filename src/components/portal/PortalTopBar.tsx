@@ -82,7 +82,7 @@ export function PortalTopBar({
     profile: 'Company Profile',
     team: 'Team Members & Permissions',
     notifications: 'Notifications & Alerts',
-    settings: 'Portal Settings',
+    settings: 'Settings',
   }
 
   return (
@@ -101,12 +101,12 @@ export function PortalTopBar({
 
         <div>
           <div className="flex items-center gap-2 text-xs text-[#64748B]">
-            <span>Portal</span>
+            <span>Dashboard</span>
             <span>/</span>
             <span className="font-semibold text-[#111827] capitalize">{currentSection}</span>
           </div>
           <h1 className="text-lg font-bold text-[#111827] tracking-tight">
-            {titles[currentSection] || 'Client Portal'}
+            {titles[currentSection] || 'Dashboard'}
           </h1>
         </div>
       </div>
