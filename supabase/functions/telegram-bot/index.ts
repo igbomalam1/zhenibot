@@ -14,7 +14,6 @@ const ADMIN_ALERT_EMAIL = Deno.env.get('ADMIN_ALERT_EMAIL') || 'ibngahd01@gmail.
 const SENDBYTE_ENDPOINT = 'https://api.sendbyte.africa/v1/emails'
 const SENDER_EMAIL = 'Zhenbot Assistant <automate@zhenibot.com>'
 const WEBSITE_URL = 'https://zhenibot.com'
-const WHATSAPP_URL = 'https://wa.me/2348000000000?text=Hello%20Zhenbot,%20I%20am%20interested%20in%20custom%20business%20automation.'
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
@@ -170,7 +169,6 @@ function getMainMenuKeyboard() {
       ],
       [
         { text: '🌐 Visit Website', url: WEBSITE_URL },
-        { text: '📱 Chat on WhatsApp', url: WHATSAPP_URL },
       ],
     ],
   }
@@ -355,8 +353,7 @@ serve(async (req) => {
 
         await sendTelegramMessage(chatId, text, {
           inline_keyboard: [
-            [{ text: '📱 Chat on WhatsApp Instantly', url: WHATSAPP_URL }],
-            [{ text: '« Back', callback_data: 'cb_main_menu' }],
+            [{ text: '« Back to Menu', callback_data: 'cb_main_menu' }],
           ],
         })
         return new Response(JSON.stringify({ ok: true }), { headers: corsHeaders })
@@ -537,12 +534,10 @@ serve(async (req) => {
         const successMsg =
           `🎉 <b>Requirements Received!</b>\n\n` +
           `Thank you, <b>${clientName}</b>. Your details for <b>${finalData.business_name}</b> have been submitted directly to our lead engineering team.\n\n` +
-          `Our team will review your workflow and contact you at <code>${finalData.contact}</code> with a tailored automation plan and timeline.\n\n` +
-          `If you'd like an immediate conversation, you can also reach us on WhatsApp right away.`
+          `Our team will review your workflow and contact you at <code>${finalData.contact}</code> with a tailored automation plan and timeline.`
 
         await sendTelegramMessage(chatId, successMsg, {
           inline_keyboard: [
-            [{ text: '📱 Chat on WhatsApp Now', url: WHATSAPP_URL }],
             [{ text: '🌐 Explore Website', url: WEBSITE_URL }],
             [{ text: '« Main Menu', callback_data: 'cb_main_menu' }],
           ],
@@ -622,12 +617,10 @@ serve(async (req) => {
         // 4. Confirm to user
         const ackText =
           `✅ <b>Request Received!</b>\n\n` +
-          `We have alerted our lead engineer directly. Someone from our team will reach out to you shortly.\n\n` +
-          `If you'd like an immediate response, feel free to tap below to message Usman directly on WhatsApp.`
+          `We have alerted our lead engineer directly. Someone from our team will reach out to you shortly.`
 
         await sendTelegramMessage(chatId, ackText, {
           inline_keyboard: [
-            [{ text: '📱 Open Direct WhatsApp Chat', url: WHATSAPP_URL }],
             [{ text: '« Main Menu', callback_data: 'cb_main_menu' }],
           ],
         })
@@ -659,7 +652,6 @@ serve(async (req) => {
 
         await sendTelegramMessage(chatId, repPrompt, {
           inline_keyboard: [
-            [{ text: '📱 Chat on WhatsApp Instantly', url: WHATSAPP_URL }],
             [{ text: '« Main Menu', callback_data: 'cb_main_menu' }],
           ],
         })

@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
+import { ChevronDown, ArrowRight } from 'lucide-react'
 
 const FAQS = [
   {
@@ -97,16 +96,14 @@ export function FaqSection() {
             Have a question specific to your operational setup?
           </h4>
           <p className="text-sm text-[#64748B] max-w-md mx-auto">
-            Chat directly with our automation engineers on WhatsApp for immediate answers.
+            Get in touch directly with our automation engineers for immediate answers.
           </p>
           <a
-            href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20have%20a%20question%20about%20automating%20my%20business."
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#contact"
             className="inline-flex items-center gap-2 bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-sm h-11 px-6 rounded-[12px] transition-colors shadow-xs cursor-pointer"
           >
-            <WhatsAppIcon className="size-4" />
-            <span>Chat on WhatsApp</span>
+            <span>Ask an Automation Engineer</span>
+            <ArrowRight className="size-4" />
           </a>
         </div>
 

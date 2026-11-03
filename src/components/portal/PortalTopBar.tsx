@@ -13,7 +13,6 @@ import {
 } from 'lucide-react'
 import type { ClientPortalUser, ClientNotification } from '@/lib/portalStore'
 import type { Client } from '@/lib/businessStore'
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 
 interface PortalTopBarProps {
   currentSection: string
@@ -158,17 +157,6 @@ export function PortalTopBar({
           )}
         </div>
 
-        {/* Direct WhatsApp Consultation */}
-        <a
-          href="https://wa.me/2348000000000?text=Hello%20Zhenbot%20Team,%20this%20is%20from%20our%20Client%20Portal."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden md:flex items-center gap-1.5 h-9 px-3 rounded-xl bg-[#F0FDF4] hover:bg-[#DCFCE7] text-[#00B82E] border border-[#00B82E]/20 text-xs font-semibold transition-colors cursor-pointer"
-          title="Direct WhatsApp Support"
-        >
-          <WhatsAppIcon className="size-3.5" />
-          <span>WhatsApp PM</span>
-        </a>
 
         {/* Notifications Dropdown */}
         <div className="relative" ref={notifRef}>

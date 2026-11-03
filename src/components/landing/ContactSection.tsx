@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from 'react'
 import { Send, CheckCircle2, Mail, ArrowRight, Clock, ShieldCheck, Globe } from 'lucide-react'
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 import { useToast } from '@/contexts/ToastContext'
 import { businessStore } from '@/lib/businessStore'
 
@@ -63,35 +62,22 @@ export function ContactSection() {
             <div className="bg-white p-7 sm:p-8 rounded-2xl border border-[#E5E7EB] shadow-[0_2px_8px_rgba(0,0,0,0.04)] space-y-6">
               <div>
                 <h3 className="text-lg font-bold text-[#111827]">
-                  Instant WhatsApp Consultation
+                  Direct Engineering Consultation
                 </h3>
                 <p className="text-sm text-[#64748B] mt-1.5 leading-relaxed">
-                  Prefer a direct, casual conversation? Chat with our automation engineers on WhatsApp right now.
+                  Have a question about what we can automate for you? Chat with our assistant on Telegram or submit your workflow review request.
                 </p>
               </div>
 
-              <div className="space-y-2.5">
+              <div>
                 <a
-                  href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20would%20like%20to%20automate%20my%20business%20processes."
+                  href="https://t.me/zhenautomation_bot"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer group"
                 >
                   <span className="flex items-center gap-3">
-                    <WhatsAppIcon className="size-5" />
-                    <span>Chat on WhatsApp</span>
-                  </span>
-                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-                </a>
-
-                <a
-                  href="https://t.me/zhenautomation_bot"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer group"
-                >
-                  <span className="flex items-center gap-3">
-                    <Send className="size-4 text-[#00B82E]" />
+                    <Send className="size-4 text-white" />
                     <span>Chat on Telegram (@zhenautomation_bot)</span>
                   </span>
                   <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />

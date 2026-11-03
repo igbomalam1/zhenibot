@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { MessageSquare, X, Send, Minimize2, Loader2, Sparkles, ExternalLink } from 'lucide-react'
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 import { supabase, TABLE } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import type { ZhenbotChatMessage, ZhenbotChatThread } from '@/types/database'
@@ -285,18 +284,18 @@ export function LiveChatWidget() {
               </div>
             </div>
 
-            {/* Quick WhatsApp Jump */}
+            {/* Quick Telegram Jump */}
             <div className="mt-3 pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
-              <span className="text-[#64748B] text-[11px]">Prefer direct WhatsApp?</span>
+              <span className="text-[#64748B] text-[11px]">Need 24/7 assistance?</span>
               <a
-                href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20would%20like%20to%20automate%20my%20business."
+                href="https://t.me/zhenautomation_bot"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => void trackClick('click_chat_header_whatsapp', { section: 'chat_header' })}
+                onClick={() => void trackClick('click_chat_header_telegram', { section: 'chat_header' })}
                 className="inline-flex items-center gap-1.5 text-[#00B82E] hover:text-[#008F27] font-semibold text-[11px] bg-[#F0FDF4] px-2.5 py-1 rounded-full border border-[#00B82E]/20 transition-colors"
               >
-                <WhatsAppIcon className="size-3.5" />
-                <span>Switch to WhatsApp</span>
+                <Send className="size-3" />
+                <span>Telegram Bot</span>
                 <ExternalLink className="size-3" />
               </a>
             </div>

@@ -10,10 +10,10 @@ import {
   Calendar,
   AlertCircle,
   FileText,
+  Mail,
 } from 'lucide-react'
 import type { Project, Invoice } from '@/lib/businessStore'
 import type { ClientAutomation, AutomationExecutionLog, ClientSupportTicket } from '@/lib/portalStore'
-import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
 
 interface PortalDashboardOverviewProps {
   projects: Project[]
@@ -308,19 +308,17 @@ export function PortalDashboardOverview({
           {/* Quick Support / Contact Card */}
           <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#00B82E]/30 text-xs space-y-2 mt-4">
             <div className="flex items-center gap-2">
-              <WhatsAppIcon className="size-4 text-[#00B82E]" />
-              <span className="font-bold text-[#111827]">Dedicated Project Manager</span>
+              <Mail className="size-4 text-[#00B82E]" />
+              <span className="font-bold text-[#111827]">Dedicated Engineering Support</span>
             </div>
             <p className="text-[11px] text-[#64748B] leading-relaxed">
               Your assigned engineer is available for real-time adjustments and workflow improvements.
             </p>
             <a
-              href="https://wa.me/2348000000000?text=Hello%20Zhenbot%20Team,%20following%20up%20from%20our%20Client%20Portal."
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:automate@zhenibot.com?subject=Project%20Support%20Request"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-[#00B82E] hover:underline pt-1"
             >
-              <span>Message on WhatsApp</span>
+              <span>Email Support Team</span>
               <ArrowRight className="size-3.5" />
             </a>
           </div>
