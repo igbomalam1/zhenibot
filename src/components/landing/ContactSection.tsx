@@ -70,18 +70,33 @@ export function ContactSection() {
                 </p>
               </div>
 
-              <a
-                href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20would%20like%20to%20automate%20my%20business%20processes."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-between px-5 py-4 rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer group"
-              >
-                <span className="flex items-center gap-3">
-                  <WhatsAppIcon className="size-5" />
-                  <span>Chat on WhatsApp</span>
-                </span>
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </a>
+              <div className="space-y-2.5">
+                <a
+                  href="https://wa.me/2348000000000?text=Hello%20Zhen%20Automation,%20I%20would%20like%20to%20automate%20my%20business%20processes."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#00B82E] hover:bg-[#008F27] text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer group"
+                >
+                  <span className="flex items-center gap-3">
+                    <WhatsAppIcon className="size-5" />
+                    <span>Chat on WhatsApp</span>
+                  </span>
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </a>
+
+                <a
+                  href="https://t.me/zhenautomation_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#111827] hover:bg-[#1F2937] text-white font-semibold text-sm transition-all shadow-sm hover:shadow-md cursor-pointer group"
+                >
+                  <span className="flex items-center gap-3">
+                    <Send className="size-4 text-[#00B82E]" />
+                    <span>Chat on Telegram (@zhenautomation_bot)</span>
+                  </span>
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </a>
+              </div>
 
               <div className="pt-4 border-t border-[#E5E7EB] space-y-4">
                 <div className="flex items-start gap-3">

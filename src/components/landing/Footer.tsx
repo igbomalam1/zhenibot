@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ZhenbotLogo } from '@/components/ui/ZhenbotLogo'
 import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
-import { Mail, Globe, ArrowUpRight } from 'lucide-react'
+import { Mail, Globe, ArrowUpRight, Send } from 'lucide-react'
 
 const YEAR = new Date().getFullYear()
 
@@ -88,6 +88,17 @@ export function Footer() {
                     className="hover:text-[#00B82E] transition-colors"
                   >
                     +234 (0) 800-000-0000
+                  </a>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <Send className="size-4 text-[#00B82E] shrink-0 mt-0.5" />
+                  <a
+                    href="https://t.me/zhenautomation_bot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-[#00B82E] transition-colors"
+                  >
+                    Telegram: @zhenautomation_bot
                   </a>
                 </li>
                 <li className="flex items-start gap-2.5">
